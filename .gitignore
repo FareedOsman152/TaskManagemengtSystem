@@ -1,0 +1,31 @@
+# .gitignore for ASP.NET MVC
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.cache
+*.log
+*.lock
+*.DS_Store
+
+# Local development configs
+appsettings.Development.json
+
+# NuGet & packages
+.nuget/
+packages/
+*.nupkg
+
+# Build outputs
+Debug/
+Release/
+out/
+
+# IDE/Editor files (VS, Rider, VSCode)
+.idea/
+.vscode/
+
+# Misc
+*.swp
+*.swo
