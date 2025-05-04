@@ -11,6 +11,7 @@ obj/
 
 # Local development configs
 appsettings.Development.json
+appsettings.json
 
 # NuGet & packages
 .nuget/
@@ -29,3 +30,4 @@ out/
 # Misc
 *.swp
 *.swo
+
