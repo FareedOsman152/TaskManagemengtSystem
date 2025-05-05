@@ -1,4 +1,6 @@
-﻿namespace TaskManagmentSystem.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace TaskManagmentSystem.Models
 {
     public class UserTask
     {
