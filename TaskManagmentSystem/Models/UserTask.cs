@@ -8,6 +8,9 @@
         public DateTime CreatedDate { get; set; }
         public DateTime BeginOn { get; set; }
         public DateTime EndOn { get; set; }
-
+        
+        [ForeignKey("TaskList")]
+        public int TaskListId { get; set; }    
+        public TaskList TaskList { get; set; }    
     }
 }
