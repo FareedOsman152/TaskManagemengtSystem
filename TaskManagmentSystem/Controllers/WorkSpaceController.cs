@@ -17,7 +17,6 @@ namespace TaskManagmentSystem.Controllers
         [Authorize]
         public IActionResult ShowAll()
         {
-            var workSpaces = _context.
             return View();
         }
     }
