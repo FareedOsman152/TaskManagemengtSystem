@@ -35,8 +35,7 @@ namespace TaskManagmentSystem.Controllers
                 if(saveResult.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    // spacific view
-                    return View();
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {
