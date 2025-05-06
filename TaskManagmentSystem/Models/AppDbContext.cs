@@ -5,6 +5,9 @@ namespace TaskManagmentSystem.Models
 {
     public class AppDbContext : IdentityDbContext<AppUser>
     {
+        public DbSet<WorkSpace> WorkSpaces { get; set; }
+        public DbSet<TaskList> TaskLists { get; set; }
+        public DbSet<UserTask> UserTasks { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
