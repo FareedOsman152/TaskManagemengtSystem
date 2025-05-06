@@ -244,7 +244,7 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasIndex("WorkSpaceId");
 
-                    b.ToTable("TaskList");
+                    b.ToTable("TaskLists");
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.UserTask", b =>
@@ -280,7 +280,7 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasIndex("TaskListId");
 
-                    b.ToTable("UserTask");
+                    b.ToTable("UserTasks");
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.WorkSpace", b =>
@@ -308,7 +308,7 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasIndex("AppUserId");
 
-                    b.ToTable("WorkSpace");
+                    b.ToTable("WorkSpaces");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
