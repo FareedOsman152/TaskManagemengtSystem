@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagmentSystem.Models;
 using TaskManagmentSystem.ViewModel;
@@ -35,7 +36,7 @@ namespace TaskManagmentSystem.Controllers
                 if(saveResult.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("ShowAll", "WorkSpace");
                 }
                 else
                 {
@@ -46,6 +47,37 @@ namespace TaskManagmentSystem.Controllers
                 }
             }
             return View("Register",userFromRequest);
+        }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View("Login");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveLogin(UserForLogin userFromRequest)
+        {
+            if (ModelState.IsValid)
+            {
+                AppUser? user = await _userManager.FindByNameAsync(userFromRequest.Username);
+                if (user is not null)
+                {
+                    var isValidPassword = await _userManager.CheckPasswordAsync(user, userFromRequest.Password);
+                    if (isValidPassword)
+                    {
+                        await _signInManager.SignInAsync(user,userFromRequest.RememberMe);
+                        return RedirectToAction("ShowAll", "WorkSpace");
+                    }
+                }
+            }
+            return View("Login",userFromRequest);
+        }
+
+        public async Task<IActionResult> SignOut()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login");
         }
     }
 }
