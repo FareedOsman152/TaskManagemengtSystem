@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TaskManagmentSystem.Models;
-using TaskManagmentSystem.RepoSitories.WorkSpaceRepos;
 
 namespace TaskManagmentSystem
 {
@@ -16,10 +15,13 @@ namespace TaskManagmentSystem
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
-                options.Password.RequiredLength = 9;
+                options.Password.RequiredLength = 6;
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredUniqueChars = 0;
+                options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
+
+                options.User.RequireUniqueEmail = true;
             })
                 .AddEntityFrameworkStores<AppDbContext>();
 
@@ -27,8 +29,6 @@ namespace TaskManagmentSystem
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("cs"));
             });
-
-            builder.Services.AddScoped<IWorkSpaceRepository, WorkSpaceRepositorySqlServer>();
 
             var app = builder.Build();
 
