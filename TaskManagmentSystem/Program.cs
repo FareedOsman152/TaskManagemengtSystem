@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TaskManagmentSystem.Models;
+using TaskManagmentSystem.RepoSitories.WorkSpaceRepos;
 
 namespace TaskManagmentSystem
 {
@@ -26,6 +27,8 @@ namespace TaskManagmentSystem
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("cs"));
             });
+
+            builder.Services.AddScoped<IWorkSpaceRepository, WorkSpaceRepositorySqlServer>();
 
             var app = builder.Build();
 

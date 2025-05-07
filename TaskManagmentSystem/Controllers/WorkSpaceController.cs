@@ -1,23 +1,27 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskManagmentSystem.Models;
+using TaskManagmentSystem.RepoSitories.WorkSpaceRepos;
 
 namespace TaskManagmentSystem.Controllers
 {
     public class WorkSpaceController : Controller
     {
-        public AppDbContext _context { get; set; }
+        private readonly IWorkSpaceRepository _workSpaceRepository;
 
-        public WorkSpaceController(AppDbContext context)
+        public WorkSpaceController(IWorkSpaceRepository workSpaceRepository)
         {
-            _context = context;
+            _workSpaceRepository = workSpaceRepository;
         }
 
         [Authorize]
-        public IActionResult ShowAll()
+        public async Task<IActionResult> ShowAll()
         {
-            return View();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var workSpaces = await _workSpaceRepository.GetAllWorkSpacesAsync(userId!);
+            return View("ShowAll",workSpaces);
         }
     }
 }
