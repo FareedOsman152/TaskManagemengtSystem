@@ -9,6 +9,5 @@ namespace TaskManagmentSystem.RepoSitories.WorkSpaceRepos
         Task<bool> CreateWorkSpaceAsync(WorkSpace workSpace);
         Task<bool> UpdateWorkSpaceAsync(WorkSpace workSpace);
         Task<bool> DeleteWorkSpaceAsync(int id);
-        Task<bool> SaveChangesAsync();
     }
 }
