@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskManagmentSystem.Models;
-using TaskManagmentSystem.ViewModel;
+using TaskManagmentSystem.ViewModels;
 
 namespace TaskManagmentSystem.Controllers
 {

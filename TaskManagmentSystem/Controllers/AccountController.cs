@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagmentSystem.Models;
-using TaskManagmentSystem.ViewModel;
+using TaskManagmentSystem.ViewModels;
 
 namespace TaskManagmentSystem.Controllers
 {

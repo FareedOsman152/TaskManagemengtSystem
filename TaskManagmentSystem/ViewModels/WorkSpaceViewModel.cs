@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TaskManagmentSystem.ViewModel
+namespace TaskManagmentSystem.ViewModels
 {
     public class WorkSpaceViewModel
     {

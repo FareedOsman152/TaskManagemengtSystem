@@ -37,7 +37,8 @@ namespace TaskManagmentSystem
             builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
             builder.Services.AddMvc()
-                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+                .AddDataAnnotationsLocalization();
 
             builder.Services.Configure<RequestLocalizationOptions>(options =>
             {
