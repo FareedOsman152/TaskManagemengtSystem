@@ -75,7 +75,7 @@ namespace TaskManagmentSystem
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Workspace}/{action=ShowAll}/{id?}");
 
             app.Run();
         }
