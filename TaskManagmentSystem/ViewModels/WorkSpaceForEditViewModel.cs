@@ -6,7 +6,10 @@ namespace TaskManagmentSystem.ViewModels
     {
         public int Id { get; set; }
         [Required]
-        public string Tilte { get; set; }
+        [Display(Name = "Tilte")]
+        public string Tilte { get; set; } = null!;
+
+        [Display(Name = "Discription")]
         public string? Discription { get; set; }
     }
 }

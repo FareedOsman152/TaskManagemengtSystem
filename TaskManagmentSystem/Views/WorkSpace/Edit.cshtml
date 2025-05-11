@@ -1,12 +1,12 @@
-﻿@model TaskManagmentSystem.ViewModels.WorkSpaceForEditViewModel
+﻿@inject IViewLocalizer Localizer
+@model TaskManagmentSystem.ViewModels.WorkSpaceForEditViewModel
 
 @{
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>@Localizer["Edit"]</h1>
 
-<h4>WorkSpaceForEditViewModel</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -24,14 +24,14 @@
                 <span asp-validation-for="Discription" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="@Localizer["Save"]" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="ShowAll">Back to Workspaces</a>
+    <a asp-action="ShowAll">@Localizer["Back"]</a>
 </div>
 
 @section Scripts {

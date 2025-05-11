@@ -5,7 +5,10 @@ namespace TaskManagmentSystem.ViewModels
     public class WorkSpaceViewModel
     {
         [Required]
-        public string Tilte { get; set; }
+        [Display(Name = "Tilte")]
+        public string Tilte { get; set; } = null!;
+
+        [Display(Name = "Discription")]
         public string? Discription { get; set; }
     }
 }
