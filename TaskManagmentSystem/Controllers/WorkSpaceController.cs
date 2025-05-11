@@ -39,7 +39,7 @@ namespace TaskManagmentSystem.Controllers
 
                 var workSapce = new WorkSpace();
                 workSapce.Title = workSpaceFromRequest.Tilte;
-                workSapce.Discription = workSpaceFromRequest.Discription;
+                workSapce.Description = workSpaceFromRequest.Description;
                 workSapce.AppUserId = userId!;
 
                 await _context.AddAsync(workSapce);
@@ -72,7 +72,7 @@ namespace TaskManagmentSystem.Controllers
             {
                 Id = workSpace.Id,
                 Tilte = workSpace.Title,
-                Discription = workSpace.Discription
+                Description = workSpace.Description
             };
             return View("Edit", workSpaceViewModel);
         }
@@ -86,7 +86,7 @@ namespace TaskManagmentSystem.Controllers
                 if (workSpace != null)
                 {
                     workSpace.Title = workSpaceFromRequest.Tilte;
-                    workSpace.Discription = workSpaceFromRequest.Discription;
+                    workSpace.Description = workSpaceFromRequest.Description;
                     _context.Update(workSpace);
                     await _context.SaveChangesAsync();
                 }

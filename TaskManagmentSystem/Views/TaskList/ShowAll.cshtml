@@ -1,0 +1,51 @@
+﻿@model TaskManagmentSystem.ViewModels.TaskListsViewModel
+
+@{
+    ViewData["Title"] = "Task List";
+}
+
+<div class="container-fluid">
+    <h1 class="mb-4">Task Boards</h1>
+
+    <!-- Trello-like Lists Container -->
+    <div class="d-flex overflow-auto" style="gap: 16px;">
+        @foreach (var taskList in Model.TaskLists)
+        {
+            <div class="card" style="min-width: 300px; background-color: #f4f5f7;">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">@taskList.Title</h5>
+                    <span class="badge bg-light text-dark">@taskList.UserTasks.Count Tasks</span>
+                </div>
+
+                <!-- Tasks Container (Draggable if needed) -->
+                <div class="card-body p-2" style="min-height: 100px;">
+                    @foreach (var task in taskList.UserTasks)
+                    {
+                        <div class="card mb-2 shadow-sm">
+                            <div class="card-body p-2">
+                                <h6 class="card-title">@task.Title</h6>
+                                @if (!string.IsNullOrEmpty(task.Description))
+                                {
+                                    <p class="card-text small">@task.Description</p>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Add New Task Button -->
+                <div class="card-footer bg-transparent">
+                    <button class="btn btn-sm btn-outline-primary w-100">+ Add Task</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Optional: Trello-like Drag & Drop (Requires JavaScript) -->
+@section Scripts {
+    <script>
+        // You can add drag-and-drop functionality here using libraries like SortableJS
+        // Example: https://github.com/SortableJS/Sortable
+    </script>
+}

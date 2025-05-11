@@ -228,7 +228,7 @@ namespace TaskManagmentSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Discription")
+                    b.Property<string>("Description")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -261,7 +261,7 @@ namespace TaskManagmentSystem.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Discription")
+                    b.Property<string>("Description")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -295,7 +295,7 @@ namespace TaskManagmentSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Discription")
+                    b.Property<string>("Description")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 

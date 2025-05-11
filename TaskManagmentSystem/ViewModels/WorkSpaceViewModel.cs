@@ -8,7 +8,7 @@ namespace TaskManagmentSystem.ViewModels
         [Display(Name = "Tilte")]
         public string Tilte { get; set; } = null!;
 
-        [Display(Name = "Discription")]
-        public string? Discription { get; set; }
+        [Display(Name = "Description")]
+        public string? Description { get; set; }
     }
 }
