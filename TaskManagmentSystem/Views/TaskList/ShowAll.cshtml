@@ -1,51 +1,136 @@
 ﻿@model TaskManagmentSystem.ViewModels.TaskListsViewModel
 
 @{
-    ViewData["Title"] = "Task List";
+    ViewData["Title"] = "Task Board";
 }
 
-<div class="container-fluid">
-    <h1 class="mb-4">Task Boards</h1>
+<div class="container-fluid task-board-container">
+    <!-- Header with Add Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>@ViewData["Title"]</h1>
+        <a asp-action="Add" asp-route-id="@Model.WorkSpaceId" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Add New List
+        </a>
+    </div>
 
-    <!-- Trello-like Lists Container -->
-    <div class="d-flex overflow-auto" style="gap: 16px;">
+    <!-- Lists Container -->
+    <div class="row flex-nowrap overflow-auto py-3" style="min-height: 70vh;">
         @foreach (var taskList in Model.TaskLists)
         {
-            <div class="card" style="min-width: 300px; background-color: #f4f5f7;">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">@taskList.Title</h5>
-                    <span class="badge bg-light text-dark">@taskList.UserTasks.Count Tasks</span>
-                </div>
+            <div class="col-md-4 col-lg-3 mb-4 pe-3" style="min-width: 320px;">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fs-6">@taskList.Title</h5>
+                        <div class="d-flex gap-2">
+                            <!-- Edit Button -->
+                            <a asp-action="Edit" asp-route-id="@taskList.Id"
+                               class="btn btn-warning btn-sm"
+                               title="Edit">
+                                <i class="bi bi-pencil" style="font-size: 1rem;"></i>
+                            </a>
 
-                <!-- Tasks Container (Draggable if needed) -->
-                <div class="card-body p-2" style="min-height: 100px;">
-                    @foreach (var task in taskList.UserTasks)
-                    {
-                        <div class="card mb-2 shadow-sm">
-                            <div class="card-body p-2">
-                                <h6 class="card-title">@task.Title</h6>
-                                @if (!string.IsNullOrEmpty(task.Description))
+                            <!-- Delete Button -->
+                            <form asp-action="Delete" asp-route-id="@taskList.Id" method="post"
+                                  onsubmit="return confirm('Delete this task list?');">
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm"
+                                        title="Delete">
+                                    <i class="bi bi-trash" style="font-size: 1rem;"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Tasks Container -->
+                    <div class="card-body p-2" style="background-color: #f8f9fa;">
+                        @if (taskList.UserTasks?.Any() != true)
+                        {
+                            <div class="text-center py-3">
+                                <i class="bi bi-inbox text-muted" style="font-size: 2rem;"></i>
+                                <p class="text-muted mt-2">No tasks yet</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="task-container" style="max-height: 60vh; overflow-y: auto;">
+                                @foreach (var task in taskList.UserTasks)
                                 {
-                                    <p class="card-text small">@task.Description</p>
+                                    <div class="card mb-2 border-0 shadow-sm task-card">
+                                        <div class="card-body p-3">
+                                            <h6 class="card-title mb-1">@task.Title</h6>
+                                            @if (!string.IsNullOrEmpty(task.Description))
+                                            {
+                                                <p class="card-text small text-muted mb-2">@task.Description</p>
+                                            }
+                                            <div class="d-flex justify-content-end">
+                                                <small class="text-muted">@task.CreatedDate.ToString("MMM dd")</small>
+                                            </div>
+                                        </div>
+                                    </div>
                                 }
                             </div>
-                        </div>
-                    }
-                </div>
+                        }
+                    </div>
 
-                <!-- Add New Task Button -->
-                <div class="card-footer bg-transparent">
-                    <button class="btn btn-sm btn-outline-primary w-100">+ Add Task</button>
+                    <!-- Add Task Button -->
+                    <div class="card-footer bg-transparent border-top-0">
+                        <button class="btn btn-sm btn-outline-primary w-100">
+                            <i class="bi bi-plus"></i> Add Task
+                        </button>
+                    </div>
                 </div>
             </div>
         }
     </div>
 </div>
 
-<!-- Optional: Trello-like Drag & Drop (Requires JavaScript) -->
-@section Scripts {
-    <script>
-        // You can add drag-and-drop functionality here using libraries like SortableJS
-        // Example: https://github.com/SortableJS/Sortable
-    </script>
-}
+<style>
+    .task-board-container {
+        background-color: #f0f2f5;
+        padding: 20px;
+        border-radius: 8px;
+    }
+
+    .task-container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .task-container::-webkit-scrollbar-thumb {
+        background-color: #d1d5db;
+        border-radius: 3px;
+    }
+
+    .task-card:hover {
+        transform: translateY(-2px);
+        transition: transform 0.2s;
+    }
+
+    .card-header .btn-sm {
+        padding: 6px 10px;
+        transition: all 0.2s ease;
+    }
+
+    .card-header .btn-warning {
+        background-color: #ffc107;
+        border-color: #ffc107;
+        color: #212529;
+    }
+
+        .card-header .btn-warning:hover {
+            background-color: #e0a800;
+            border-color: #e0a800;
+            transform: scale(1.1);
+        }
+
+    .card-header .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: white;
+    }
+
+        .card-header .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+            transform: scale(1.1);
+        }
+</style>
