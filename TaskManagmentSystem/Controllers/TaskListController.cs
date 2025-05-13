@@ -52,5 +52,18 @@ namespace TaskManagmentSystem.Controllers
             }
             return View("Add", taskListFromRequst);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int taskListId, int workSpaceId)
+        {
+            var taskList = await _context.TaskLists.FindAsync(taskListId);
+            if (taskList is not null)
+            {
+                _context.TaskLists.Remove(taskList);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("ShowAll", new { id = taskList.WorkSpaceId });
+            }
+            return RedirectToAction("ShowAll", new { id = workSpaceId });
+        }
     }
 }
