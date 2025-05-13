@@ -255,7 +255,7 @@ namespace TaskManagmentSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("BeginOn")
+                    b.Property<DateTime?>("BeginOn")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreatedDate")
@@ -265,7 +265,7 @@ namespace TaskManagmentSystem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime>("EndOn")
+                    b.Property<DateTime?>("EndOn")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("TaskListId")
