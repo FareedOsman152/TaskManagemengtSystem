@@ -240,6 +240,9 @@ namespace TaskManagmentSystem.Migrations
                     b.Property<int>("WorkSpaceId")
                         .HasColumnType("int");
 
+                    b.Property<int>("color")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("WorkSpaceId");
@@ -258,6 +261,9 @@ namespace TaskManagmentSystem.Migrations
                     b.Property<DateTime?>("BeginOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Color")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -267,6 +273,12 @@ namespace TaskManagmentSystem.Migrations
 
                     b.Property<DateTime?>("EndOn")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int>("TaskListId")
                         .HasColumnType("int");
@@ -294,6 +306,9 @@ namespace TaskManagmentSystem.Migrations
                     b.Property<string>("AppUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Color")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasMaxLength(100)

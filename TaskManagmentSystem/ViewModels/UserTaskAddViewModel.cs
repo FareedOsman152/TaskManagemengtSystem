@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TaskManagmentSystem.Models;
 
 namespace TaskManagmentSystem.ViewModels
 {
@@ -15,6 +16,9 @@ namespace TaskManagmentSystem.ViewModels
         [MaxLength(255)]
         [Display(Name = "Description")]
         public string? Description { get; set; }
+
+        public UserTaskStatus Status { get; set; } = UserTaskStatus.NotStarted;
+        public UserTaskPriority Priority { get; set; } = UserTaskPriority.None;
 
         [Display(Name = "Begin on")]
         public DateTime? BeginOn { get; set; }
