@@ -65,5 +65,38 @@ namespace TaskManagmentSystem.Controllers
             }
             return RedirectToAction("ShowAll", new { id = workSpaceId });
         }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var taskList = await _context.TaskLists.FindAsync(id);
+            if (taskList is not null)
+            {
+                var taskListViewModel = new TaskListForEditViewModel
+                {
+                    Id = taskList.Id,
+                    WorkSpaceId = taskList.WorkSpaceId,
+                    Tilte = taskList.Title,
+                    Description = taskList.Description
+                };
+                return View("Edit", taskListViewModel);
+            }
+            return View("Edit");
+        }
+
+        public async Task<IActionResult> SaveEdit(TaskListForEditViewModel taskListFromRequest)
+        {
+            if(ModelState.IsValid)
+            {
+                var TaskList = await _context.TaskLists.FindAsync(taskListFromRequest.Id);
+                if (TaskList is not null)
+                {
+                    TaskList.Title = taskListFromRequest.Tilte;
+                    TaskList.Description = taskListFromRequest.Description;
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("ShowAll", new { Id = taskListFromRequest.WorkSpaceId });
+                }
+            }
+            return View("Edit");
+        }
     }
 }
