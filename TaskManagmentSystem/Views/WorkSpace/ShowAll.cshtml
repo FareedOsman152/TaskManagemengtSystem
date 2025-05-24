@@ -8,36 +8,64 @@
 <style>
     .workspace-card {
         transition: transform 0.2s;
-        border-left: 4px solid;
+        position: relative;
+        overflow: hidden;
     }
 
         .workspace-card:hover {
             transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
+    /* Color overlay styles */
+    .color-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 10px; /* ارتفاع شريط اللون */
+    }
+
     /* Colors based on WorkSpaceColor enum */
-    .workspace-red {
-        border-left-color: #dc3545;
+    .workspace-red .color-overlay {
+        background-color: #dc3545;
     }
 
-    .workspace-blue {
-        border-left-color: #0d6efd;
+    .workspace-blue .color-overlay {
+        background-color: #0d6efd;
     }
 
-    .workspace-green {
-        border-left-color: #198754;
+    .workspace-green .color-overlay {
+        background-color: #198754;
     }
 
-    .workspace-yellow {
-        border-left-color: #ffc107;
+    .workspace-yellow .color-overlay {
+        background-color: #ffc107;
     }
 
-    .workspace-gray {
-        border-left-color: #6c757d;
+    .workspace-gray .color-overlay {
+        background-color: #6c757d;
     }
 
-    .workspace-none {
-        border-left-color: #dee2e6;
+    .workspace-none .color-overlay {
+        background-color: #dee2e6;
+    }
+
+    /* Adjust card body padding */
+    .workspace-card .card-body {
+        padding-top: 1.75rem;
+    }
+
+    /* Card title styling */
+    .workspace-card .card-title {
+        font-weight: 600;
+        color: #212529;
+    }
+
+    /* Footer styling */
+    .workspace-card .card-footer {
+        background-color: rgba(0, 0, 0, 0.03);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
     }
 </style>
 
@@ -56,6 +84,9 @@
             {
                 <div class="col">
                     <div class="card h-100 shadow-sm workspace-card @GetWorkspaceColorClass(workspace.Color)">
+                        <!-- Color overlay bar -->
+                        <div class="color-overlay"></div>
+
                         <div class="card-body">
                             <!-- Title row with inline icons -->
                             <div class="d-flex justify-content-between align-items-start mb-2">
@@ -81,7 +112,7 @@
                             </div>
 
                             <!-- Description -->
-                            <p class="card-text">@(workspace.Description ?? "")</p>
+                            <p class="card-text text-muted">@(workspace.Description ?? "")</p>
                         </div>
 
                         <!-- Footer with "Go to Tasks" -->
