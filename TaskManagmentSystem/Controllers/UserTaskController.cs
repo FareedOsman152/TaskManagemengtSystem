@@ -86,5 +86,16 @@ namespace TaskManagmentSystem.Controllers
             }
             return View("Edit", userTaskFromRequest);
         }
+
+        public async Task<IActionResult> Delete(int id, int workSpaceId)
+        {
+            var userTask = await _context.UserTasks.FindAsync(id);
+            if(userTask is not null)
+            {
+                _context.UserTasks.Remove(userTask);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("ShowAll", "TaskList", new { Id = workSpaceId });
+        }
     }
 }
