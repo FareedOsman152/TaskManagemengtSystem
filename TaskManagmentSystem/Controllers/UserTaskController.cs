@@ -44,5 +44,47 @@ namespace TaskManagmentSystem.Controllers
             }
             return View("Add", userTaskFromRequest);
         }
+
+        public async Task<IActionResult>Edit(int Id, int WorkSpaceId)
+        {
+            var userTask = await _context.UserTasks.FindAsync(Id);
+            if(userTask is not null)
+            {
+                var userTaskViewModel = new UserTaskEditViewModel
+                {
+                    Id = Id,
+                    WorkSpaceId = WorkSpaceId,
+                    Title = userTask.Title,
+                    Description = userTask.Description,
+                    Status = userTask.Status,
+                    Priority = userTask.Priority,
+                    BeginOn = userTask.BeginOn,
+                    EndOn = userTask.EndOn
+                };
+                return View("Edit", userTaskViewModel);
+            }
+            return RedirectToAction("ShowAll", "TaskList", new { Id = WorkSpaceId });
+        }
+
+        public async Task<IActionResult> SaveEdit(UserTaskEditViewModel userTaskFromRequest)
+        {
+            if(ModelState.IsValid)
+            {
+                var userTask = await _context.UserTasks.FindAsync(userTaskFromRequest.Id);
+                if(userTask is not null)
+                {
+                    userTask.Title = userTaskFromRequest.Title;
+                    userTask.Description = userTaskFromRequest.Description;
+                    userTask.Status = userTaskFromRequest.Status;
+                    userTask.Priority = userTaskFromRequest.Priority;
+                    userTask.BeginOn = userTaskFromRequest.BeginOn;
+                    userTask.EndOn = userTaskFromRequest.EndOn;
+
+                    await _context.SaveChangesAsync();
+                }
+                return RedirectToAction("ShowAll", "TaskList", new { Id = userTaskFromRequest.WorkSpaceId });
+            }
+            return View("Edit", userTaskFromRequest);
+        }
     }
 }

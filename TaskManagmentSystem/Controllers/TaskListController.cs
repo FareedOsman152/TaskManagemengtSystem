@@ -96,7 +96,8 @@ namespace TaskManagmentSystem.Controllers
                     return RedirectToAction("ShowAll", new { Id = taskListFromRequest.WorkSpaceId });
                 }
             }
-            return View("Edit");
+
+            return View("Edit", taskListFromRequest);
         }
     }
 }
