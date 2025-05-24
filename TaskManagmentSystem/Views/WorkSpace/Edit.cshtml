@@ -1,39 +1,45 @@
-﻿@inject IViewLocalizer Localizer
-@model TaskManagmentSystem.ViewModels.WorkSpaceForEditViewModel
+﻿@model TaskManagmentSystem.ViewModels.WorkSpaceForEditViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Workspace";
 }
 
-<h1>@Localizer["Edit"]</h1>
-
-<hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="SaveEdit">
-            <div asp-validation-summary="All" class="text-danger"></div>
-                <input asp-for="Id" type="hidden" class="form-control" />
-            <div class="form-group">
-                <label asp-for="Tilte" class="control-label"></label>
+            <input asp-for="Id" type="hidden" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Tilte" class="form-label"></label>
                 <input asp-for="Tilte" class="form-control" />
                 <span asp-validation-for="Tilte" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description" class="form-control"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+
+            <!-- Color Selection Section -->
+            <div class="form-group mb-3">
+                <label class="form-label">Select Color</label>
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach (var colorName in Model.Colors)
+                    {
+                        <div class="color-option @(Model.Color.ToString() == colorName ? "selected" : "")">
+                            <input type="radio" asp-for="Color" value="@colorName" id="@colorName" />
+                            <label for="@colorName" class="color-label @colorName.ToLower()"></label>
+                        </div>
+                    }
+                </div>
+                <span asp-validation-for="Color" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
-                <input type="submit" value="@Localizer["Save"]" class="btn btn-primary" />
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a asp-action="ShowAll" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>
 </div>
-
-<div>
-    <a asp-action="ShowAll">@Localizer["Back"]</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

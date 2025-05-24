@@ -5,6 +5,42 @@
     ViewData["Title"] = "Work Spaces";
 }
 
+<style>
+    .workspace-card {
+        transition: transform 0.2s;
+        border-left: 4px solid;
+    }
+
+        .workspace-card:hover {
+            transform: translateY(-3px);
+        }
+
+    /* Colors based on WorkSpaceColor enum */
+    .workspace-red {
+        border-left-color: #dc3545;
+    }
+
+    .workspace-blue {
+        border-left-color: #0d6efd;
+    }
+
+    .workspace-green {
+        border-left-color: #198754;
+    }
+
+    .workspace-yellow {
+        border-left-color: #ffc107;
+    }
+
+    .workspace-gray {
+        border-left-color: #6c757d;
+    }
+
+    .workspace-none {
+        border-left-color: #dee2e6;
+    }
+</style>
+
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>@Localizer["Your Work Spaces"]</h1>
@@ -19,7 +55,7 @@
             @foreach (var workspace in Model)
             {
                 <div class="col">
-                    <div class="card h-100 shadow-sm">
+                    <div class="card h-100 shadow-sm workspace-card @GetWorkspaceColorClass(workspace.Color)">
                         <div class="card-body">
                             <!-- Title row with inline icons -->
                             <div class="d-flex justify-content-between align-items-start mb-2">
@@ -50,7 +86,7 @@
 
                         <!-- Footer with "Go to Tasks" -->
                         <div class="card-footer bg-transparent">
-                            <a asp-action="ShowAll"asp-controller="TaskList" asp-route-id="@workspace.Id"
+                            <a asp-action="ShowAll" asp-controller="TaskList" asp-route-id="@workspace.Id"
                                class="btn btn-outline-primary btn-sm w-100">
                                 <i class="bi bi-list-check me-1"></i>@Localizer["Go To Tasks"]
                             </a>
@@ -70,3 +106,18 @@
 
 <!-- Bootstrap Icons -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+@functions {
+    string GetWorkspaceColorClass(TaskManagmentSystem.Models.WorkSpaceColor color)
+    {
+        return color switch
+        {
+            TaskManagmentSystem.Models.WorkSpaceColor.Red => "workspace-red",
+            TaskManagmentSystem.Models.WorkSpaceColor.Blue => "workspace-blue",
+            TaskManagmentSystem.Models.WorkSpaceColor.Green => "workspace-green",
+            TaskManagmentSystem.Models.WorkSpaceColor.Yellow => "workspace-yellow",
+            TaskManagmentSystem.Models.WorkSpaceColor.Gray => "workspace-gray",
+            _ => "workspace-none",
+        };
+    }
+}

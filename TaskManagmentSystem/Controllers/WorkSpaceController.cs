@@ -68,11 +68,15 @@ namespace TaskManagmentSystem.Controllers
             {
                 return NotFound();
             }
+            var colors = Enum.GetNames(typeof(WorkSpaceColor)).ToList();
             var workSpaceViewModel = new WorkSpaceForEditViewModel
             {
                 Id = workSpace.Id,
                 Tilte = workSpace.Title,
-                Description = workSpace.Description
+                Description = workSpace.Description,
+                Color = workSpace.Color,
+                Colors = colors
+                
             };
             return View("Edit", workSpaceViewModel);
         }
@@ -87,6 +91,7 @@ namespace TaskManagmentSystem.Controllers
                 {
                     workSpace.Title = workSpaceFromRequest.Tilte;
                     workSpace.Description = workSpaceFromRequest.Description;
+                    workSpace.Color = workSpaceFromRequest.Color;
                     _context.Update(workSpace);
                     await _context.SaveChangesAsync();
                 }
