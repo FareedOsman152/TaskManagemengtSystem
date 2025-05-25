@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using TaskManagmentSystem.Models;
 using TaskManagmentSystem.ViewModels;
@@ -28,7 +29,12 @@ namespace TaskManagmentSystem.Controllers
 
         public IActionResult Add()
         {
-            return View("Add");
+            var colors = Enum.GetNames(typeof(WorkSpaceColor)).ToList();
+            var workSpaceViewModel = new WorkSpaceViewModel
+            {                
+                Colors = colors
+            };
+            return View("Add", workSpaceViewModel);
         }
 
         public async Task<IActionResult> SaveAdd(WorkSpaceViewModel workSpaceFromRequest)
@@ -41,6 +47,7 @@ namespace TaskManagmentSystem.Controllers
                 workSapce.Title = workSpaceFromRequest.Tilte;
                 workSapce.Description = workSpaceFromRequest.Description;
                 workSapce.AppUserId = userId!;
+                workSapce.Color = workSpaceFromRequest.Color;
 
                 await _context.AddAsync(workSapce);
                 await _context.SaveChangesAsync();

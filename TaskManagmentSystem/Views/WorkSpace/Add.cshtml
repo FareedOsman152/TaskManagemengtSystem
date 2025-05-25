@@ -9,28 +9,47 @@
 
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="SaveAdd">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Tilte" class="control-label"></label>
+
+            <div class="form-group mb-3">
+                <label asp-for="Tilte" class="form-label"></label>
                 <input asp-for="Tilte" class="form-control" />
                 <span asp-validation-for="Tilte" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+
+            <!-- Color Selection Section -->
+            <div class="form-group mb-4">
+                <label class="form-label">Workspace Color</label>
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach (var colorName in Model.Colors)
+                    {
+                        <div class="color-option @(Model.Color.ToString() == colorName ? "selected" : "")">
+                            <input type="radio" asp-for="Color" value="@colorName" id="@colorName" />
+                            <label for="@colorName" class="color-label @colorName.ToLower()"></label>
+                        </div>
+                    }
+                </div>
+                <span asp-validation-for="Color" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
-                <input type="submit" value="@Localizer["Add"]" class="btn btn-primary" />
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> @Localizer["Add"]
+                </button>
+                <a asp-action="ShowAll" class="btn btn-outline-secondary ms-2">
+                    <i class="bi bi-arrow-left"></i> @Localizer["Back"]
+                </a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="ShowAll">@Localizer["Back"]</a>
 </div>
 
 @section Scripts {
