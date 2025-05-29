@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TaskManagmentSystem.Models;
 
 namespace TaskManagmentSystem.ViewModels
 {
@@ -12,5 +13,6 @@ namespace TaskManagmentSystem.ViewModels
 
         [Display(Name = "Description")]
         public string? Description { get; set; }
+        public UserTaskListColor color { get; set; } = UserTaskListColor.None;
     }
 }
