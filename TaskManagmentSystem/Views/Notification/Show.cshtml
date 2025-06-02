@@ -1,0 +1,79 @@
+﻿@model List<TaskManagmentSystem.ViewModels.NotificationsViewModel>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-bell me-2"></i>Notifications
+        </h2>
+        <div>
+            <span class="badge bg-primary" id="unread-count">
+                @Model.Count(n => !n.IsRead) unread
+            </span>
+            <a asp-action="MakeAllRead" 
+               class="btn btn-sm btn-outline-primary mark-as-read-link">
+                <i class="fas fa-check"></i> Make All Read
+            </a>
+        </div>
+    </div>
+
+    <div class="list-group">
+        @foreach (var notification in Model.OrderByDescending(n => n.DateCeated))
+        {
+            <div class="list-group-item list-group-item-action flex-column align-items-start @(!notification.IsRead ? "list-group-item-primary" : "")"
+                 data-notification-id="@notification.Id">
+                <div class="d-flex w-100 justify-content-between">
+                    <div class="mb-1">
+                        <p class="mb-1 @(!notification.IsRead ? "fw-bold" : "")">@notification.Details</p>
+                        <small class="text-muted">
+                            <i class="far fa-clock me-1"></i>@notification.DateCeated.ToString("yyyy/M/d h:mm tt")
+                        </small>
+                    </div>
+                    <div>
+                        @if (!notification.IsRead)
+                        {
+                            <a asp-action="MakeRead" asp-route-Id="@notification.Id"
+                               class="btn btn-sm btn-outline-primary mark-as-read-link">
+                                <i class="fas fa-check"></i> Make Read
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">Read</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+    <style>
+        .list-group-item-primary {
+            background-color: #e6f2ff;
+        }
+
+        .notification-time {
+            font-size: 0.85rem;
+        }
+    </style>
+
+
+    <script>
+        $(document).ready(function() {
+            $('.mark-as-read').click(function() {
+                const notificationItem = $(this).closest('.list-group-item');
+                const notificationId = notificationItem.data('notification-id');
+
+                $.post('/Notifications/MarkAsRead', { id: notificationId }, function() {
+                    notificationItem.removeClass('list-group-item-primary');
+                    notificationItem.find('p').removeClass('fw-bold');
+                    notificationItem.find('.mark-as-read').replaceWith(
+                        '<span class="badge bg-success">مقروء</span>'
+                    );
+
+                    // تحديث العداد
+                    const unreadCount = parseInt($('#unread-count').text()) - 1;
+                $('#unread-count').text(unreadCount + 'unread');
+                });
+            });
+        });
+    </script>
