@@ -8,6 +8,7 @@ namespace TaskManagmentSystem.Models
         public DbSet<WorkSpace> WorkSpaces { get; set; }
         public DbSet<TaskList> TaskLists { get; set; }
         public DbSet<UserTask> UserTasks { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
@@ -27,6 +28,17 @@ namespace TaskManagmentSystem.Models
             builder.Entity<WorkSpace>().HasKey(x => x.Id);
             builder.Entity<WorkSpace>().Property(x => x.Title).HasMaxLength(50);
             builder.Entity<WorkSpace>().Property(x => x.Description).HasMaxLength(100);
+
+            builder.Entity<Notification>().HasKey(x => x.Id);
+            builder.Entity<Notification>().Property(x => x.Details).HasMaxLength(50);
+            builder.Entity<Notification>()
+                .HasOne(x=>x.UserTask)
+                .WithMany(x=>x.Notifications)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+            builder.Entity<Notification>()
+                .HasOne(x => x.AppUser)
+                .WithMany(x => x.Notifications)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         }
     }
 }

@@ -42,6 +42,7 @@ namespace TaskManagmentSystem.Models
         
         [ForeignKey("TaskList")]
         public int TaskListId { get; set; }
-        public TaskList TaskList { get; set; } = null!;  
+        public TaskList TaskList { get; set; } = null!;
+        public List<Notification> Notifications { get; set; }
     }
 }
