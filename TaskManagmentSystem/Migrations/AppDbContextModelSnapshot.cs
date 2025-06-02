@@ -229,7 +229,6 @@ namespace TaskManagmentSystem.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AppUserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("DateCeated")
@@ -240,7 +239,10 @@ namespace TaskManagmentSystem.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("UserTaskId")
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("UserTaskId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -249,7 +251,7 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasIndex("UserTaskId");
 
-                    b.ToTable("Notification");
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.TaskList", b =>
@@ -412,16 +414,12 @@ namespace TaskManagmentSystem.Migrations
             modelBuilder.Entity("TaskManagmentSystem.Models.Notification", b =>
                 {
                     b.HasOne("TaskManagmentSystem.Models.AppUser", "AppUser")
-                        .WithMany()
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Notifications")
+                        .HasForeignKey("AppUserId");
 
                     b.HasOne("TaskManagmentSystem.Models.UserTask", "UserTask")
-                        .WithMany()
-                        .HasForeignKey("UserTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserTaskId");
 
                     b.Navigation("AppUser");
 
@@ -453,7 +451,7 @@ namespace TaskManagmentSystem.Migrations
             modelBuilder.Entity("TaskManagmentSystem.Models.WorkSpace", b =>
                 {
                     b.HasOne("TaskManagmentSystem.Models.AppUser", "AppUser")
-                        .WithMany()
+                        .WithMany("WorkSpaces")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -461,9 +459,21 @@ namespace TaskManagmentSystem.Migrations
                     b.Navigation("AppUser");
                 });
 
+            modelBuilder.Entity("TaskManagmentSystem.Models.AppUser", b =>
+                {
+                    b.Navigation("Notifications");
+
+                    b.Navigation("WorkSpaces");
+                });
+
             modelBuilder.Entity("TaskManagmentSystem.Models.TaskList", b =>
                 {
                     b.Navigation("UserTasks");
+                });
+
+            modelBuilder.Entity("TaskManagmentSystem.Models.UserTask", b =>
+                {
+                    b.Navigation("Notifications");
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.WorkSpace", b =>

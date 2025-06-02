@@ -15,5 +15,6 @@ namespace TaskManagmentSystem.Models
         [ForeignKey("UserTask")]
         public int? UserTaskId { get; set; }
         public UserTask? UserTask { get; set; }
+        public bool IsRead { get; set; }
     }
 }
