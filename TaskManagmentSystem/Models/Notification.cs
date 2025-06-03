@@ -6,7 +6,7 @@ namespace TaskManagmentSystem.Models
     {
         public int Id { get; set; }
         public String Details { get; set; } = null!;
-        public DateTime DateCeated { get; set; } = DateTime.Now;
+        public DateTime DateCreated { get; set; } = DateTime.Now;
 
         [ForeignKey("AppUser")]
         public string? AppUserId { get; set; }

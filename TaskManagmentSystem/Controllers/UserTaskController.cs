@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Mvc;
 using TaskManagmentSystem.Models;
 using TaskManagmentSystem.ViewModels;
 
@@ -38,6 +39,15 @@ namespace TaskManagmentSystem.Controllers
 
                  _context.UserTasks.Add(userTask);
                  await _context.SaveChangesAsync();
+
+                if(userTask.BeginOn is not null && userTask.BeginOn > DateTime.Now)
+                {
+                    //BackgroundJob.Schedule();ss
+                }
+                if (userTask.EndOn is not null && userTask.EndOn > DateTime.Now)
+                {
+                    // 
+                }
 
                 return RedirectToAction
                     ("ShowAll", "TaskList", new { id = userTaskFromRequest.WorkSpaceId });
