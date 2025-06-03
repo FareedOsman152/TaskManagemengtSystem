@@ -1,10 +1,13 @@
 using System.Globalization;
+using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using TaskManagmentSystem.Models;
+using TaskManagmentSystem.NotificationsManager;
+using TaskManagmentSystem.NotificationsManager.Interfaces;
 
 namespace TaskManagmentSystem
 {
@@ -20,6 +23,7 @@ namespace TaskManagmentSystem
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 6;
+                options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredUniqueChars = 0;
                 options.Password.RequireNonAlphanumeric = false;
@@ -31,8 +35,20 @@ namespace TaskManagmentSystem
 
             builder.Services.AddDbContext<AppDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("cs"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("SystemDB"));
             });
+
+            builder.Services.AddHangfire(config =>
+            {
+                config.SetDataCompatibilityLevel(CompatibilityLevel.Version_180);
+                config.UseSimpleAssemblyNameTypeSerializer();
+                config.UseRecommendedSerializerSettings();
+                config.UseSqlServerStorage("HangFireDB");
+            });
+            builder.Services.AddHangfireServer();
+
+            builder.Services.AddScoped<INotificationServiece,NotificationServiece>();
+            builder.Services.AddScoped<INotificationFactory,NotificationFactory>();
 
             builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
@@ -64,6 +80,8 @@ namespace TaskManagmentSystem
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            app.UseHangfireDashboard();
 
             app.UseRouting();
 
