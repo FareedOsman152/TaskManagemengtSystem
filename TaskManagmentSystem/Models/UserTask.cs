@@ -39,8 +39,8 @@ namespace TaskManagmentSystem.Models
         public DateTime CreatedDate { get; set; }
         public DateTime? BeginOn { get; set; }
         public DateTime? EndOn { get; set; }
-        public DateTime? RememberMeBeforeBegin { get; set; }
-        public DateTime? RememberMeBeforeEnd { get; set; }
+        public DateTime? RemindMeBeforeBegin { get; set; }
+        public DateTime? RemindMeBeforeEnd { get; set; }
         
         [ForeignKey("TaskList")]
         public int TaskListId { get; set; }

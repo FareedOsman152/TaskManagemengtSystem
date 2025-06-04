@@ -311,10 +311,10 @@ namespace TaskManagmentSystem.Migrations
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("RememberMeBeforeBegin")
+                    b.Property<DateTime?>("RemindMeBeforeBegin")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("RememberMeBeforeEnd")
+                    b.Property<DateTime?>("RemindMeBeforeEnd")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
