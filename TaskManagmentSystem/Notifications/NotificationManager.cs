@@ -6,9 +6,9 @@ namespace TaskManagmentSystem.Notifications
 {
     public class NotificationManager : INotificationManager
     {
-        private readonly NotificationRepository _notifiRepository;
+        private readonly INotificationRepository _notifiRepository;
         private readonly INotificationScheduler _notifiScheduler;
-        public NotificationManager(NotificationRepository notifiRepository, INotificationScheduler notifiScheduler)
+        public NotificationManager(INotificationRepository notifiRepository, INotificationScheduler notifiScheduler)
         {
             _notifiRepository = notifiRepository;
             _notifiScheduler = notifiScheduler;

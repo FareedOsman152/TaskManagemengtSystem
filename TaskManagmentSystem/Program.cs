@@ -46,7 +46,7 @@ namespace TaskManagmentSystem
                 config.SetDataCompatibilityLevel(CompatibilityLevel.Version_180);
                 config.UseSimpleAssemblyNameTypeSerializer();
                 config.UseRecommendedSerializerSettings();
-                config.UseSqlServerStorage("HangFireDB");
+                config.UseSqlServerStorage(builder.Configuration.GetConnectionString("hangfirecs"));
             });
             builder.Services.AddHangfireServer();
 
