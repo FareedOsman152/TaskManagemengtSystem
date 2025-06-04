@@ -1,39 +1,326 @@
 ﻿@model TaskManagmentSystem.ViewModels.TaskListForEditViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Task List";
 }
 
-<h1>Edit</h1>
+<div class="form-page-wrapper">
+    <div class="container-fluid form-container">
+        <!-- Header Section -->
+        <div class="form-header">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="form-title">
+                        <i class="bi bi-pencil-square"></i>
+                        Edit Task List
+                    </h1>
+                    <p class="form-subtitle">Update your task list information</p>
+                </div>
+                <a asp-action="ShowAll" asp-route-id="@Model.WorkSpaceId" class="btn btn-back">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Back to Board</span>
+                </a>
+            </div>
+        </div>
 
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="SaveEdit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="WorkSpaceId" />
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Tilte" class="control-label"></label>
-                <input asp-for="Tilte" class="form-control" />
-                <span asp-validation-for="Tilte" class="text-danger"></span>
+        <!-- Form Section -->
+        <div class="form-card">
+            <div class="form-card-header">
+                <h3 class="card-title">Task List Details</h3>
+                <p class="card-subtitle">Modify the information below to update your task list</p>
             </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+
+            <div class="form-card-body">
+                <form asp-action="SaveEdit" class="modern-form">
+                    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                    <input type="hidden" asp-for="WorkSpaceId" />
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="form-group">
+                        <label asp-for="Tilte" class="form-label">
+                            <i class="bi bi-card-text"></i>
+                            Title
+                        </label>
+                        <input asp-for="Tilte" class="form-input" placeholder="Enter task list title..." />
+                        <span asp-validation-for="Tilte" class="validation-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Description" class="form-label">
+                            <i class="bi bi-file-text"></i>
+                            Description
+                        </label>
+                        <textarea asp-for="Description" class="form-textarea" rows="4" placeholder="Enter task list description..."></textarea>
+                        <span asp-validation-for="Description" class="validation-error"></span>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-save">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span>Save Changes</span>
+                        </button>
+                        <a asp-action="ShowAll" asp-route-id="@Model.WorkSpaceId" class="btn btn-cancel">
+                            <i class="bi bi-x-circle"></i>
+                            <span>Cancel</span>
+                        </a>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="ShowAll" asp-route-id="@Model.WorkSpaceId">Back</a>
-</div>
+<style>
+    /* Root Variables */
+    :root {
+        --primary-color: #6366f1;
+        --primary-hover: #5855eb;
+        --success-color: #10b981;
+        --success-hover: #059669;
+        --danger-color: #ef4444;
+        --danger-hover: #dc2626;
+        --warning-color: #f59e0b;
+        --secondary-color: #6b7280;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --text-muted: #9ca3af;
+        --border-color: #e5e7eb;
+        --background-light: #f8fafc;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 12px;
+        --radius-sm: 8px;
+    }
+
+    /* Main Container */
+    .form-page-wrapper {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* Header Styles */
+    .form-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .title-section {
+        flex: 1;
+    }
+
+    .form-title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .form-subtitle {
+        color: var(--text-secondary);
+        margin: 0.5rem 0 0 0;
+        font-size: 1.1rem;
+    }
+
+    .btn-back {
+        background: rgba(107, 114, 128, 0.1);
+        color: var(--secondary-color);
+        border: 2px solid var(--secondary-color);
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        font-size: 0.95rem;
+    }
+
+        .btn-back:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+    /* Form Card */
+    .form-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+    }
+
+    .form-card-header {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        padding: 2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .card-subtitle {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .form-card-body {
+        padding: 2rem;
+    }
+
+    /* Form Styles */
+    .modern-form {
+        max-width: 100%;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .form-input,
+    .form-textarea {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+        color: var(--text-primary);
+    }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            transform: translateY(-1px);
+        }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 120px;
+        font-family: inherit;
+    }
+
+    /* Validation Styles */
+    .validation-summary {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: var(--danger-color);
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        margin-bottom: 1.5rem;
+    }
+
+    .validation-error {
+        color: var(--danger-color);
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+        font-weight: 500;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.875rem 1.5rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 1rem;
+        border: 2px solid;
+        min-width: 140px;
+        justify-content: center;
+    }
+
+    .btn-save {
+        background: var(--success-color);
+        color: white;
+        border-color: var(--success-color);
+    }
+
+        .btn-save:hover {
+            background: var(--success-hover);
+            border-color: var(--success-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+    .btn-cancel {
+        background: white;
+        color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+
+        .btn-cancel:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+        }
+</style>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
