@@ -27,7 +27,7 @@ namespace TaskManagmentSystem.Controllers
                     Id = n.Id,
                     IsRead = n.IsRead,
                     Details = n.Details,
-                    DateCeated = n.DateCeated
+                    DateCeated = n.DateCreated
                 })
                 .ToList();
 

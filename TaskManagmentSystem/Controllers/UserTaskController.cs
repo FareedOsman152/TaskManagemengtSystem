@@ -1,6 +1,8 @@
-﻿using Hangfire;
+﻿using System.Security.Claims;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagmentSystem.Models;
+using TaskManagmentSystem.Notifications.Interfaces;
 using TaskManagmentSystem.ViewModels;
 
 namespace TaskManagmentSystem.Controllers
@@ -8,10 +10,12 @@ namespace TaskManagmentSystem.Controllers
     public class UserTaskController : Controller
     {    
         private readonly AppDbContext _context;
+        private readonly INotificationManager _notificationManager;
 
-        public UserTaskController(AppDbContext context)
+        public UserTaskController(AppDbContext context, INotificationManager notificationManager)
         {
             _context = context;
+            _notificationManager = notificationManager;
         }
 
         [HttpPost]
@@ -27,6 +31,7 @@ namespace TaskManagmentSystem.Controllers
 
         public async Task<IActionResult> SaveAdd(UserTaskAddViewModel userTaskFromRequest)
         {
+            // 1- create the task and add it to DB
             if (ModelState.IsValid)
             {
                 var userTask = new UserTask();
@@ -40,14 +45,9 @@ namespace TaskManagmentSystem.Controllers
                  _context.UserTasks.Add(userTask);
                  await _context.SaveChangesAsync();
 
-                if(userTask.BeginOn is not null && userTask.BeginOn > DateTime.Now)
-                {
-                    //BackgroundJob.Schedule();ss
-                }
-                if (userTask.EndOn is not null && userTask.EndOn > DateTime.Now)
-                {
-                    // 
-                }
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                _notificationManager.ManageTaskBeginAndEndAsync(userId!, userTask);
 
                 return RedirectToAction
                     ("ShowAll", "TaskList", new { id = userTaskFromRequest.WorkSpaceId });

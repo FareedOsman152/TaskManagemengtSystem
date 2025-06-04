@@ -5,9 +5,10 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using TaskManagmentSystem.Hubs;
 using TaskManagmentSystem.Models;
-using TaskManagmentSystem.NotificationsManager;
-using TaskManagmentSystem.NotificationsManager.Interfaces;
+using TaskManagmentSystem.Notifications;
+using TaskManagmentSystem.Notifications.Interfaces;
 
 namespace TaskManagmentSystem
 {
@@ -35,8 +36,10 @@ namespace TaskManagmentSystem
 
             builder.Services.AddDbContext<AppDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("SystemDB"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("cs"));
             });
+
+            builder.Services.AddSignalR();
 
             builder.Services.AddHangfire(config =>
             {
@@ -47,8 +50,10 @@ namespace TaskManagmentSystem
             });
             builder.Services.AddHangfireServer();
 
-            builder.Services.AddScoped<INotificationServiece,NotificationServiece>();
             builder.Services.AddScoped<INotificationFactory,NotificationFactory>();
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            builder.Services.AddScoped<INotificationManager, NotificationManager>();
+            builder.Services.AddScoped<INotificationScheduler, NotificationScheduler>();
 
             builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
@@ -95,6 +100,7 @@ namespace TaskManagmentSystem
                 name: "default",
                 pattern: "{controller=Workspace}/{action=ShowAll}/{id?}");
 
+            app.MapHub<NotificationsHub>("/hubs/taskNotification");
             app.Run();
         }
     }
