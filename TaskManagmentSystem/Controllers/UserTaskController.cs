@@ -40,14 +40,15 @@ namespace TaskManagmentSystem.Controllers
                 userTask.BeginOn = userTaskFromRequest.BeginOn;
                 userTask.EndOn = userTaskFromRequest.EndOn;
                 userTask.TaskListId = userTaskFromRequest.TaskListId;
-                userTask.CreatedDate = DateTime.Now;
-
+                // for test ============
+                userTask.BeginOn = DateTime.Now.AddSeconds(20);
+                //========
                  _context.UserTasks.Add(userTask);
                  await _context.SaveChangesAsync();
 
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                _notificationManager.ManageTaskBeginAndEndAsync(userId!, userTask);
+                await _notificationManager.ManageTaskBeginAndEndAsync(userId!, userTask);
 
                 return RedirectToAction
                     ("ShowAll", "TaskList", new { id = userTaskFromRequest.WorkSpaceId });

@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Resources\Controllers\" />
+    <Folder Include="wwwroot\microsoft\signalr\dist\browser\" />
   </ItemGroup>
 
 </Project>

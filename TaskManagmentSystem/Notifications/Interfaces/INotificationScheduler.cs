@@ -1,7 +1,10 @@
-﻿namespace TaskManagmentSystem.Notifications.Interfaces
+﻿using TaskManagmentSystem.Models;
+using TaskManagmentSystem.ViewModels;
+
+namespace TaskManagmentSystem.Notifications.Interfaces
 {
     public interface INotificationScheduler
     {
-        void SheduleTaskNotifiBeginOrEnd(DateTime dateTime, string userId);
+        void SheduleTaskNotifiBeginOrEnd(List<NotificationViewModel> notifications, string userId);
     }
 }

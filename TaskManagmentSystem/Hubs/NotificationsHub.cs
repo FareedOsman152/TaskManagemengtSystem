@@ -4,7 +4,7 @@ namespace TaskManagmentSystem.Hubs
 {
     public class NotificationsHub : Hub
     {
-        public async Task SendNotification()
+        public async Task ThereIsANewNotification()
         {
             await Clients.Caller.SendAsync("NewNotification");
         }

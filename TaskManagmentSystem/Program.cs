@@ -54,6 +54,7 @@ namespace TaskManagmentSystem
             builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
             builder.Services.AddScoped<INotificationManager, NotificationManager>();
             builder.Services.AddScoped<INotificationScheduler, NotificationScheduler>();
+            builder.Services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
 
             builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 

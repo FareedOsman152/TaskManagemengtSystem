@@ -21,13 +21,13 @@ namespace TaskManagmentSystem.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var notifications = _context.Notifications
-                .Where(n=>n.AppUserId==userId)
-                .Select(n=>new NotificationsViewModel
+                .Where(n=>n.AppUserId==userId && n.DateToSend<=DateTime.Now)
+                .Select(n=>new NotificationViewModel
                 {
                     Id = n.Id,
                     IsRead = n.IsRead,
                     Details = n.Details,
-                    DateCeated = n.DateCreated
+                    DateToSend = n.DateToSend
                 })
                 .ToList();
 

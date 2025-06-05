@@ -14,7 +14,6 @@ namespace TaskManagmentSystem.Notifications
                 Details = details,
                 IsRead = IsRead,
                 DateToSend = dateToSend,
-                DateCreated = DateTime.Now,
             };
         }
     }

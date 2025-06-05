@@ -28,26 +28,26 @@ namespace TaskManagmentSystem.Notifications
         }
         public async Task<Notification> BeginAsync(string userId, UserTask userTask, bool IsRead = false)
         {
-            var details = $"Your task \"${userTask.Title} Begins now  in ${userTask.BeginOn}";
+            var details = $"Your task ({userTask.Title}) Begins now  in {userTask.BeginOn}";
             return await createNotificationAsync(userId, userTask.Id,  details, userTask.BeginOn.Value, IsRead);
         }
 
         public async Task<Notification> BeforeBeginAsync(string userId, UserTask userTask, DateTime timeBeforeBegin, bool IsRead = false)
         {
-            var details = $"Your task \"${userTask.Title} Begins After ${userTask.BeginOn - timeBeforeBegin} in ${userTask.BeginOn}";
+            var details = $"Your task {userTask.Title} Begins After {userTask.BeginOn - timeBeforeBegin} in {userTask.BeginOn}";
 
             return await createNotificationAsync(userId, userTask.Id, details, timeBeforeBegin, IsRead);
         }
 
         public async Task<Notification> EndAsync(string userId, UserTask userTask, bool IsRead = false)
         {
-            var details = $"Your task \"${userTask.Title} End now in ${userTask.EndOn}";
+            var details = $"Your task {userTask.Title} End now in {userTask.EndOn}";
             return await createNotificationAsync(userId, userTask.Id, details, userTask.EndOn.Value, IsRead);
         }
 
         public async Task<Notification> BeforeEndAsync(string userId, UserTask userTask, DateTime timeBeforeEnd, bool IsRead = false)
         {
-            var details = $"Your task \"${userTask.Title} End After ${userTask.EndOn - timeBeforeEnd} in ${userTask.BeginOn}";
+            var details = $"Your task {userTask.Title} End After {userTask.EndOn - timeBeforeEnd} in {userTask.BeginOn}";
             return await createNotificationAsync(userId, userTask.Id, details, timeBeforeEnd, IsRead);
         }
 

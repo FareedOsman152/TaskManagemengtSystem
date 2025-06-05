@@ -30,7 +30,7 @@ namespace TaskManagmentSystem.Models
             builder.Entity<WorkSpace>().Property(x => x.Description).HasMaxLength(100);
 
             builder.Entity<Notification>().HasKey(x => x.Id);
-            builder.Entity<Notification>().Property(x => x.Details).HasMaxLength(50);
+            builder.Entity<Notification>().Property(x => x.Details).HasMaxLength(200);
             builder.Entity<Notification>()
                 .HasOne(x=>x.UserTask)
                 .WithMany(x=>x.Notifications)

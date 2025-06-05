@@ -1,23 +1,31 @@
 ﻿using Hangfire;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR;
 using TaskManagmentSystem.Hubs;
+using TaskManagmentSystem.Models;
 using TaskManagmentSystem.Notifications.Interfaces;
+using TaskManagmentSystem.ViewModels;
 
 namespace TaskManagmentSystem.Notifications
 {
     public class NotificationScheduler : INotificationScheduler
     {
-        private readonly IHubContext<NotificationsHub> _notifiHubContext;
-        private readonly IBackgroundJobClient _backgroundJobClient;
-        public NotificationScheduler(IHubContext<NotificationsHub> notifiHubContext, IBackgroundJobClient backgroundJobClient)
+        private readonly INotificationDispatcher _notificationDispatcher;
+        private readonly IBackgroundJobClient _backgroundJob;
+        public NotificationScheduler(INotificationDispatcher notificationDispatcher, IBackgroundJobClient backgroundJob)
         {
-            _notifiHubContext = notifiHubContext;
-            _backgroundJobClient = backgroundJobClient;
+            _notificationDispatcher = notificationDispatcher;
+            _backgroundJob = backgroundJob;
         }
 
-        public void SheduleTaskNotifiBeginOrEnd(DateTime dateTime, string userId)
+        public void SheduleTaskNotifiBeginOrEnd(List<NotificationViewModel> notifications, string userId)
         {
-            _backgroundJobClient.Schedule<IHubContext>(x => x.Clients.User(userId), dateTime);
+            foreach (var notification in notifications)
+            {
+                _backgroundJob.Schedule(
+            () => _notificationDispatcher.SendRealTimeTaskNotification(notification, userId),
+            notification.DateToSend);
+            }            
         }
     }
 }

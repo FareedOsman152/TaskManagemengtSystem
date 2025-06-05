@@ -78,3 +78,23 @@ body {
 .gray {
     background-color: #6c757d;
 }
+
+.notification-icon {
+    position: relative;
+    display: inline-block;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -12px;
+    right: 17px;
+    background-color: #ff4757; 
+    color: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

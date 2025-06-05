@@ -28,8 +28,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Notification" asp-action="Show">Notifications</a>
                         </li>
+                        
                     </ul>
-
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span id="unread-notifications-count" class="notification-badge">0</span>
+                    </div>
                     <div class="language-switcher ms-auto">
                         <i class="fa fa-language" aria-hidden="true">
                             <a href="?culture=en" class="btn btn-sm btn-outline-secondary me-1">English</a>

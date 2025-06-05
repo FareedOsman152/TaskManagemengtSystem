@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TaskManagmentSystem.Models;
 using TaskManagmentSystem.Notifications.Interfaces;
+using TaskManagmentSystem.ViewModels;
 
 namespace TaskManagmentSystem.Notifications
 {
@@ -44,10 +45,19 @@ namespace TaskManagmentSystem.Notifications
                 }
                 if(notifications.Count>0)
                 {
+                   var notificationsViewModel = new List<NotificationViewModel>();
                     foreach (var n in notifications)
                     {
-                        _notifiScheduler.SheduleTaskNotifiBeginOrEnd(n.DateToSend, userId);
+                        notificationsViewModel.Add(new NotificationViewModel
+                        {
+                            Id = n.Id,
+                            Details = n.Details,
+                            DateToSend = n.DateToSend,
+                            IsRead = n.IsRead,
+                            TaskId = n.UserTaskId,
+                        });
                     }
+                    _notifiScheduler.SheduleTaskNotifiBeginOrEnd(notificationsViewModel, userId);
                 }
             }
 
