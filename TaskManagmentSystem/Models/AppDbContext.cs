@@ -34,11 +34,11 @@ namespace TaskManagmentSystem.Models
             builder.Entity<Notification>()
                 .HasOne(x=>x.UserTask)
                 .WithMany(x=>x.Notifications)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+                .OnDelete(DeleteBehavior.SetNull);
             builder.Entity<Notification>()
                 .HasOne(x => x.AppUser)
                 .WithMany(x => x.Notifications)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

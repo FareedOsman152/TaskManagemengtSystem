@@ -19,6 +19,7 @@ namespace TaskManagmentSystem.ViewModels
 
         public UserTaskStatus Status { get; set; } = UserTaskStatus.NotStarted;
         public UserTaskPriority Priority { get; set; } = UserTaskPriority.None;
+        public UserTaskColor Color { get; set; } = UserTaskColor.None;
 
         [Display(Name = "Begin on")]
         public DateTime? BeginOn { get; set; }

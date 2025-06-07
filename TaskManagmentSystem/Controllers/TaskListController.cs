@@ -22,7 +22,25 @@ namespace TaskManagmentSystem.Controllers
             var taskLists = new TaskListsViewModel();
             taskLists.TaskLists = _context.TaskLists
                 .Where(x => x.WorkSpaceId == id)
-                .Include(x=>x.UserTasks)
+                .Select(x => new TaskListForShowAllViewModel
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    Description = x.Description,
+                    Color = x.color,
+                    UserTasks = x.UserTasks.Select(x => new UserTaskForShowListsViewModel
+                    {
+                        Id = x.Id,
+                        Title = x.Title,
+                        Description = x.Description,
+                        Status = x.Status,
+                        Priority = x.Priority,
+                        Color = x.Color,
+                        CreatedDate = x.CreatedDate,
+                        BeginOn = x.BeginOn,
+                        EndOn = x.EndOn,
+                    }).ToList()
+                })
                 .ToList();
             taskLists.WorkSpaceId = id;
 

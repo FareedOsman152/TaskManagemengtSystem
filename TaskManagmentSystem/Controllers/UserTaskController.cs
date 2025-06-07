@@ -40,9 +40,11 @@ namespace TaskManagmentSystem.Controllers
                 userTask.BeginOn = userTaskFromRequest.BeginOn;
                 userTask.EndOn = userTaskFromRequest.EndOn;
                 userTask.TaskListId = userTaskFromRequest.TaskListId;
-                // for test ============
-                userTask.BeginOn = DateTime.Now.AddSeconds(20);
-                //========
+                userTask.BeginOn = userTaskFromRequest.BeginOn;
+                userTask.EndOn = userTaskFromRequest.EndOn;
+                userTask.Color = userTaskFromRequest.Color;
+                userTask.Priority = userTaskFromRequest.Priority;
+                userTask.Status = userTaskFromRequest.Status; 
                  _context.UserTasks.Add(userTask);
                  await _context.SaveChangesAsync();
 
@@ -70,7 +72,8 @@ namespace TaskManagmentSystem.Controllers
                     Status = userTask.Status,
                     Priority = userTask.Priority,
                     BeginOn = userTask.BeginOn,
-                    EndOn = userTask.EndOn
+                    EndOn = userTask.EndOn,
+                    Color = userTask.Color
                 };
                 return View("Edit", userTaskViewModel);
             }

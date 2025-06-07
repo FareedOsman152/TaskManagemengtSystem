@@ -421,11 +421,13 @@ namespace TaskManagmentSystem.Migrations
                 {
                     b.HasOne("TaskManagmentSystem.Models.AppUser", "AppUser")
                         .WithMany("Notifications")
-                        .HasForeignKey("AppUserId");
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("TaskManagmentSystem.Models.UserTask", "UserTask")
                         .WithMany("Notifications")
-                        .HasForeignKey("UserTaskId");
+                        .HasForeignKey("UserTaskId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("AppUser");
 
