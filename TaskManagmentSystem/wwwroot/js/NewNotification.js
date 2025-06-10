@@ -17,7 +17,7 @@ newNotificationConnection.on("ReceiveNewNotification", (id, details, isRead, tas
                     </small>
                 </div>
                 <div>
-                    <a href="/Notifications/MakeRead?id=${id}"
+                    <a href="/Notification/MakeRead?id=${id}"
                        class="btn btn-sm btn-outline-primary mark-as-read">
                         <i class="fas fa-check"></i> Make Read
                     </a>

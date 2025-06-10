@@ -5,106 +5,48 @@
     ViewData["Title"] = "Work Spaces";
 }
 
-<style>
-    .workspace-card {
-        transition: transform 0.2s;
-        position: relative;
-        overflow: hidden;
-    }
+<div class="workspaces-wrapper">
+    <div class="container-fluid">
+        <!-- Header Section -->
+        <div class="page-header">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="page-title">
+                        <i class="bi bi-kanban"></i>
+                        @Localizer["Your Work Spaces"]
+                    </h1>
+                    <p class="page-subtitle">Organize your projects and tasks efficiently</p>
+                </div>
+                <a asp-action="Add" class="btn btn-add-workspace">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>@Localizer["Add New"]</span>
+                </a>
+            </div>
+        </div>
 
-        .workspace-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+        <!-- Workspaces Grid -->
+        @if (Model.Any())
+        {
+            <div class="workspaces-grid">
+                @foreach (var workspace in Model)
+                {
+                    <div class="workspace-card @GetWorkspaceColorClass(workspace.Color)">
+                        <!-- Color Bar -->
+                        <div class="workspace-color-bar"></div>
 
-    /* Color overlay styles */
-    .color-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 10px; /* ارتفاع شريط اللون */
-    }
-
-    /* Colors based on WorkSpaceColor enum */
-    .workspace-red .color-overlay {
-        background-color: #dc3545;
-    }
-
-    .workspace-blue .color-overlay {
-        background-color: #0d6efd;
-    }
-
-    .workspace-green .color-overlay {
-        background-color: #198754;
-    }
-
-    .workspace-yellow .color-overlay {
-        background-color: #ffc107;
-    }
-
-    .workspace-gray .color-overlay {
-        background-color: #6c757d;
-    }
-
-    .workspace-none .color-overlay {
-        background-color: #dee2e6;
-    }
-
-    /* Adjust card body padding */
-    .workspace-card .card-body {
-        padding-top: 1.75rem;
-    }
-
-    /* Card title styling */
-    .workspace-card .card-title {
-        font-weight: 600;
-        color: #212529;
-    }
-
-    /* Footer styling */
-    .workspace-card .card-footer {
-        background-color: rgba(0, 0, 0, 0.03);
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
-    }
-</style>
-
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>@Localizer["Your Work Spaces"]</h1>
-        <a asp-action="Add" class="btn btn-primary">
-            <i class="bi bi-plus-lg"></i> @Localizer["Add New"]
-        </a>
-    </div>
-
-    @if (Model.Any())
-    {
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            @foreach (var workspace in Model)
-            {
-                <div class="col">
-                    <div class="card h-100 shadow-sm workspace-card @GetWorkspaceColorClass(workspace.Color)">
-                        <!-- Color overlay bar -->
-                        <div class="color-overlay"></div>
-
-                        <div class="card-body">
-                            <!-- Title row with inline icons -->
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="card-title mb-0">@workspace.Title</h5>
-                                <div class="btn-group">
-                                    <!-- Edit Button -->
+                        <!-- Card Content -->
+                        <div class="workspace-content">
+                            <!-- Header with Actions -->
+                            <div class="workspace-header">
+                                <h3 class="workspace-title">@workspace.Title</h3>
+                                <div class="workspace-actions">
                                     <a asp-action="Edit" asp-route-id="@workspace.Id"
-                                       class="btn btn-outline-secondary btn-sm rounded-circle"
-                                       title="@Localizer["Edit"]">
+                                       class="action-btn edit-btn" title="@Localizer["Edit"]">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-
-                                    <!-- Delete Button -->
-                                    <form asp-action="Delete" asp-route-id="@workspace.Id" method="post"
-                                          onsubmit="return confirm('Delete this workspace?');">
-                                        <button type="submit"
-                                                class="btn btn-outline-danger btn-sm rounded-circle ms-1"
-                                                title="@Localizer["Delete"]">
+                                    <form asp-action="Delete" asp-route-id="@workspace.Id" method="post" class="d-inline"
+                                          onsubmit="return confirm('Delete this workspace and all its data?');">
+                                        <button type="submit" class="action-btn delete-btn" title="@Localizer["Delete"]">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
@@ -112,31 +54,357 @@
                             </div>
 
                             <!-- Description -->
-                            <p class="card-text text-muted">@(workspace.Description ?? "")</p>
+                            <div class="workspace-description">
+                                <p>@(workspace.Description ?? "No description provided")</p>
+                            </div>
+
+                            <!-- Stats -->
+                            <div class="workspace-stats">
+                                <div class="stat-item">
+                                    <i class="bi bi-list-check"></i>
+                                    <span>@(workspace.TaskList?.Count ?? 0) Lists</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span>@(workspace.TaskList?.SelectMany(tl => tl.UserTasks ?? new List<TaskManagmentSystem.Models.UserTask>()).Count() ?? 0) Tasks</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Footer with "Go to Tasks" -->
-                        <div class="card-footer bg-transparent">
+                        <!-- Footer -->
+                        <div class="workspace-footer">
                             <a asp-action="ShowAll" asp-controller="TaskList" asp-route-id="@workspace.Id"
-                               class="btn btn-outline-primary btn-sm w-100">
-                                <i class="bi bi-list-check me-1"></i>@Localizer["Go To Tasks"]
+                               class="btn-go-to-tasks">
+                                <i class="bi bi-arrow-right-circle"></i>
+                                <span>@Localizer["Go To Tasks"]</span>
                             </a>
                         </div>
                     </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-content">
+                    <i class="bi bi-kanban empty-icon"></i>
+                    <h3>No Workspaces Yet</h3>
+                    <p>Create your first workspace to start organizing your tasks and projects.</p>
+                    <a asp-action="Add" class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-circle"></i>
+                        Create First Workspace
+                    </a>
                 </div>
-            }
-        </div>
-    }
-    else
-    {
-        <div class="alert alert-info">
-            You don't have any workspaces yet. <a asp-action="Create" class="alert-link">Create your first workspace</a>.
-        </div>
-    }
+            </div>
+        }
+    </div>
 </div>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<style>
+    /* Root Variables */
+    :root {
+        --primary-color: #6366f1;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --border-color: #e5e7eb;
+        --bg-light: #f8fafc;
+        /* Workspace Colors */
+        --workspace-red: #ef4444;
+        --workspace-blue: #3b82f6;
+        --workspace-green: #10b981;
+        --workspace-yellow: #f59e0b;
+        --workspace-gray: #6b7280;
+        --workspace-none: #e5e7eb;
+    }
 
-<!-- Bootstrap Icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    /* Main Container */
+    .workspaces-wrapper {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    /* Page Header */
+    .page-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .page-subtitle {
+        color: var(--text-secondary);
+        margin: 0.5rem 0 0 0;
+        font-size: 1.1rem;
+    }
+
+    .btn-add-workspace {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.875rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+        .btn-add-workspace:hover {
+            background: #5855eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            color: white;
+        }
+
+    /* Workspaces Grid */
+    .workspaces-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+        padding: 0.5rem;
+    }
+
+    /* Workspace Card */
+    .workspace-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .workspace-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+    /* Color Bar */
+    .workspace-color-bar {
+        height: 6px;
+        width: 100%;
+    }
+
+    .workspace-red .workspace-color-bar {
+        background: var(--workspace-red);
+    }
+
+    .workspace-blue .workspace-color-bar {
+        background: var(--workspace-blue);
+    }
+
+    .workspace-green .workspace-color-bar {
+        background: var(--workspace-green);
+    }
+
+    .workspace-yellow .workspace-color-bar {
+        background: var(--workspace-yellow);
+    }
+
+    .workspace-gray .workspace-color-bar {
+        background: var(--workspace-gray);
+    }
+
+    .workspace-none .workspace-color-bar {
+        background: var(--workspace-none);
+    }
+
+    /* Card Content */
+    .workspace-content {
+        padding: 1.5rem;
+    }
+
+    .workspace-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .workspace-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+        flex: 1;
+    }
+
+    .workspace-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+
+    .edit-btn {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning-color);
+    }
+
+        .edit-btn:hover {
+            background: var(--warning-color);
+            color: white;
+        }
+
+    .delete-btn {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger-color);
+    }
+
+        .delete-btn:hover {
+            background: var(--danger-color);
+            color: white;
+        }
+
+    .workspace-description {
+        margin-bottom: 1rem;
+    }
+
+        .workspace-description p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+    /* Stats */
+    .workspace-stats {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+        .stat-item i {
+            color: var(--primary-color);
+        }
+
+    /* Footer */
+    .workspace-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--border-color);
+        background: rgba(0, 0, 0, 0.02);
+    }
+
+    .btn-go-to-tasks {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+        .btn-go-to-tasks:hover {
+            background: #5855eb;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+    /* Empty State */
+    .empty-state {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 400px;
+    }
+
+    .empty-content {
+        text-align: center;
+        background: white;
+        padding: 3rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+
+    .empty-content h3 {
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-content p {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .workspaces-grid
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .page-title {
+        font-size: 2rem;
+    }
+
+    }</style>
 
 @functions {
     string GetWorkspaceColorClass(TaskManagmentSystem.Models.WorkSpaceColor color)

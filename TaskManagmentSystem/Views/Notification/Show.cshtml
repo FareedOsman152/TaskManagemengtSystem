@@ -63,7 +63,7 @@
                 const notificationItem = $(this).closest('.list-group-item');
                 const notificationId = notificationItem.data('notification-id');
 
-                $.post('/Notifications/MarkAsRead', { id: notificationId }, function() {
+                $.post('/Notification/MarkAsRead', { id: notificationId }, function() {
                     notificationItem.removeClass('list-group-item-primary');
                     notificationItem.find('p').removeClass('fw-bold');
                     notificationItem.find('.mark-as-read').replaceWith(

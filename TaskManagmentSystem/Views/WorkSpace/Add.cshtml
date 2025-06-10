@@ -2,56 +2,431 @@
 @model TaskManagmentSystem.ViewModels.WorkSpaceViewModel
 
 @{
-    ViewData["Title"] = "Add";
+    ViewData["Title"] = "Add Workspace";
 }
 
-<h1>@Localizer["Add"]</h1>
-
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="SaveAdd">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Tilte" class="form-label"></label>
-                <input asp-for="Tilte" class="form-control" />
-                <span asp-validation-for="Tilte" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Description" class="form-label"></label>
-                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-
-            <!-- Color Selection Section -->
-            <div class="form-group mb-4">
-                <label class="form-label">Workspace Color</label>
-                <div class="d-flex flex-wrap gap-2">
-                    @foreach (var colorName in Model.Colors)
-                    {
-                        <div class="color-option @(Model.Color.ToString() == colorName ? "selected" : "")">
-                            <input type="radio" asp-for="Color" value="@colorName" id="@colorName" />
-                            <label for="@colorName" class="color-label @colorName.ToLower()"></label>
-                        </div>
-                    }
+<div class="form-page-wrapper">
+    <div class="container-fluid form-container">
+        <!-- Header Section -->
+        <div class="form-header">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="form-title">
+                        <i class="bi bi-plus-square-fill"></i>
+                        @Localizer["Add New Workspace"]
+                    </h1>
+                    <p class="form-subtitle">Create a new workspace to organize your projects</p>
                 </div>
-                <span asp-validation-for="Color" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> @Localizer["Add"]
-                </button>
-                <a asp-action="ShowAll" class="btn btn-outline-secondary ms-2">
-                    <i class="bi bi-arrow-left"></i> @Localizer["Back"]
+                <a asp-action="ShowAll" class="btn btn-back">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Back to Workspaces</span>
                 </a>
             </div>
-        </form>
+        </div>
+
+        <!-- Form Section -->
+        <div class="form-card">
+            <div class="form-card-header">
+                <h3 class="card-title">Workspace Information</h3>
+                <p class="card-subtitle">Fill in the details below to create your new workspace</p>
+            </div>
+
+            <div class="form-card-body">
+                <form asp-action="SaveAdd" class="modern-form">
+                    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <h4 class="section-title">Basic Information</h4>
+
+                        <div class="form-group">
+                            <label asp-for="Tilte" class="form-label">
+                                <i class="bi bi-card-heading"></i>
+                                Workspace Title
+                            </label>
+                            <input asp-for="Tilte" class="form-input" placeholder="Enter workspace title..." />
+                            <span asp-validation-for="Tilte" class="validation-error"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Description" class="form-label">
+                                <i class="bi bi-file-text"></i>
+                                Description
+                            </label>
+                            <textarea asp-for="Description" class="form-textarea" rows="4" placeholder="Enter workspace description..."></textarea>
+                            <span asp-validation-for="Description" class="validation-error"></span>
+                        </div>
+                    </div>
+
+                    <!-- Color Selection -->
+                    <div class="form-section">
+                        <h4 class="section-title">Workspace Theme</h4>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="bi bi-palette"></i>
+                                Color Theme
+                            </label>
+                            <div class="color-picker">
+                                @foreach (var colorName in Model.Colors)
+                                {
+                                    <input type="radio" asp-for="Color" value="@colorName" id="color-@colorName" />
+                                    <label for="color-@colorName" class="color-option color-@colorName.ToLower()">
+                                        <span class="color-circle"></span>
+                                        <span class="color-name">@colorName</span>
+                                    </label>
+                                }
+                            </div>
+                            <span asp-validation-for="Color" class="validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-create">
+                            <i class="bi bi-plus-circle-fill"></i>
+                            <span>@Localizer["Create Workspace"]</span>
+                        </button>
+                        <a asp-action="ShowAll" class="btn btn-cancel">
+                            <i class="bi bi-x-circle"></i>
+                            <span>Cancel</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
+<style>
+    /* Root Variables */
+    :root {
+        --primary-color: #6366f1;
+        --primary-hover: #5855eb;
+        --success-color: #10b981;
+        --success-hover: #059669;
+        --danger-color: #ef4444;
+        --secondary-color: #6b7280;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --border-color: #e5e7eb;
+        --radius: 12px;
+        --radius-sm: 8px;
+        /* Color Variables */
+        --color-red: #ef4444;
+        --color-blue: #3b82f6;
+        --color-green: #10b981;
+        --color-yellow: #f59e0b;
+        --color-gray: #6b7280;
+    }
+
+    /* Main Container */
+    .form-page-wrapper {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* Header Styles */
+    .form-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .form-title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .form-subtitle {
+        color: var(--text-secondary);
+        margin: 0.5rem 0 0 0;
+        font-size: 1.1rem;
+    }
+
+    .btn-back {
+        background: rgba(107, 114, 128, 0.1);
+        color: var(--secondary-color);
+        border: 2px solid var(--secondary-color);
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+        .btn-back:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    /* Form Card */
+    .form-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .form-card-header {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        padding: 2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .card-subtitle {
+        color: var(--text-secondary);
+        margin: 0;
+    }
+
+    .form-card-body {
+        padding: 2rem;
+    }
+
+    /* Form Sections */
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+    }
+
+        .form-section:last-of-type {
+            border-bottom: none;
+        }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 1.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .section-title::before {
+            content: "";
+            width: 4px;
+            height: 1.25rem;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-input,
+    .form-textarea {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            transform: translateY(-1px);
+        }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 120px;
+        font-family: inherit;
+    }
+
+    /* Color Picker */
+    .color-picker {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+    }
+
+        .color-picker input[type="radio"] {
+            display: none;
+        }
+
+    .color-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        padding: 0.75rem;
+        border-radius: var(--radius-sm);
+        transition: all 0.2s ease;
+        border: 2px solid transparent;
+    }
+
+        .color-option:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+    .color-picker input[type="radio"]:checked + .color-option {
+        border-color: var(--primary-color);
+        background: rgba(99, 102, 241, 0.1);
+    }
+
+    .color-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 2px solid var(--border-color);
+    }
+
+    .color-none .color-circle {
+        background: white;
+        border: 2px dashed var(--border-color);
+    }
+
+    .color-red .color-circle {
+        background: var(--color-red);
+    }
+
+    .color-blue .color-circle {
+        background: var(--color-blue);
+    }
+
+    .color-green .color-circle {
+        background: var(--color-green);
+    }
+
+    .color-yellow .color-circle {
+        background: var(--color-yellow);
+    }
+
+    .color-gray .color-circle {
+        background: var(--color-gray);
+    }
+
+    .color-name {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+
+    /* Validation */
+    .validation-summary {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: var(--danger-color);
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        margin-bottom: 1.5rem;
+    }
+
+    .validation-error {
+        color: var(--danger-color);
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+        font-weight: 500;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.875rem 1.5rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        border: 2px solid;
+        min-width: 140px;
+        justify-content: center;
+    }
+
+    .btn-create {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+        .btn-create:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+    .btn-cancel {
+        background: white;
+        color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+
+        .btn-cancel:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+</style>
+
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

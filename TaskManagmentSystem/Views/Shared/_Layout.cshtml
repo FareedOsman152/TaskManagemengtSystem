@@ -17,7 +17,7 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <!-- Brand -->
-                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index">
+                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="WorkSpace" asp-action="ShowAll">
                     <i class="bi bi-kanban me-2"></i>
                     TaskManagement
                 </a>
@@ -31,18 +31,7 @@
                 <!-- Navbar Content -->
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <!-- Left Navigation -->
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
-                                <i class="bi bi-house me-1"></i>Home
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">
-                                <i class="bi bi-shield-check me-1"></i>Privacy
-                            </a>
-                        </li>
-                    </ul>
+                   
 
                     <!-- Right Navigation -->
                     <div class="navbar-nav ms-auto d-flex align-items-center">
@@ -107,7 +96,7 @@
                             </div>
 
                             <!-- Hidden Logout Form -->
-                            <form id="logoutForm" asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="d-none">
+                            <form id="logoutForm" asp-area="" asp-controller="Account" asp-action="SignOut" method="post" class="d-none">
                                 @Html.AntiForgeryToken()
                             </form>
                         }
@@ -242,7 +231,7 @@
 
         /* } */
 
-        /* /* RTL Support for Arabic */ */
+        /* /* RTL Support for Arabic */ 
         /* [dir="rtl"] .navbar-nav { */
         /*     flex-direction: row-reverse; */
         /* } */
@@ -252,9 +241,9 @@
         /*     left: 0; */
         /* } */
 
-        /* /* Animation for notification badge */ */
-        /* /*  keyframes pulse { */ */
-        /*     /* 0% */ */
+        /* /* Animation for notification badge */ 
+        /* /*  keyframes pulse { */ 
+        /*     /* 0% */ 
 
         /* { */
         /*     transform: scale(1); */
@@ -282,20 +271,20 @@
     <!-- Notification Script -->
     <script>
         // Update notification count
-        function updateNotificationCount() {
-            // This would typically fetch from your API
-            // For now, it's just a placeholder
-            fetch('/api/notifications/unread-count')
-                .then(response => response.json())
-                .then(data => {
-                    const badge = document.getElementById('unread-notifications-count');
-                    if (badge) {
-                        badge.textContent = data.count || 0;
-                        badge.style.display = data.count > 0 ? 'flex' : 'none';
-                    }
-                })
-                .catch(error => console.log('Notification count update failed:', error));
-        }
+        // function updateNotificationCount() {
+        //     This would typically fetch from your API
+        //     For now, it's just a placeholder
+        //     fetch('/api/notifications/unread-count')
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             const badge = document.getElementById('unread-notifications-count');
+        //             if (badge) {
+        //                 badge.textContent = data.count || 0;
+        //                 badge.style.display = data.count > 0 ? 'flex' : 'none';
+        //             }
+        //         })
+        //         .catch(error => console.log('Notification count update failed:', error));
+        // }
 
         // Update notification count on page load (only for authenticated users)
         @if (User.Identity.IsAuthenticated)

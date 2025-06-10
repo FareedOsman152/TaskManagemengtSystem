@@ -26,5 +26,13 @@ namespace TaskManagmentSystem.ViewModels
 
         [Display(Name = "End on")]
         public DateTime? EndOn { get; set; }
+
+        [Display(Name = "Remind me before begin")]
+        [Range(5, 60)]
+        public int RemindMeBeforeBegin { get; set; }
+
+        [Display(Name = "Remind me before End")]
+        [Range(5, 60)]
+        public int RemindMeBeforeEnd { get; set; }
     }
 }
