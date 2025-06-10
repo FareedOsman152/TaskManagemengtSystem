@@ -308,6 +308,11 @@ namespace TaskManagmentSystem.Migrations
                     b.Property<DateTime?>("EndOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsDone")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 

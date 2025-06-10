@@ -39,6 +39,7 @@ namespace TaskManagmentSystem.Controllers
                         CreatedDate = x.CreatedDate,
                         BeginOn = x.BeginOn,
                         EndOn = x.EndOn,
+                        IsDone = x.IsDone
                     }).ToList()
                 })
                 .ToList();

@@ -27,11 +27,13 @@ namespace TaskManagmentSystem.Models
         Yellow,
         Gray
     }
+   
     public class UserTask
     {
         public int Id { get; set; }
         public string Title { get; set; } = null!;
         public string? Description { get; set; }
+        public bool IsDone { get; set; } = false;
         public UserTaskStatus Status { get; set; } = UserTaskStatus.NotStarted;
         public UserTaskPriority Priority { get; set; } = UserTaskPriority.None;
         public UserTaskColor Color { get; set; } = UserTaskColor.None;

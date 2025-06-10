@@ -20,6 +20,12 @@ namespace TaskManagmentSystem.Models
             builder.Entity<UserTask>().Property(x=>x.Description).HasMaxLength(100);
             builder.Entity<UserTask>().Property(x => x.BeginOn).IsRequired(false);
             builder.Entity<UserTask>().Property(x => x.EndOn).IsRequired(false);
+            builder.Entity<UserTask>(e =>
+            {
+                e.Property(x => x.RemindMeBeforeBegin).IsRequired(false);
+                e.Property(x => x.RemindMeBeforeEnd).IsRequired(false);
+                e.Property(x => x.IsDone).HasDefaultValue(false);
+            });
 
             builder.Entity<TaskList>().HasKey(x => x.Id);
             builder.Entity<TaskList>().Property(x => x.Title).HasMaxLength(50);

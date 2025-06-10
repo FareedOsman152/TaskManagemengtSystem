@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Hangfire;
+using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagmentSystem.Models;
 using TaskManagmentSystem.Notifications.Interfaces;
@@ -38,7 +39,11 @@ namespace TaskManagmentSystem.Controllers
                 userTask.Title = userTaskFromRequest.Title;
                 userTask.Description = userTaskFromRequest.Description;
                 userTask.BeginOn = userTaskFromRequest.BeginOn;
+                if(userTask.BeginOn is not null)
+                    userTask.RemindMeBeforeBegin = userTask.BeginOn - userTaskFromRequest.RemindMeBeforeBegin.Minutes();
                 userTask.EndOn = userTaskFromRequest.EndOn;
+                if(userTask.EndOn is not null)
+                    userTask.RemindMeBeforeEnd = userTask.EndOn - userTaskFromRequest.RemindMeBeforeEnd.Minutes();
                 userTask.TaskListId = userTaskFromRequest.TaskListId;
                 userTask.BeginOn = userTaskFromRequest.BeginOn;
                 userTask.EndOn = userTaskFromRequest.EndOn;
@@ -110,6 +115,22 @@ namespace TaskManagmentSystem.Controllers
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction("ShowAll", "TaskList", new { Id = workSpaceId });
+        }
+
+        public async Task<IActionResult> IsDone(CheckIsDoneTaskViewModel taskIsDoneModel)
+        {
+            if (taskIsDoneModel is not null)
+            {
+                var userTask = await _context.UserTasks.FindAsync(taskIsDoneModel.Id);
+                if (userTask is not null)
+                {
+                    userTask.IsDone = taskIsDoneModel.IsDone;
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("ShowAll", "TaskList", new { Id = taskIsDoneModel.WorkSpaceId});
+                }
+                return NotFound();
+            }
+            return BadRequest();
         }
     }
 }
