@@ -31,3 +31,4 @@ out/
 *.swp
 *.swo
 
+/TaskManagementSystem.API/Properties/launchSettings.json
