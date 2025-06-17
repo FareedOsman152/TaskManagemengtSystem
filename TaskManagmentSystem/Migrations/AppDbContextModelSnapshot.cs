@@ -163,6 +163,9 @@ namespace TaskManagmentSystem.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<DateOnly>("Birthday")
+                        .HasColumnType("date");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -173,6 +176,9 @@ namespace TaskManagmentSystem.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -218,6 +224,32 @@ namespace TaskManagmentSystem.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("TaskManagmentSystem.Models.AppUserProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("JopTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PicURL")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId")
+                        .IsUnique();
+
+                    b.ToTable("AppUserProfiles");
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.Notification", b =>
@@ -422,6 +454,17 @@ namespace TaskManagmentSystem.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("TaskManagmentSystem.Models.AppUserProfile", b =>
+                {
+                    b.HasOne("TaskManagmentSystem.Models.AppUser", "AppUser")
+                        .WithOne("Profile")
+                        .HasForeignKey("TaskManagmentSystem.Models.AppUserProfile", "AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
             modelBuilder.Entity("TaskManagmentSystem.Models.Notification", b =>
                 {
                     b.HasOne("TaskManagmentSystem.Models.AppUser", "AppUser")
@@ -475,6 +518,9 @@ namespace TaskManagmentSystem.Migrations
             modelBuilder.Entity("TaskManagmentSystem.Models.AppUser", b =>
                 {
                     b.Navigation("Notifications");
+
+                    b.Navigation("Profile")
+                        .IsRequired();
 
                     b.Navigation("WorkSpaces");
                 });

@@ -2,13 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 
 namespace TaskManagmentSystem.Models
-{
+{ 
     public class AppDbContext : IdentityDbContext<AppUser>
     {
         public DbSet<WorkSpace> WorkSpaces { get; set; }
         public DbSet<TaskList> TaskLists { get; set; }
         public DbSet<UserTask> UserTasks { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<AppUserProfile> AppUserProfiles { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
@@ -45,6 +46,14 @@ namespace TaskManagmentSystem.Models
                 .HasOne(x => x.AppUser)
                 .WithMany(x => x.Notifications)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<AppUserProfile>(p =>
+            {
+                p.HasKey(p => p.Id);
+                p.HasOne(x => x.AppUser)
+                .WithOne(u => u.Profile)
+                .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }
