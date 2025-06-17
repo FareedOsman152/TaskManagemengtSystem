@@ -1,18 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TaskManagmentSystem.Models
+namespace TaskManagmentSystem.ViewModels
 {
-    public class AppUserProfile
+    public class ProfileShowViewModel
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string? PicURL { get; set; }
         public string? JopTitle { get; set; }
-
-        [ForeignKey("AppUser")]
-        public string AppUserId { get; set; } = null!;
-        public AppUser AppUser { get; set; } = null!;
-
     }
 }

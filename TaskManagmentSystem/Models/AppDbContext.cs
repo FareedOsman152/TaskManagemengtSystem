@@ -50,6 +50,8 @@ namespace TaskManagmentSystem.Models
             builder.Entity<AppUserProfile>(p =>
             {
                 p.HasKey(p => p.Id);
+                p.Property(p=>p.FirstName).HasMaxLength(30);    
+                p.Property(p=>p.LastName).HasMaxLength(30);    
                 p.HasOne(x => x.AppUser)
                 .WithOne(u => u.Profile)
                 .OnDelete(DeleteBehavior.Cascade);

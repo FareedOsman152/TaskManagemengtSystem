@@ -25,6 +25,7 @@
   <ItemGroup>
     <Folder Include="Resources\Controllers\" />
     <Folder Include="wwwroot\microsoft\signalr\dist\browser\" />
+    <Folder Include="wwwroot\Uploads\ProfileImages\" />
   </ItemGroup>
 
 </Project>

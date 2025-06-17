@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\TaskManagmentSystem\TaskManagmentSystem.csproj" />
   </ItemGroup>
 
 </Project>

@@ -60,6 +60,11 @@
                         <!-- Authentication Section -->
                         @if (User.Identity.IsAuthenticated)
                         {
+                            <div class="nav-item me-2">
+                                <a class="btn btn-outline-primary btn-sm" asp-controller="Profile" asp-action="Show">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i>Profile
+                                </a>
+                            </div>
                             <!-- Notifications (Only for authenticated users) -->
                             <div class="nav-item me-3">
                                 <a class="nav-link position-relative" asp-area="" asp-controller="Notification" asp-action="Show">
@@ -289,13 +294,13 @@
         // Update notification count on page load (only for authenticated users)
         @if (User.Identity.IsAuthenticated)
         {
-            <text>
-                document.addEventListener('DOMContentLoaded', function() {
-                    updateNotificationCount();
-                    // Update every 30 seconds
-                    setInterval(updateNotificationCount, 30000);
-                });
-            </text>
+            // <text>
+            //     document.addEventListener('DOMContentLoaded', function() {
+            //         updateNotificationCount();
+            //         Update every 30 seconds
+            //         setInterval(updateNotificationCount, 30000);
+            //     });
+            // </text>
         }
     </script>
 

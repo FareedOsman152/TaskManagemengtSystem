@@ -1,0 +1,461 @@
+﻿@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="profile-page-wrapper">
+    <div class="container-fluid profile-container">
+        <!-- Header Section -->
+        <div class="profile-header">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="profile-title">
+                        <i class="bi bi-person-circle"></i>
+                        User Profile
+                    </h1>
+                    <p class="profile-subtitle">View and manage your profile information</p>
+                </div>
+                <div class="header-actions">
+                    <a asp-action="Index" class="btn btn-back">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Back to List</span>
+                    </a>
+                    <a asp-action="Edit" asp-route-Id="" class="btn btn-edit" id="editProfileBtn">
+                        <i class="bi bi-pencil-square"></i>
+                        <span>Edit Profile</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-card">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p>Loading profile...</p>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="error-card" style="display: none;">
+            <div class="error-content">
+                <div class="error-icon">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <h3>Error Loading Profile</h3>
+                <p>Unable to load profile information. Please try again.</p>
+                <button onclick="retryLoadProfile()" class="btn btn-retry">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    <span>Retry</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Profile Content -->
+        <div id="profileContent" class="profile-card" style="display: none;">
+            <div class="profile-card-header">
+                <div class="profile-image-section">
+                    <div class="profile-image-container">
+                        <img id="profileImage" src="/placeholder.svg?height=120&width=120" alt="Profile Picture" class="profile-image" />
+                        <div class="profile-image-placeholder" id="profileImagePlaceholder">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-info-header">
+                    <h2 id="profileFullName" class="profile-name">Loading...</h2>
+                    <p id="profileJobTitle" class="profile-job">Loading...</p>
+                </div>
+            </div>
+
+            <div class="profile-card-body">
+                <div class="profile-details">
+                    <h3 class="details-title">Profile Details</h3>
+
+                    <div class="detail-row">
+                        <div class="detail-label">
+                            <i class="bi bi-person"></i>
+                            <span>First Name</span>
+                        </div>
+                        <div class="detail-value" id="profileFirstName">Loading...</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">
+                            <i class="bi bi-person"></i>
+                            <span>Last Name</span>
+                        </div>
+                        <div class="detail-value" id="profileLastName">Loading...</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">
+                            <i class="bi bi-briefcase"></i>
+                            <span>Job Title</span>
+                        </div>
+                        <div class="detail-value" id="profileJobTitleDetail">Loading...</div>
+                    </div>
+
+                    @* <div class="detail-row"> *@
+                    @*     <div class="detail-label"> *@
+                    @*         <i class="bi bi-hash"></i> *@
+                    @*         <span>Profile ID</span> *@
+                    @*     </div> *@
+                    @*     <div class="detail-value" id="profileId">Loading...</div> *@
+                    @* </div> *@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden span for user ID -->
+<span id="idspan" style="display:none">@Model</span>
+
+<style>
+    /* Root Variables */
+    :root {
+        --primary-color: #6366f1;
+        --primary-hover: #5855eb;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --secondary-color: #6b7280;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --text-muted: #9ca3af;
+        --border-color: #e5e7eb;
+        --background-light: #f8fafc;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 12px;
+        --radius-sm: 8px;
+    }
+
+    /* Main Container */
+    .profile-page-wrapper {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .profile-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* Header Styles */
+    .profile-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .title-section {
+        flex: 1;
+    }
+
+    .profile-title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .profile-subtitle {
+        color: var(--text-secondary);
+        margin: 0.5rem 0 0 0;
+        font-size: 1.1rem;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border: 2px solid;
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+
+    .btn-back {
+        background: rgba(107, 114, 128, 0.1);
+        color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+
+        .btn-back:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .btn-edit {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning-color);
+        border-color: var(--warning-color);
+    }
+
+        .btn-edit:hover {
+            background: var(--warning-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .btn-retry {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+        .btn-retry:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+    /* Card Styles */
+    .profile-card,
+    .loading-card,
+    .error-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+    }
+
+    /* Loading State */
+    .loading-content {
+        padding: 4rem 2rem;
+        text-align: center;
+    }
+
+    .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+    }
+
+    @@keyframes spin {
+        0%
+
+    {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    /* Error State */
+    .error-content {
+        padding: 4rem 2rem;
+        text-align: center;
+    }
+
+    .error-icon {
+        font-size: 3rem;
+        color: var(--danger-color);
+        margin-bottom: 1rem;
+    }
+
+    .error-content h3 {
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .error-content p {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+
+    /* Profile Card Header */
+    .profile-card-header {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        padding: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .profile-image-container {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .profile-image,
+    .profile-image-placeholder {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid white;
+        box-shadow: var(--shadow-md);
+    }
+
+    .profile-image {
+        object-fit: cover;
+    }
+
+    .profile-image-placeholder {
+        background: var(--background-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: var(--text-muted);
+    }
+
+    .profile-info-header {
+        flex: 1;
+    }
+
+    .profile-name {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .profile-job {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+        margin: 0;
+        font-style: italic;
+    }
+
+    /* Profile Card Body */
+    .profile-card-body {
+        padding: 2rem;
+    }
+
+    .details-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 1.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .details-title::before {
+            content: "";
+            width: 4px;
+            height: 1.5rem;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+    }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+    .detail-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        flex: 1;
+    }
+
+        .detail-label i {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+    .detail-value {
+        color: var(--text-secondary);
+        font-weight: 500;
+        text-align: right;
+        flex: 1;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .profile-page-wrapper
+
+    {
+        padding: 1rem 0;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .profile-card-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .profile-name {
+        font-size: 1.75rem;
+    }
+
+    .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .detail-value {
+        text-align: left;
+    }
+
+    }
+</style>
+
+<script src="~/js/GetProfileData.js"></script>

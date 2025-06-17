@@ -11,6 +11,23 @@ namespace TaskManagmentSystem.ViewModels
 
         [Required]
         [MinLength(5)]
+        [MaxLength(30)]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [MinLength(5)]
+        [MaxLength(30)]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
+
+        [MinLength(5)]
+        [MaxLength(30)]
+        [Display(Name = "Jop Title")]
+        public string? JopTitle { get; set; }
+
+        [Required]
+        [MinLength(5)]
         [MaxLength(20)]
         [Display(Name ="Username")]
         public string Username { get; set; }

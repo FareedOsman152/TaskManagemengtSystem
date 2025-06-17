@@ -10,11 +10,13 @@ namespace TaskManagmentSystem.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly AppDbContext _context;
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, AppDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
         }
 
         [HttpGet]
@@ -35,6 +37,16 @@ namespace TaskManagmentSystem.Controllers
                     await _userManager.CreateAsync(user,userFromRequest.Password);
                 if(saveResult.Succeeded)
                 {
+                    var userId = user.Id;
+                    var profile = new AppUserProfile
+                    {
+                        FirstName = userFromRequest.FirstName,
+                        LastName = userFromRequest.LastName,
+                        JopTitle = userFromRequest.JopTitle,
+                        AppUserId = userId
+                    };
+                    _context.AppUserProfiles.Add(profile);
+                    await _context.SaveChangesAsync();
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("ShowAll", "WorkSpace");
                 }
