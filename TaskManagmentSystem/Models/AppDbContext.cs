@@ -64,7 +64,7 @@ namespace TaskManagmentSystem.Models
                 t.Property(t => t.Title).HasMaxLength(75);
                 t.Property(t => t.Description).HasMaxLength(255);
                 t.HasOne(t => t.Admin)
-                .WithOne()
+                .WithMany()
                 .OnDelete(DeleteBehavior.NoAction);
 
                 t.HasMany(t => t.Users)

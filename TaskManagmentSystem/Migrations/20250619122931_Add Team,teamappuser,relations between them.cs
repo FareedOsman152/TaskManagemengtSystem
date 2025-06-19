@@ -75,7 +75,7 @@ namespace TaskManagmentSystem.Migrations
                 name: "IX_Teams_AdminId",
                 table: "Teams",
                 column: "AdminId",
-                unique: true);
+                unique: false);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_WorkSpaces_Teams_TeamId",

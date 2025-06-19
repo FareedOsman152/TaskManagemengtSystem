@@ -338,8 +338,8 @@ namespace TaskManagmentSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateOnly>("DateCreated")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .HasMaxLength(255)
@@ -352,8 +352,7 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AdminId")
-                        .IsUnique();
+                    b.HasIndex("AdminId");
 
                     b.ToTable("Teams");
                 });
@@ -558,8 +557,8 @@ namespace TaskManagmentSystem.Migrations
             modelBuilder.Entity("TaskManagmentSystem.Models.Team", b =>
                 {
                     b.HasOne("TaskManagmentSystem.Models.AppUser", "Admin")
-                        .WithOne()
-                        .HasForeignKey("TaskManagmentSystem.Models.Team", "AdminId")
+                        .WithMany()
+                        .HasForeignKey("AdminId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
