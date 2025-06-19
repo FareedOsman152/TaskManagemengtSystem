@@ -10,6 +10,8 @@ namespace TaskManagmentSystem.Models
         public DbSet<UserTask> UserTasks { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<AppUserProfile> AppUserProfiles { get; set; }
+        public DbSet<Team> Teams { get; set; }
+        public DbSet<TeamAppUser> TeamAppUser { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
@@ -55,6 +57,22 @@ namespace TaskManagmentSystem.Models
                 p.HasOne(x => x.AppUser)
                 .WithOne(u => u.Profile)
                 .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<Team>(t =>
+            {
+                t.Property(t => t.Name).HasMaxLength(75);
+                t.HasOne(t => t.Admin)
+                .WithOne()
+                .OnDelete(DeleteBehavior.NoAction);
+
+                t.HasMany(t => t.Users)
+                .WithMany(u => u.Teams)
+                .UsingEntity<TeamAppUser>();
+
+                t.HasMany(t => t.WorkSpaces)
+                .WithOne(w => w.Team)
+                .OnDelete(DeleteBehavior.SetNull);
             });
         }
     }

@@ -10,10 +10,16 @@ namespace TaskManagmentSystem.Models
     }
     public class AppUser : IdentityUser
     {
-        public List<WorkSpace> WorkSpaces { get; set; }
-        public List<Notification> Notifications { get; set; }
         public DateOnly Birthday{ get; set; }
         public Genders Gender{ get; set; }
         public AppUserProfile Profile { get; set; } = null!;
+        public List<WorkSpace>? WorkSpaces { get; set; }
+        public List<Notification>? Notifications { get; set; }
+
+        // M:N
+        public List<TeamAppUser> TeamAppUsers { get; set; } = null!;
+
+        // with skip
+        public List<Team>? Teams { get; set; }
     }
 }

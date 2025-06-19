@@ -326,6 +326,49 @@ namespace TaskManagmentSystem.Migrations
                     b.ToTable("TaskLists");
                 });
 
+            modelBuilder.Entity("TaskManagmentSystem.Models.Team", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdminId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateOnly>("DateCreated")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(75)
+                        .HasColumnType("nvarchar(75)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdminId")
+                        .IsUnique();
+
+                    b.ToTable("Teams");
+                });
+
+            modelBuilder.Entity("TaskManagmentSystem.Models.TeamAppUser", b =>
+                {
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("TeamId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TeamAppUser");
+                });
+
             modelBuilder.Entity("TaskManagmentSystem.Models.UserTask", b =>
                 {
                     b.Property<int>("Id")
@@ -401,6 +444,9 @@ namespace TaskManagmentSystem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int?>("TeamId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -409,6 +455,8 @@ namespace TaskManagmentSystem.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
+
+                    b.HasIndex("TeamId");
 
                     b.ToTable("WorkSpaces");
                 });
@@ -503,6 +551,36 @@ namespace TaskManagmentSystem.Migrations
                     b.Navigation("WorkSpace");
                 });
 
+            modelBuilder.Entity("TaskManagmentSystem.Models.Team", b =>
+                {
+                    b.HasOne("TaskManagmentSystem.Models.AppUser", "Admin")
+                        .WithOne()
+                        .HasForeignKey("TaskManagmentSystem.Models.Team", "AdminId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Admin");
+                });
+
+            modelBuilder.Entity("TaskManagmentSystem.Models.TeamAppUser", b =>
+                {
+                    b.HasOne("TaskManagmentSystem.Models.Team", "Team")
+                        .WithMany("TeamAppUsers")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TaskManagmentSystem.Models.AppUser", "User")
+                        .WithMany("TeamAppUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Team");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("TaskManagmentSystem.Models.UserTask", b =>
                 {
                     b.HasOne("TaskManagmentSystem.Models.TaskList", "TaskList")
@@ -522,7 +600,14 @@ namespace TaskManagmentSystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TaskManagmentSystem.Models.Team", "Team")
+                        .WithMany("WorkSpaces")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("AppUser");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.AppUser", b =>
@@ -532,12 +617,21 @@ namespace TaskManagmentSystem.Migrations
                     b.Navigation("Profile")
                         .IsRequired();
 
+                    b.Navigation("TeamAppUsers");
+
                     b.Navigation("WorkSpaces");
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.TaskList", b =>
                 {
                     b.Navigation("UserTasks");
+                });
+
+            modelBuilder.Entity("TaskManagmentSystem.Models.Team", b =>
+                {
+                    b.Navigation("TeamAppUsers");
+
+                    b.Navigation("WorkSpaces");
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.UserTask", b =>
