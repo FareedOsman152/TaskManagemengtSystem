@@ -32,3 +32,6 @@ out/
 *.swo
 
 /TaskManagementSystem.API/Properties/launchSettings.json
+
+wwwroot/Uploads/
+
