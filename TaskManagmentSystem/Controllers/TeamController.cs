@@ -135,5 +135,40 @@ namespace TaskManagmentSystem.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Show");
         }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var team = await _context.Teams.Include(t=>t.Users).FirstOrDefaultAsync(t => t.Id == id);
+            if (team == null)
+                return NotFound();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (team.Users.FirstOrDefault(u => u.Id == userId) is null)
+                return BadRequest();
+
+            var usersDeatils = new List<UserDetailsForTeamViewModel>();
+            foreach (var user in team.Users)
+            {
+                usersDeatils.Add(new UserDetailsForTeamViewModel
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    IsAdmin = team.AdminId==user.Id,
+                });
+            }
+
+
+            var teamDetails = new TeamDeatilsViewModel
+            {
+                Id = team.Id,
+                Title = team.Title,
+                Description = team.Description,
+                AdminId = team.AdminId,
+                UserId = userId,
+                Users = usersDeatils
+            };
+
+            return View("Details", teamDetails);
+        }
     }
 }
