@@ -341,7 +341,11 @@ namespace TaskManagmentSystem.Migrations
                     b.Property<DateOnly>("DateCreated")
                         .HasColumnType("date");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(75)
                         .HasColumnType("nvarchar(75)");

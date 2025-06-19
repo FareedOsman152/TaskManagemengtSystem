@@ -61,7 +61,8 @@ namespace TaskManagmentSystem.Models
 
             builder.Entity<Team>(t =>
             {
-                t.Property(t => t.Name).HasMaxLength(75);
+                t.Property(t => t.Title).HasMaxLength(75);
+                t.Property(t => t.Description).HasMaxLength(255);
                 t.HasOne(t => t.Admin)
                 .WithOne()
                 .OnDelete(DeleteBehavior.NoAction);
