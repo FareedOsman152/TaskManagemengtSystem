@@ -1,0 +1,552 @@
+﻿@model TaskManagmentSystem.ViewModels.TeamEditViewModel
+
+@{
+    ViewData["Title"] = "Edit Team";
+}
+
+<div class="team-edit-wrapper">
+    <div class="container-fluid team-edit-container">
+        <!-- Header Section -->
+        <div class="edit-header">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="edit-title">
+                        <i class="bi bi-pencil-square"></i>
+                        Edit Team
+                    </h1>
+                    <p class="edit-subtitle">Update your team information and settings</p>
+                </div>
+                <a asp-action="Index" class="btn btn-back">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Back to Teams</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="edit-card">
+            <div class="edit-card-header">
+                <div class="card-icon">
+                    <i class="bi bi-diagram-3-fill"></i>
+                </div>
+                <div class="card-title-section">
+                    <h3 class="card-title">Team Information</h3>
+                    <p class="card-subtitle">Modify the details for your team</p>
+                </div>
+            </div>
+
+            <div class="edit-card-body">
+                <form asp-action="SaveEdit" method="post" class="team-form">
+                    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                    <!-- Hidden ID Field -->
+                    <input asp-for="Id" type="hidden" />
+
+                    <!-- Team Title Section -->
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label asp-for="Title" class="form-label">
+                                <i class="bi bi-tag-fill"></i>
+                                <span>Team Name</span>
+                                <span class="required-indicator">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input asp-for="Title" class="form-input" placeholder="Enter team name (e.g., Development Team, Marketing Team)" maxlength="50" />
+                                <div class="input-icon">
+                                    <i class="bi bi-people-fill"></i>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Title" class="validation-error"></span>
+                            <div class="form-help">
+                                <small>Choose a clear and descriptive name for your team (1-50 characters)</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Team Description Section -->
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label asp-for="Description" class="form-label">
+                                <i class="bi bi-card-text"></i>
+                                <span>Team Description</span>
+                                <span class="optional-indicator">(Optional)</span>
+                            </label>
+                            <div class="textarea-wrapper">
+                                <textarea asp-for="Description" class="form-textarea" placeholder="Describe the team's purpose, goals, or responsibilities..." rows="4" maxlength="255"></textarea>
+                                <div class="textarea-icon">
+                                    <i class="bi bi-chat-square-text-fill"></i>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Description" class="validation-error"></span>
+                            <div class="form-help">
+                                <small>Provide additional context about this team's role and objectives (up to 255 characters)</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-save">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span>Save Changes</span>
+                        </button>
+                        <a asp-action="Index" class="btn btn-cancel">
+                            <i class="bi bi-x-circle"></i>
+                            <span>Cancel</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="help-section">
+            <div class="help-card">
+                <div class="help-icon">
+                    <i class="bi bi-info-circle-fill"></i>
+                </div>
+                <div class="help-content">
+                    <h4>Editing Tips</h4>
+                    <ul>
+                        <li><strong>Team Name:</strong> Keep it concise and meaningful</li>
+                        <li><strong>Description:</strong> Update to reflect current team goals</li>
+                        <li><strong>Changes:</strong> All team members will see the updated information</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Root Variables */
+    :root {
+        --primary-color: #6366f1;
+        --primary-hover: #5855eb;
+        --success-color: #10b981;
+        --success-hover: #059669;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --info-color: #3b82f6;
+        --secondary-color: #6b7280;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --text-muted: #9ca3af;
+        --border-color: #e5e7eb;
+        --background-light: #f8fafc;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 12px;
+        --radius-sm: 8px;
+    }
+
+    /* Main Container */
+    .team-edit-wrapper {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .team-edit-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* Header Styles */
+    .edit-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .title-section {
+        flex: 1;
+    }
+
+    .edit-title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: linear-gradient(135deg, var(--warning-color), #d97706);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .edit-subtitle {
+        color: var(--text-secondary);
+        margin: 0.5rem 0 0 0;
+        font-size: 1.1rem;
+        line-height: 1.5;
+    }
+
+    .btn-back {
+        background: rgba(107, 114, 128, 0.1);
+        color: var(--secondary-color);
+        border: 2px solid var(--secondary-color);
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+        .btn-back:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    /* Form Card */
+    .edit-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .edit-card-header {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        padding: 2rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .card-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--warning-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .card-title-section {
+        flex: 1;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .card-subtitle {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .edit-card-body {
+        padding: 2rem;
+    }
+
+    /* Form Sections */
+    .form-section {
+        margin-bottom: 2rem;
+    }
+
+        .form-section:last-of-type {
+            margin-bottom: 0;
+        }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .required-indicator {
+        color: var(--danger-color);
+        font-weight: 700;
+    }
+
+    .optional-indicator {
+        color: var(--text-muted);
+        font-weight: 400;
+        font-size: 0.875rem;
+    }
+
+    /* Input Styles */
+    .input-wrapper,
+    .textarea-wrapper {
+        position: relative;
+    }
+
+    .form-input,
+    .form-textarea {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+        color: var(--text-primary);
+        resize: vertical;
+    }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--warning-color);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+            transform: translateY(-1px);
+        }
+
+    .input-icon,
+    .textarea-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        pointer-events: none;
+    }
+
+    .textarea-icon {
+        top: 1rem;
+        transform: none;
+    }
+
+    .form-help {
+        margin-top: 0.5rem;
+    }
+
+        .form-help small {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-style: italic;
+            line-height: 1.4;
+        }
+
+    /* Validation */
+    .validation-summary {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: var(--danger-color);
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        margin-bottom: 1.5rem;
+    }
+
+    .validation-error {
+        color: var(--danger-color);
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+        font-weight: 500;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.875rem 1.5rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 1rem;
+        border: 2px solid;
+        min-width: 140px;
+        justify-content: center;
+    }
+
+    .btn-save {
+        background: var(--warning-color);
+        color: white;
+        border-color: var(--warning-color);
+        flex: 1;
+    }
+
+        .btn-save:hover {
+            background: #d97706;
+            border-color: #d97706;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+    .btn-cancel {
+        background: white;
+        color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        flex: 1;
+    }
+
+        .btn-cancel:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+        }
+
+    /* Help Section */
+    .help-section {
+        margin-top: 2rem;
+    }
+
+    .help-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        padding: 2rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+    }
+
+    .help-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--info-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .help-content {
+        flex: 1;
+    }
+
+        .help-content h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 1rem 0;
+        }
+
+        .help-content ul {
+            margin: 0;
+            padding-left: 1.5rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .help-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .help-content strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .team-edit-wrapper
+
+    {
+        padding: 1rem 0;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .edit-card-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .help-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .edit-title {
+        font-size: 1.75rem;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        .edit-card-body
+
+    {
+        padding: 1.5rem;
+    }
+
+    .form-input,
+    .form-textarea {
+        padding: 0.875rem 0.875rem 0.875rem 2.5rem;
+    }
+
+    .input-icon,
+    .textarea-icon {
+        left: 0.75rem;
+    }
+
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

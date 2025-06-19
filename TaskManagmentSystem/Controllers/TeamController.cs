@@ -44,7 +44,8 @@ namespace TaskManagmentSystem.Controllers
                         Description = t.Description,
                         DateCreated = t.DateCreated,
                         AdminId = t.AdminId,
-                        AdminName = admin!.UserName!
+                        AdminName = admin!.UserName!,
+                        UserId = userId!
                     });
                 }
             }  
@@ -77,6 +78,61 @@ namespace TaskManagmentSystem.Controllers
             await _context.TeamAppUser.AddAsync(new TeamAppUser { TeamId = team.Id, UserId = user.Id });
             await _context.SaveChangesAsync();
 
+            return RedirectToAction("Show");
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == id);
+            if (team == null)
+                return NotFound();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == team.AdminId)
+            {
+                _context.Teams.Remove(team);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Show");
+            }
+            else return BadRequest();
+        }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == id);
+            if (team == null)
+                return NotFound();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == team.AdminId)
+            {
+                var teamViewModel = new TeamEditViewModel
+                {
+                    Id = team.Id,
+                    Title = team.Title,
+                    Description = team.Description
+                };
+                return View("Edit", teamViewModel);
+            }
+            else return BadRequest();
+        }
+
+        public async Task<IActionResult> SaveEdit(TeamEditViewModel teamFromRequest)
+        {
+            if (!ModelState.IsValid)
+                return View("Edit", teamFromRequest);
+
+            var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == teamFromRequest.Id);
+            if (team is null)
+                return NotFound();
+
+            if (team.AdminId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+                return BadRequest();
+
+            team.Title = teamFromRequest.Title;
+            team.Description = teamFromRequest.Description;
+
+            await _context.SaveChangesAsync();
             return RedirectToAction("Show");
         }
     }

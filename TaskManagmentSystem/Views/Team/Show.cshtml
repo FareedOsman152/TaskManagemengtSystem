@@ -94,14 +94,17 @@
                                         <i class="bi bi-kanban-fill"></i>
                                         <span>Workspaces</span>
                                     </a>
-                                    <a asp-action="Edit" asp-route-id="@team.Id" class="btn btn-edit">
-                                        <i class="bi bi-pencil-square"></i>
-                                        <span>Edit</span>
-                                    </a>
-                                    <a asp-action="Delete" asp-route-id="@team.Id" class="btn btn-delete">
-                                        <i class="bi bi-trash3-fill"></i>
-                                        <span>Delete</span>
-                                    </a>
+                                    @if(team.AdminId==team.UserId)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@team.Id" class="btn btn-edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                            <span>Edit</span>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@team.Id" class="btn btn-delete">
+                                            <i class="bi bi-trash3-fill"></i>
+                                            <span>Delete</span>
+                                        </a>
+                                    }                                    
                                 </div>
                             </div>
                         </div>

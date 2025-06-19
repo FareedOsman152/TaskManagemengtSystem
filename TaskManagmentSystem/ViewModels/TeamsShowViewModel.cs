@@ -13,5 +13,7 @@ namespace TaskManagmentSystem.ViewModels
         [ForeignKey("Admin")]
         public string AdminId { get; set; } = null!;
         public string AdminName { get; set; } = null!;
+
+        public string UserId { get; set; }
     }
 }
