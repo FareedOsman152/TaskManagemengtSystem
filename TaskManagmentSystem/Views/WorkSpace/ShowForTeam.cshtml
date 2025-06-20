@@ -1,0 +1,880 @@
+﻿@model TaskManagmentSystem.ViewModels.FullDataWorkSpaceForTeamViewModel
+
+@{
+    ViewData["Title"] = "Team Workspaces";
+}
+
+<div class="workspaces-wrapper">
+    <div class="container-fluid workspaces-container">
+        <!-- Header Section -->
+        <div class="workspaces-header">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="workspaces-title">
+                        <i class="bi bi-kanban-fill"></i>
+                        @Model.Name Workspaces
+                    </h1>
+                    <p class="workspaces-subtitle">Manage and view all workspaces for this team</p>
+                </div>
+                <div class="header-actions">
+                    @if (Model.AdminId == Model.UserId)
+                    {
+                        <a asp-action="Add" asp-route-teamId="@Model.TeamId" class="btn btn-create">
+                            <i class="bi bi-plus-circle-fill"></i>
+                            <span>Add Workspace</span>
+                        </a>
+                    }
+                    <a asp-controller="Team" asp-action="Index" class="btn btn-back">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Back to Teams</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Info Card -->
+        <div class="team-info-card">
+            <div class="card-header">
+                <div class="header-icon">
+                    <i class="bi bi-diagram-3-fill"></i>
+                </div>
+                <div class="header-text">
+                    <h3>@Model.Name</h3>
+                    <p>Team Information</p>
+                </div>
+                <div class="team-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">@(Model.Workspaces?.Count ?? 0)</span>
+                        <span class="stat-label">Workspaces</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">@(Model.Users?.Count ?? 0)</span>
+                        <span class="stat-label">Members</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="team-details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">
+                            <i class="bi bi-card-text"></i>
+                            <span>Description</span>
+                        </div>
+                        <div class="detail-value">
+                            @if (!string.IsNullOrEmpty(Model.Description))
+                            {
+                                @Model.Description
+                            }
+                            else
+                            {
+                                <span class="no-description">No description provided</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-label">
+                            <i class="bi bi-calendar-check"></i>
+                            <span>Created Date</span>
+                        </div>
+                        <div class="detail-value">@Model.DateCreated.ToString("MMMM dd, yyyy 'at' hh:mm tt")</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-label">
+                            <i class="bi bi-person-badge-fill"></i>
+                            <span>Team Administrator</span>
+                        </div>
+                        <div class="detail-value">@Model.AdminName</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workspaces Section -->
+        <div class="workspaces-section">
+            <div class="section-header">
+                <h3>
+                    <i class="bi bi-kanban"></i>
+                    Workspaces
+                </h3>
+                <p>@(Model.Workspaces?.Count ?? 0) workspace(s) available</p>
+            </div>
+
+            @if (Model.Workspaces != null && Model.Workspaces.Any())
+            {
+                <div class="workspaces-grid">
+                    @foreach (var workspace in Model.Workspaces)
+                    {
+                        <div class="workspace-card @GetColorClass(workspace.Color)">
+                            <div class="workspace-header">
+                                <div class="workspace-color-indicator @GetColorClass(workspace.Color)"></div>
+                                <h4 class="workspace-title">@workspace.Title</h4>
+                                <div class="workspace-actions">
+                                    <a asp-action="Details" asp-route-id="@workspace.Id" class="action-btn details">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </a>
+                                    @if (Model.AdminId == Model.UserId)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@workspace.Id" class="action-btn edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@workspace.Id" class="action-btn delete" onclick="return confirm('Are you sure you want to delete this workspace?');">
+                                            <i class="bi bi-trash3-fill"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="workspace-body">
+                                @if (!string.IsNullOrEmpty(workspace.Description))
+                                {
+                                    <p class="workspace-description">@workspace.Description</p>
+                                }
+                                else
+                                {
+                                    <p class="workspace-description no-description">No description provided</p>
+                                }
+                            </div>
+
+                            <div class="workspace-footer">
+                                <div class="workspace-color-info">
+                                    <span class="color-badge @GetColorClass(workspace.Color)">
+                                        @workspace.Color.ToString()
+                                    </span>
+                                </div>
+                                <a asp-action="ViewTasks" asp-route-id="@workspace.Id" class="btn-view-tasks">
+                                    <i class="bi bi-list-task"></i>
+                                    <span>View Tasks</span>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="no-workspaces">
+                    <div class="no-workspaces-icon">
+                        <i class="bi bi-kanban"></i>
+                    </div>
+                    <h4>No Workspaces Found</h4>
+                    <p>This team doesn't have any workspaces yet.</p>
+                    @if (Model.AdminId == Model.UserId)
+                    {
+                        <a asp-action="Add" asp-route-teamId="@Model.TeamId" class="btn btn-create-first">
+                            <i class="bi bi-plus-circle-fill"></i>
+                            <span>Create First Workspace</span>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Team Members Section -->
+        <div class="members-section">
+            <div class="section-header">
+                <h3>
+                    <i class="bi bi-people-fill"></i>
+                    Team Members
+                </h3>
+                <p>@(Model.Users?.Count ?? 0) member(s) in this team</p>
+            </div>
+
+            @if (Model.Users != null && Model.Users.Any())
+            {
+                <div class="members-grid">
+                    @foreach (var user in Model.Users)
+                    {
+                        <div class="member-card">
+                            <div class="member-avatar">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            <div class="member-info">
+                                <h6 class="member-name">@user.UserName</h6>
+                            </div>
+                            <div class="member-role">
+                                @if (user.IsAdmin)
+                                {
+                                    <span class="role-badge admin">
+                                        <i class="bi bi-shield-fill-check"></i>
+                                        Admin
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="role-badge member">
+                                        <i class="bi bi-person-check-fill"></i>
+                                        Member
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="no-members">
+                    <div class="no-members-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h5>No Members Found</h5>
+                    <p>This team doesn't have any members yet.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetColorClass(WorkSpaceColor color)
+    {
+        return color switch
+        {
+            WorkSpaceColor.Red => "color-red",
+            WorkSpaceColor.Blue => "color-blue",
+            WorkSpaceColor.Green => "color-green",
+            WorkSpaceColor.Yellow => "color-yellow",
+            _ => "color-default"
+        };
+    }
+}
+
+<style>
+    /* Root Variables */
+    :root {
+        --primary-color: #6366f1;
+        --primary-hover: #5855eb;
+        --success-color: #10b981;
+        --success-hover: #059669;
+        --warning-color: #f59e0b;
+        --warning-hover: #d97706;
+        --danger-color: #ef4444;
+        --danger-hover: #dc2626;
+        --info-color: #3b82f6;
+        --info-hover: #2563eb;
+        --purple-color: #8b5cf6;
+        --purple-hover: #7c3aed;
+        --secondary-color: #6b7280;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --text-muted: #9ca3af;
+        --border-color: #e5e7eb;
+        --background-light: #f8fafc;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 12px;
+        --radius-sm: 8px;
+    }
+
+    /* Color Variables */
+    :root {
+        --color-red: #ef4444;
+        --color-blue: #3b82f6;
+        --color-green: #10b981;
+        --color-yellow: #f59e0b;
+        --color-purple: #8b5cf6;
+        --color-orange: #f97316;
+        --color-pink: #ec4899;
+        --color-cyan: #06b6d4;
+        --color-default: #6b7280;
+    }
+
+    /* Main Container */
+    .workspaces-wrapper {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .workspaces-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* Header Styles */
+    .workspaces-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .title-section {
+        flex: 1;
+    }
+
+    .workspaces-title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: linear-gradient(135deg, var(--purple-color), #7c3aed);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .workspaces-subtitle {
+        color: var(--text-secondary);
+        margin: 0.5rem 0 0 0;
+        font-size: 1.1rem;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border: 2px solid;
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+
+    .btn-create,
+    .btn-create-first {
+        background: var(--success-color);
+        color: white;
+        border-color: var(--success-color);
+    }
+
+        .btn-create:hover,
+        .btn-create-first:hover {
+            background: var(--success-hover);
+            border-color: var(--success-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+    .btn-back {
+        background: rgba(107, 114, 128, 0.1);
+        color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+
+        .btn-back:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    /* Card Styles */
+    .team-info-card,
+    .workspaces-section,
+    .members-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .header-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--purple-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .header-text {
+        flex: 1;
+    }
+
+        .header-text h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 0.25rem 0;
+        }
+
+        .header-text p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+    .team-stats {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-number {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--purple-color);
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* Team Details Grid */
+    .team-details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .detail-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+        .detail-label i {
+            color: var(--purple-color);
+            font-size: 1rem;
+        }
+
+    .detail-value {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        line-height: 1.5;
+        padding: 0.75rem 1rem;
+        background: var(--background-light);
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-color);
+    }
+
+    .no-description {
+        font-style: italic;
+        color: var(--text-muted);
+    }
+
+    /* Section Headers */
+    .section-header {
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border-color);
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    }
+
+        .section-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 0.25rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+    /* Workspaces Grid */
+    .workspaces-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+        padding: 2rem;
+    }
+
+    .workspace-card {
+        background: white;
+        border-radius: var(--radius-sm);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .workspace-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+    .workspace-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .workspace-color-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .workspace-title {
+        flex: 1;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .workspace-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 0.875rem;
+    }
+
+        .action-btn.details {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info-color);
+        }
+
+            .action-btn.details:hover {
+                background: var(--info-color);
+                color: white;
+            }
+
+        .action-btn.edit {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+            .action-btn.edit:hover {
+                background: var(--warning-color);
+                color: white;
+            }
+
+        .action-btn.delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+            .action-btn.delete:hover {
+                background: var(--danger-color);
+                color: white;
+            }
+
+    .workspace-body {
+        padding: 1.5rem;
+    }
+
+    .workspace-description {
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .workspace-footer {
+        padding: 1rem 1.5rem;
+        background: var(--background-light);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .color-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: capitalize;
+        color: white;
+    }
+
+    .btn-view-tasks {
+        background: var(--purple-color);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+        .btn-view-tasks:hover {
+            background: var(--purple-hover);
+            transform: translateY(-1px);
+        }
+
+    /* Color Classes */
+    .color-red {
+        background-color: var(--color-red);
+    }
+
+    .color-blue {
+        background-color: var(--color-blue);
+    }
+
+    .color-green {
+        background-color: var(--color-green);
+    }
+
+    .color-yellow {
+        background-color: var(--color-yellow);
+    }
+
+    .color-purple {
+        background-color: var(--color-purple);
+    }
+
+    .color-orange {
+        background-color: var(--color-orange);
+    }
+
+    .color-pink {
+        background-color: var(--color-pink);
+    }
+
+    .color-cyan {
+        background-color: var(--color-cyan);
+    }
+
+    .color-default {
+        background-color: var(--color-default);
+    }
+
+    /* Members Grid */
+    .members-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+        padding: 2rem;
+    }
+
+    .member-card {
+        background: var(--background-light);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.3s ease;
+    }
+
+        .member-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+    .member-avatar {
+        width: 45px;
+        height: 45px;
+        background: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .member-info {
+        flex: 1;
+    }
+
+    .member-name {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .member-role {
+        flex-shrink: 0;
+    }
+
+    .role-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+        .role-badge.admin {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .role-badge.member {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info-color);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+    /* Empty States */
+    .no-workspaces,
+    .no-members {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+
+    .no-workspaces-icon,
+    .no-members-icon {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    .no-workspaces h4,
+    .no-members h5 {
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .no-workspaces p,
+    .no-members p {
+        color: var(--text-secondary);
+        margin: 0 0 2rem 0;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .workspaces-wrapper
+
+    {
+        padding: 1rem 0;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .team-stats {
+        gap: 1rem;
+    }
+
+    .team-details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .workspaces-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .members-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .workspaces-title {
+        font-size: 1.75rem;
+    }
+
+    .card-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        .workspace-header
+
+    {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .workspace-actions {
+        align-self: flex-end;
+    }
+
+    .workspace-footer {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .member-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    }
+</style>

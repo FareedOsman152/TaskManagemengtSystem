@@ -18,13 +18,69 @@ namespace TaskManagmentSystem.Controllers
         {
             _context = context;
         }
-
-        [Authorize]
         public async Task<IActionResult> ShowAll()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var workSpaces = _context.WorkSpaces.Where(x => x.AppUserId == userId).ToList();
             return View("ShowAll", workSpaces);
+        }
+
+        public async Task<IActionResult> ShowForTeam(int id)
+        {
+            var team = await _context.Teams.Include(t=>t.Users).FirstOrDefaultAsync(t=>t.Id==id);
+            if (team is null)
+                return NotFound();
+
+            var workspaces = await _context.WorkSpaces.Where(w=>w.TeamId==id).ToListAsync();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (team.Users.FirstOrDefault(u => u.Id == userId) is null || team.Users.Count==0)
+                return BadRequest();
+
+            var workspacesViewModel = new List<WorkSpaceForTeamViewModel>();
+            var admin = await _context.Users.FindAsync(team.AdminId);
+            if (admin is null)
+                return BadRequest();
+
+            var usersViewModel = new List<UserDetailsForTeamViewModel>();
+
+            foreach (var u in team.Users)
+            {
+                usersViewModel.Add(new UserDetailsForTeamViewModel
+                {
+                    Id = u.Id,
+                    UserName = u.UserName,
+                    IsAdmin = u.Id == admin.Id
+                });
+            }
+
+            var fullWorkspacesViewModel = new FullDataWorkSpaceForTeamViewModel
+            {
+                Workspaces = workspacesViewModel,
+                Name = team.Title,
+                Description = team.Description,
+                DateCreated = team.DateCreated,
+                AdminId = team.AdminId,
+                AdminName = admin.UserName,
+                UserId = userId
+            };
+            if (workspaces.Count < 1)
+                goto finalReutn;
+
+            foreach (var w in workspaces)
+            {
+                workspacesViewModel.Add(new WorkSpaceForTeamViewModel
+                {
+                    Title = w.Title,
+                    Description = w.Description,
+                    Id = w.Id,
+                    Color = w.Color
+                });
+            }
+
+        finalReutn:
+            return View("ShowForTeam", fullWorkspacesViewModel);
         }
 
         public IActionResult Add()
@@ -44,7 +100,7 @@ namespace TaskManagmentSystem.Controllers
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 var workSapce = new WorkSpace();
-                workSapce.Title = workSpaceFromRequest.Tilte;
+                workSapce.Title = workSpaceFromRequest.Title;
                 workSapce.Description = workSpaceFromRequest.Description;
                 workSapce.AppUserId = userId!;
                 workSapce.Color = workSpaceFromRequest.Color;
@@ -79,7 +135,7 @@ namespace TaskManagmentSystem.Controllers
             var workSpaceViewModel = new WorkSpaceForEditViewModel
             {
                 Id = workSpace.Id,
-                Tilte = workSpace.Title,
+                Title = workSpace.Title,
                 Description = workSpace.Description,
                 Color = workSpace.Color,
                 Colors = colors
@@ -96,7 +152,7 @@ namespace TaskManagmentSystem.Controllers
                 var workSpace = await _context.WorkSpaces.FindAsync(id);
                 if (workSpace != null)
                 {
-                    workSpace.Title = workSpaceFromRequest.Tilte;
+                    workSpace.Title = workSpaceFromRequest.Title;
                     workSpace.Description = workSpaceFromRequest.Description;
                     workSpace.Color = workSpaceFromRequest.Color;
                     _context.Update(workSpace);
