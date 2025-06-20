@@ -20,6 +20,6 @@ namespace TaskManagmentSystem.Models
         public List<TeamAppUser> TeamAppUsers { get; set; } = null!;
 
         // with skip
-        public List<Team>? Teams { get; set; }
+        public List<Team>? Teams { get; set; } = new List<Team>();
     }
 }

@@ -9,6 +9,11 @@ using TaskManagmentSystem.Hubs;
 using TaskManagmentSystem.Models;
 using TaskManagmentSystem.Notifications;
 using TaskManagmentSystem.Notifications.Interfaces;
+using TaskManagmentSystem.Repositories;
+using TaskManagmentSystem.Repositories.Interfaces;
+using TaskManagmentSystem.Srvices;
+using TaskManagmentSystem.Srvices.Interfaces;
+using TaskManagmentSystem.Srvicese;
 
 namespace TaskManagmentSystem
 {
@@ -55,6 +60,12 @@ namespace TaskManagmentSystem
             builder.Services.AddScoped<INotificationManager, NotificationManager>();
             builder.Services.AddScoped<INotificationScheduler, NotificationScheduler>();
             builder.Services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
+            builder.Services.AddScoped<ITeamAppUserRepository, TeamAppUserRepository>();
+            builder.Services.AddScoped<ITeamRepository, TeamRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<ITeamAppUserService, TeamAppUserService>();
+            builder.Services.AddScoped<ITeamService, TeamService>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 

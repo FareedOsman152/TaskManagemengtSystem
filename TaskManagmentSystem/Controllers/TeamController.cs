@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskManagmentSystem.Models;
+using TaskManagmentSystem.Srvices.Interfaces;
 using TaskManagmentSystem.ViewModels;
 
 namespace TaskManagmentSystem.Controllers
@@ -11,44 +12,22 @@ namespace TaskManagmentSystem.Controllers
     [Authorize]
     public class TeamController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly UserManager<AppUser> _userManager;
+        private readonly ITeamService _teamService;
+        private readonly ITeamAppUserService _teamAppUserService;
 
-        public TeamController(AppDbContext context, UserManager<AppUser> userManager)
+        public TeamController(ITeamService teamService, ITeamAppUserService teamAppUserService)
         {
-            _context = context;
-            _userManager = userManager;
+            _teamService = teamService;
+            _teamAppUserService = teamAppUserService;
         }
 
         public async Task<IActionResult> Show()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userWithTeams = await _context.Users.Include(u => u.Teams)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-            if (userWithTeams is null)
-            {
-                return NotFound();
-            }
-
-            var teamsViewModel = new List<TeamsShowViewModel>();
-            
-            if(userWithTeams.Teams is not null)
-            {
-                foreach (var t in userWithTeams.Teams)
-                {
-                    var admin = await _context.Users.FirstOrDefaultAsync(u => u.Id == t.AdminId);
-                    teamsViewModel.Add(new TeamsShowViewModel
-                    {
-                        Id = t.Id,
-                        Name = t.Title,
-                        Description = t.Description,
-                        DateCreated = t.DateCreated,
-                        AdminId = t.AdminId,
-                        AdminName = admin!.UserName!,
-                        UserId = userId!
-                    });
-                }
-            }  
+            if (userId is null)
+                return BadRequest();
+             
+            var teamsViewModel = await _teamService.GetTeamsForShowAllAsync(userId);
 
             return View("Show", teamsViewModel);
         }
@@ -60,46 +39,30 @@ namespace TaskManagmentSystem.Controllers
 
         public async Task<IActionResult> SaveAdd(TeamAddViwModel teamFromRequest)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!ModelState.IsValid)
                 return RedirectToAction("Add", teamFromRequest);
 
-            var team = new Team
-            {
-                Title = teamFromRequest.Title,
-                Description = teamFromRequest.Description,
-                DateCreated = DateTime.Now,
-                AdminId = user!.Id
-            };
-            await _context.AddAsync(team);
+            var team = await _teamService.AddAsync(teamFromRequest, userId!);
+            if (team == null) 
+                return BadRequest("Failed to create team");
 
-            await _context.SaveChangesAsync();
-           // id of team
-            await _context.TeamAppUser.AddAsync(new TeamAppUser { TeamId = team.Id, UserId = user.Id });
-            await _context.SaveChangesAsync();
+            await _teamAppUserService.AddAsync(userId!, team.Id);
 
             return RedirectToAction("Show");
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == id);
-            if (team == null)
-                return NotFound();
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == team.AdminId)
-            {
-                _context.Teams.Remove(team);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Show");
-            }
-            else return BadRequest();
+            
+            await _teamService.DeleteAsync(id, userId);
+            return RedirectToAction("Show");
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == id);
+            var team = await _teamService.GetByIdAsync(id);
             if (team == null)
                 return NotFound();
 
@@ -122,53 +85,17 @@ namespace TaskManagmentSystem.Controllers
             if (!ModelState.IsValid)
                 return View("Edit", teamFromRequest);
 
-            var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == teamFromRequest.Id);
-            if (team is null)
-                return NotFound();
-
-            if (team.AdminId != User.FindFirstValue(ClaimTypes.NameIdentifier))
-                return BadRequest();
-
-            team.Title = teamFromRequest.Title;
-            team.Description = teamFromRequest.Description;
-
-            await _context.SaveChangesAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            await _teamService.EditAsync(teamFromRequest, userId!);
             return RedirectToAction("Show");
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            var team = await _context.Teams.Include(t=>t.Users).FirstOrDefaultAsync(t => t.Id == id);
-            if (team == null)
-                return NotFound();
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (team.Users.FirstOrDefault(u => u.Id == userId) is null)
-                return BadRequest();
-
-            var usersDeatils = new List<UserDetailsForTeamViewModel>();
-            foreach (var user in team.Users)
-            {
-                usersDeatils.Add(new UserDetailsForTeamViewModel
-                {
-                    Id = user.Id,
-                    UserName = user.UserName,
-                    IsAdmin = team.AdminId==user.Id,
-                });
-            }
-
-
-            var teamDetails = new TeamDeatilsViewModel
-            {
-                Id = team.Id,
-                Title = team.Title,
-                Description = team.Description,
-                AdminId = team.AdminId,
-                UserId = userId,
-                Users = usersDeatils
-            };
-
+            var teamDetails = await _teamService.GetTeamDetailsInculdeUsersAsync(id, userId);
             return View("Details", teamDetails);
         }
+
     }
 }
