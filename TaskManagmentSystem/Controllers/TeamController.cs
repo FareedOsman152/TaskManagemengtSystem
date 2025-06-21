@@ -97,5 +97,10 @@ namespace TaskManagmentSystem.Controllers
             return View("Details", teamDetails);
         }
 
+        //public IActionResult AddMember(int id)
+        //{
+
+        //}
+
     }
 }

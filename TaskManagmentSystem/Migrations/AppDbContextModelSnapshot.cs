@@ -259,7 +259,7 @@ namespace TaskManagmentSystem.Migrations
                     b.HasIndex("AppUserId")
                         .IsUnique();
 
-                    b.ToTable("AppUserProfiles", (string)null);
+                    b.ToTable("AppUserProfiles");
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.Notification", b =>
@@ -293,7 +293,7 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasIndex("UserTaskId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.TaskEdiotor", b =>
@@ -308,7 +308,7 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasIndex("TaskEditedId");
 
-                    b.ToTable("TaskEdiotor", (string)null);
+                    b.ToTable("TaskEdiotor");
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.TaskList", b =>
@@ -338,7 +338,7 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasIndex("WorkSpaceId");
 
-                    b.ToTable("TaskLists", (string)null);
+                    b.ToTable("TaskLists");
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.Team", b =>
@@ -369,7 +369,7 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasIndex("AdminId");
 
-                    b.ToTable("Teams", (string)null);
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.TeamAppUser", b =>
@@ -380,11 +380,14 @@ namespace TaskManagmentSystem.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("Permissons")
+                        .HasColumnType("int");
+
                     b.HasKey("TeamId", "UserId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TeamAppUser", (string)null);
+                    b.ToTable("TeamAppUser");
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.UserTask", b =>
@@ -448,7 +451,7 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasIndex("TaskListId");
 
-                    b.ToTable("UserTasks", (string)null);
+                    b.ToTable("UserTasks");
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.WorkSpace", b =>
@@ -484,7 +487,7 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("WorkSpaces", (string)null);
+                    b.ToTable("WorkSpaces");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

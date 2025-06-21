@@ -100,6 +100,7 @@ namespace TaskManagmentSystem.Models
                 .HasForeignKey(te => te.TaskEditedId)
                 .OnDelete(DeleteBehavior.Restrict);
             });
+
         }
     }
 }
