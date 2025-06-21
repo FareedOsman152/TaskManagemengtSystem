@@ -28,6 +28,15 @@ namespace TaskManagmentSystem.Models
                 e.Property(x => x.RemindMeBeforeBegin).IsRequired(false);
                 e.Property(x => x.RemindMeBeforeEnd).IsRequired(false);
                 e.Property(x => x.IsDone).HasDefaultValue(false);
+
+                e.HasOne(t => t.Creater)
+               .WithMany(u => u.TasksCreated)
+               .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasMany(t => t.Editors)
+                .WithMany(u => u.TasksEdited)
+                .UsingEntity<TaskEdiotor>();
+
             });
 
             builder.Entity<TaskList>().HasKey(x => x.Id);
@@ -74,6 +83,21 @@ namespace TaskManagmentSystem.Models
                 t.HasMany(t => t.WorkSpaces)
                 .WithOne(w => w.Team)
                 .OnDelete(DeleteBehavior.SetNull);
+            });
+
+            builder.Entity<TaskEdiotor>(te =>
+            {
+                te.HasKey(te => new { te.EditorId, te.TaskEditedId });
+
+                te.HasOne(te => te.Editor)
+                .WithMany(u => u.TaskEditor)
+                .HasForeignKey(te => te.EditorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                te.HasOne(te => te.TaskEdited)
+                .WithMany(u => u.TaskEditor)
+                .HasForeignKey(te => te.TaskEditedId)
+                .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }

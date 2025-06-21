@@ -21,5 +21,9 @@ namespace TaskManagmentSystem.Models
 
         // with skip
         public List<Team>? Teams { get; set; } = new List<Team>();
+        public List<UserTask> TasksCreated{ get; set; } = new List<UserTask>();
+
+        public List<UserTask> TasksEdited { get; set; } = new List<UserTask>();
+        public List<TaskEdiotor> TaskEditor { get; set; } = null!;
     }
 }

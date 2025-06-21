@@ -259,7 +259,7 @@ namespace TaskManagmentSystem.Migrations
                     b.HasIndex("AppUserId")
                         .IsUnique();
 
-                    b.ToTable("AppUserProfiles");
+                    b.ToTable("AppUserProfiles", (string)null);
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.Notification", b =>
@@ -293,7 +293,22 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasIndex("UserTaskId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
+                });
+
+            modelBuilder.Entity("TaskManagmentSystem.Models.TaskEdiotor", b =>
+                {
+                    b.Property<string>("EditorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("TaskEditedId")
+                        .HasColumnType("int");
+
+                    b.HasKey("EditorId", "TaskEditedId");
+
+                    b.HasIndex("TaskEditedId");
+
+                    b.ToTable("TaskEdiotor", (string)null);
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.TaskList", b =>
@@ -323,7 +338,7 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasIndex("WorkSpaceId");
 
-                    b.ToTable("TaskLists");
+                    b.ToTable("TaskLists", (string)null);
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.Team", b =>
@@ -354,7 +369,7 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasIndex("AdminId");
 
-                    b.ToTable("Teams");
+                    b.ToTable("Teams", (string)null);
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.TeamAppUser", b =>
@@ -369,7 +384,7 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TeamAppUser");
+                    b.ToTable("TeamAppUser", (string)null);
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.UserTask", b =>
@@ -389,6 +404,9 @@ namespace TaskManagmentSystem.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CreaterId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Description")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -400,6 +418,9 @@ namespace TaskManagmentSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("LastEditDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Priority")
                         .HasColumnType("int");
@@ -423,9 +444,11 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreaterId");
+
                     b.HasIndex("TaskListId");
 
-                    b.ToTable("UserTasks");
+                    b.ToTable("UserTasks", (string)null);
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.WorkSpace", b =>
@@ -461,7 +484,7 @@ namespace TaskManagmentSystem.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("WorkSpaces");
+                    b.ToTable("WorkSpaces", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -543,6 +566,25 @@ namespace TaskManagmentSystem.Migrations
                     b.Navigation("UserTask");
                 });
 
+            modelBuilder.Entity("TaskManagmentSystem.Models.TaskEdiotor", b =>
+                {
+                    b.HasOne("TaskManagmentSystem.Models.AppUser", "Editor")
+                        .WithMany("TaskEditor")
+                        .HasForeignKey("EditorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TaskManagmentSystem.Models.UserTask", "TaskEdited")
+                        .WithMany("TaskEditor")
+                        .HasForeignKey("TaskEditedId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Editor");
+
+                    b.Navigation("TaskEdited");
+                });
+
             modelBuilder.Entity("TaskManagmentSystem.Models.TaskList", b =>
                 {
                     b.HasOne("TaskManagmentSystem.Models.WorkSpace", "WorkSpace")
@@ -586,11 +628,18 @@ namespace TaskManagmentSystem.Migrations
 
             modelBuilder.Entity("TaskManagmentSystem.Models.UserTask", b =>
                 {
+                    b.HasOne("TaskManagmentSystem.Models.AppUser", "Creater")
+                        .WithMany("TasksCreated")
+                        .HasForeignKey("CreaterId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("TaskManagmentSystem.Models.TaskList", "TaskList")
                         .WithMany("UserTasks")
                         .HasForeignKey("TaskListId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Creater");
 
                     b.Navigation("TaskList");
                 });
@@ -620,6 +669,10 @@ namespace TaskManagmentSystem.Migrations
                     b.Navigation("Profile")
                         .IsRequired();
 
+                    b.Navigation("TaskEditor");
+
+                    b.Navigation("TasksCreated");
+
                     b.Navigation("TeamAppUsers");
 
                     b.Navigation("WorkSpaces");
@@ -640,6 +693,8 @@ namespace TaskManagmentSystem.Migrations
             modelBuilder.Entity("TaskManagmentSystem.Models.UserTask", b =>
                 {
                     b.Navigation("Notifications");
+
+                    b.Navigation("TaskEditor");
                 });
 
             modelBuilder.Entity("TaskManagmentSystem.Models.WorkSpace", b =>

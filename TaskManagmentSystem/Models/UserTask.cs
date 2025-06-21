@@ -39,11 +39,18 @@ namespace TaskManagmentSystem.Models
         public UserTaskColor Color { get; set; } = UserTaskColor.None;
 
         public DateTime CreatedDate { get; set; }
+        public DateTime? LastEditDate { get; set; }
         public DateTime? BeginOn { get; set; }
         public DateTime? EndOn { get; set; }
         public DateTime? RemindMeBeforeBegin { get; set; }
         public DateTime? RemindMeBeforeEnd { get; set; }
-        
+
+        [ForeignKey("Creater")]
+        public string? CreaterId { get; set; }
+        public AppUser Creater { get; set; } = null!;
+        public List<AppUser> Editors { get; set; } = new List<AppUser>();
+        public List<TaskEdiotor> TaskEditor { get; set; } = null!;
+
         [ForeignKey("TaskList")]
         public int TaskListId { get; set; }
         public TaskList TaskList { get; set; } = null!;
