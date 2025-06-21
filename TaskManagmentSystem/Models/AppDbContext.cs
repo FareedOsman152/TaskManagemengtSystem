@@ -12,6 +12,7 @@ namespace TaskManagmentSystem.Models
         public DbSet<AppUserProfile> AppUserProfiles { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamAppUser> TeamAppUser { get; set; }
+        public DbSet<TaskEdiotor> TaskEdiotor { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }

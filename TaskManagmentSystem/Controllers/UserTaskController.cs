@@ -35,9 +35,11 @@ namespace TaskManagmentSystem.Controllers
             // 1- create the task and add it to DB
             if (ModelState.IsValid)
             {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var userTask = new UserTask();
                 userTask.Title = userTaskFromRequest.Title;
                 userTask.Description = userTaskFromRequest.Description;
+                userTask.CreaterId = userId; ;
                 userTask.BeginOn = userTaskFromRequest.BeginOn;
                 if(userTask.BeginOn is not null)
                     userTask.RemindMeBeforeBegin = userTask.BeginOn - userTaskFromRequest.RemindMeBeforeBegin.Minutes();
@@ -52,8 +54,6 @@ namespace TaskManagmentSystem.Controllers
                 userTask.Status = userTaskFromRequest.Status; 
                  _context.UserTasks.Add(userTask);
                  await _context.SaveChangesAsync();
-
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 await _notificationManager.ManageTaskBeginAndEndAsync(userId!, userTask);
 
@@ -92,13 +92,17 @@ namespace TaskManagmentSystem.Controllers
                 var userTask = await _context.UserTasks.FindAsync(userTaskFromRequest.Id);
                 if(userTask is not null)
                 {
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                     userTask.Title = userTaskFromRequest.Title;
                     userTask.Description = userTaskFromRequest.Description;
+                    userTask.LastEditDate = DateTime.Now;
                     userTask.Status = userTaskFromRequest.Status;
                     userTask.Priority = userTaskFromRequest.Priority;
                     userTask.BeginOn = userTaskFromRequest.BeginOn;
                     userTask.EndOn = userTaskFromRequest.EndOn;
-
+                    
+                    await _context.SaveChangesAsync();
+                    _context.TaskEdiotor.Add(new TaskEdiotor { EditorId = userId, TaskEditedId = userTask.Id });
                     await _context.SaveChangesAsync();
                 }
                 return RedirectToAction("ShowAll", "TaskList", new { Id = userTaskFromRequest.WorkSpaceId });
