@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TaskManagmentSystem.Filters;
 using TaskManagmentSystem.Models;
 using TaskManagmentSystem.Srvices.Interfaces;
 using TaskManagmentSystem.ViewModels;
@@ -60,6 +61,7 @@ namespace TaskManagmentSystem.Controllers
             return RedirectToAction("Show");
         }
 
+        [TypeFilter(typeof(TeamPermissionsFilter), Arguments =new object[] {TeamPermissions.AddEditTask})]
         public async Task<IActionResult> Edit(int id)
         {
             var team = await _teamService.GetByIdAsync(id);

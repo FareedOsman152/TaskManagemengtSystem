@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using TaskManagmentSystem.Filters;
 using TaskManagmentSystem.Hubs;
 using TaskManagmentSystem.Models;
 using TaskManagmentSystem.Notifications;
@@ -66,6 +67,8 @@ namespace TaskManagmentSystem
             builder.Services.AddScoped<ITeamAppUserService, TeamAppUserService>();
             builder.Services.AddScoped<ITeamService, TeamService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            //builder.Services.AddScoped<TeamPermissionsFilter>();
+
 
             builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 

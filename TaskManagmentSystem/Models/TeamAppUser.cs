@@ -3,13 +3,14 @@
 namespace TaskManagmentSystem.Models
 {
     [Flags]
-    public enum Permissions
+    public enum TeamPermissions
     {
         None = 0,
-        AddEditWorkspace = 1,
-        AddEditTaskList = 2,
-        AddEditTask = 4,
-        SendInvitation = 8,
+        Admin = 1,
+        AddEditWorkspace = 2,
+        AddEditTaskList = 4,
+        AddEditTask = 8,
+        SendInvitation = 16,
     }
 
     public class TeamAppUser
@@ -21,6 +22,6 @@ namespace TaskManagmentSystem.Models
         [ForeignKey("User")]
         public string UserId { get; set; } = null!; 
         public AppUser User { get; set; } = null!;
-        public Permissions Permissons { get; set; } = Permissions.None;
+        public TeamPermissions Permissons { get; set; } = TeamPermissions.None;
     }
 }

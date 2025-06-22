@@ -19,5 +19,11 @@ namespace TaskManagmentSystem.Srvices
             await _teamAppUserRepository
                 .AddAsync(new TeamAppUser { TeamId = teamId, UserId = userId });
         }
+
+        public async Task<bool> IsHasPermissionAsync(string userId, int teamId, TeamPermissions permossionsCheck)
+        {
+            var permissions = await _teamAppUserRepository.GetPermissionsAsync(userId,teamId);
+            return permissions  == TeamPermissions.Admin || (permissions & permossionsCheck) == permossionsCheck ;
+        }
     }
 }
