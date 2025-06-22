@@ -20,5 +20,6 @@ namespace TaskManagmentSystem.Models
         // with skip
         public List<AppUser> Users { get; set; } = null!;
         public List<WorkSpace> WorkSpaces { get; set; } = null!;
+        public List<TeamInvitation> Invitations { get; set; } = null!;
     }
 }

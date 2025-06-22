@@ -22,9 +22,11 @@ namespace TaskManagmentSystem.Controllers
             _teamAppUserService = teamAppUserService;
         }
 
+        private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
+
         public async Task<IActionResult> Show()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserId();
             if (userId is null)
                 return BadRequest();
              
@@ -40,7 +42,7 @@ namespace TaskManagmentSystem.Controllers
 
         public async Task<IActionResult> SaveAdd(TeamAddViwModel teamFromRequest)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserId();
             if (!ModelState.IsValid)
                 return RedirectToAction("Add", teamFromRequest);
 
@@ -53,22 +55,24 @@ namespace TaskManagmentSystem.Controllers
             return RedirectToAction("Show");
         }
 
+        [TypeFilter(typeof(TeamPermissionsFilter), Arguments = new object[] { TeamPermissions.Admin })]
         public async Task<IActionResult> Delete(int id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            
+            var userId = GetUserId();
+
+
             await _teamService.DeleteAsync(id, userId);
             return RedirectToAction("Show");
         }
 
-        [TypeFilter(typeof(TeamPermissionsFilter), Arguments =new object[] {TeamPermissions.AddEditTask})]
+        [TypeFilter(typeof(TeamPermissionsFilter), Arguments =new object[] {TeamPermissions.EditTeamDetails})]
         public async Task<IActionResult> Edit(int id)
         {
             var team = await _teamService.GetByIdAsync(id);
             if (team == null)
                 return NotFound();
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserId();
             if (userId == team.AdminId)
             {
                 var teamViewModel = new TeamEditViewModel
@@ -82,27 +86,31 @@ namespace TaskManagmentSystem.Controllers
             else return BadRequest();
         }
 
+        [TypeFilter(typeof(TeamPermissionsFilter), Arguments = new object[] { TeamPermissions.AddEditTask })]
         public async Task<IActionResult> SaveEdit(TeamEditViewModel teamFromRequest)
         {
             if (!ModelState.IsValid)
                 return View("Edit", teamFromRequest);
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserId();
             await _teamService.EditAsync(teamFromRequest, userId!);
             return RedirectToAction("Show");
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserId();
             var teamDetails = await _teamService.GetTeamDetailsInculdeUsersAsync(id, userId);
             return View("Details", teamDetails);
         }
 
-        //public IActionResult AddMember(int id)
-        //{
-
-        //}
+        [TypeFilter(typeof(TeamPermissionsFilter),Arguments = new object[] {TeamPermissions.Admin})]
+        public IActionResult AddMember(int id)
+        {
+            var userId = GetUserId();
+            var invitationViewModel = new InvitationViewModel { TeamId =  id , SenderId = userId};
+            return View("AddMember", invitationViewModel);
+        }
 
     }
 }

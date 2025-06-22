@@ -11,6 +11,7 @@ namespace TaskManagmentSystem.Models
         AddEditTaskList = 4,
         AddEditTask = 8,
         SendInvitation = 16,
+        EditTeamDetails = 32,
     }
 
     public class TeamAppUser

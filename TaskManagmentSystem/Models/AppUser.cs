@@ -25,5 +25,8 @@ namespace TaskManagmentSystem.Models
 
         public List<UserTask> TasksEdited { get; set; } = new List<UserTask>();
         public List<TaskEdiotor> TaskEditor { get; set; } = null!;
+
+        public List<TeamInvitation> TnvitationsSent { get; set; } = new List<TeamInvitation>();
+        public List<TeamInvitation> TnvitationsReceived { get; set; } = new List<TeamInvitation>();
     }
 }

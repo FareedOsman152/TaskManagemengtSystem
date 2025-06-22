@@ -13,6 +13,7 @@ namespace TaskManagmentSystem.Models
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamAppUser> TeamAppUser { get; set; }
         public DbSet<TaskEdiotor> TaskEdiotor { get; set; }
+        public DbSet<TeamInvitation> TeamInvitations { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
@@ -101,6 +102,26 @@ namespace TaskManagmentSystem.Models
                 .OnDelete(DeleteBehavior.Restrict);
             });
 
+            builder.Entity<TeamInvitation>(ti =>
+            {
+                ti.HasKey(te => te.Id);
+                ti.Property(ti => ti.Message).HasMaxLength(250);
+
+                ti.HasOne(ti => ti.Sender)
+                .WithMany(u => u.TnvitationsSent)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasForeignKey(ti => ti.SenderId);
+
+                ti.HasOne(ti => ti.Receiver)
+                .WithMany(u => u.TnvitationsReceived)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasForeignKey(ti => ti.ReceiverId);
+
+                ti.HasOne(ti => ti.Team)
+                .WithMany(t => t.Invitations)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasForeignKey(ti => ti.TeamId);
+            }); 
         }
     }
 }

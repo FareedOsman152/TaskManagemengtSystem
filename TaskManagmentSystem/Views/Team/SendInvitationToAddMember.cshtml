@@ -1,0 +1,571 @@
+﻿@model TaskManagmentSystem.ViewModels.InvitationViewModel
+
+@{
+    ViewData["Title"] = "Add Team Member";
+}
+
+<div class="add-member-wrapper">
+    <div class="container-fluid add-member-container">
+        <!-- Header Section -->
+        <div class="add-member-header">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="add-member-title">
+                        <i class="bi bi-person-plus-fill"></i>
+                        Add Team Member
+                    </h1>
+                    <p class="add-member-subtitle">Invite a new member to join your team</p>
+                </div>
+                <div class="header-actions">
+                    <a asp-action="Details" asp-route-id="@Model.TeamId" class="btn btn-back">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Back to Team</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Member Form -->
+        <div class="add-member-content">
+            <div class="form-card">
+                <div class="card-header">
+                    <div class="header-icon">
+                        <i class="bi bi-envelope-plus-fill"></i>
+                    </div>
+                    <div class="header-text">
+                        <h3>Send Invitation</h3>
+                        <p>Enter the username and optional message for the invitation</p>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="SaveAddMember" method="post" class="invitation-form">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Hidden Fields -->
+                        @Html.HiddenFor(m => m.TeamId)
+                        @Html.HiddenFor(m => m.SenderId)
+
+                        <!-- Username Field -->
+                        <div class="form-group">
+                            <label asp-for="ReceiverUserName" class="form-label">
+                                <i class="bi bi-person-fill"></i>
+                                <span>Username</span>
+                                <span class="required">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input asp-for="ReceiverUserName"
+                                       class="form-control"
+                                       placeholder="Enter the username of the person you want to invite"
+                                       autocomplete="off" />
+                                <div class="input-icon">
+                                    <i class="bi bi-at"></i>
+                                </div>
+                            </div>
+                            <span asp-validation-for="ReceiverUserName" class="validation-error"></span>
+                            <div class="field-help">
+                                <i class="bi bi-info-circle"></i>
+                                <span>Enter the exact username of the person you want to add to the team</span>
+                            </div>
+                        </div>
+
+                        <!-- Message Field -->
+                        <div class="form-group">
+                            <label asp-for="Message" class="form-label">
+                                <i class="bi bi-chat-text-fill"></i>
+                                <span>Invitation Message</span>
+                                <span class="optional">(Optional)</span>
+                            </label>
+                            <div class="textarea-wrapper">
+                                <textarea asp-for="Message"
+                                          class="form-control"
+                                          rows="4"
+                                          placeholder="Write a personal message to include with the invitation (optional)"></textarea>
+                                <div class="textarea-icon">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Message" class="validation-error"></span>
+                            <div class="field-help">
+                                <i class="bi bi-lightbulb"></i>
+                                <span>Add a personal touch to your invitation with a custom message</span>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-send">
+                                <i class="bi bi-send-fill"></i>
+                                <span>Send Invitation</span>
+                            </button>
+                            <a asp-action="Details" asp-route-id="@Model.TeamId" class="btn btn-cancel">
+                                <i class="bi bi-x-circle"></i>
+                                <span>Cancel</span>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Information Card -->
+            <div class="info-card">
+                <div class="card-header">
+                    <div class="header-icon">
+                        <i class="bi bi-info-circle-fill"></i>
+                    </div>
+                    <div class="header-text">
+                        <h3>How it works</h3>
+                        <p>Information about team invitations</p>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="info-list">
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="bi bi-1-circle-fill"></i>
+                            </div>
+                            <div class="info-content">
+                                <h6>Enter Username</h6>
+                                <p>Type the exact username of the person you want to invite to your team.</p>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="bi bi-2-circle-fill"></i>
+                            </div>
+                            <div class="info-content">
+                                <h6>Add Message</h6>
+                                <p>Optionally include a personal message with your invitation.</p>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="bi bi-3-circle-fill"></i>
+                            </div>
+                            <div class="info-content">
+                                <h6>Send Invitation</h6>
+                                <p>The user will receive a notification and can accept or decline the invitation.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Root Variables */
+    :root {
+        --primary-color: #6366f1;
+        --primary-hover: #5855eb;
+        --success-color: #10b981;
+        --success-hover: #059669;
+        --warning-color: #f59e0b;
+        --warning-hover: #d97706;
+        --danger-color: #ef4444;
+        --danger-hover: #dc2626;
+        --info-color: #3b82f6;
+        --info-hover: #2563eb;
+        --purple-color: #8b5cf6;
+        --purple-hover: #7c3aed;
+        --secondary-color: #6b7280;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --text-muted: #9ca3af;
+        --border-color: #e5e7eb;
+        --background-light: #f8fafc;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 12px;
+        --radius-sm: 8px;
+    }
+
+    /* Main Container */
+    .add-member-wrapper {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .add-member-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* Header Styles */
+    .add-member-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .title-section {
+        flex: 1;
+    }
+
+    .add-member-title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: linear-gradient(135deg, var(--success-color), #059669);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .add-member-subtitle {
+        color: var(--text-secondary);
+        margin: 0.5rem 0 0 0;
+        font-size: 1.1rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border: 2px solid;
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+
+    .btn-back {
+        background: rgba(107, 114, 128, 0.1);
+        color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+
+    .btn-back:hover {
+        background: var(--secondary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Content Layout */
+    .add-member-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    /* Card Styles */
+    .form-card,
+    .info-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .header-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--success-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .info-card .header-icon {
+        background: var(--info-color);
+    }
+
+    .header-text {
+        flex: 1;
+    }
+
+    .header-text h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.25rem 0;
+    }
+
+    .header-text p {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* Form Styles */
+    .invitation-form {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 1rem;
+    }
+
+    .form-label i {
+        color: var(--success-color);
+        font-size: 1.1rem;
+    }
+
+    .required {
+        color: var(--danger-color);
+        font-weight: 700;
+    }
+
+    .optional {
+        color: var(--text-muted);
+        font-weight: 400;
+        font-size: 0.875rem;
+    }
+
+    .input-wrapper,
+    .textarea-wrapper {
+        position: relative;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--success-color);
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    .form-control::placeholder {
+        color: var(--text-muted);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 120px;
+        line-height: 1.5;
+    }
+
+    .input-icon,
+    .textarea-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        pointer-events: none;
+    }
+
+    .textarea-icon {
+        top: 1rem;
+        transform: none;
+    }
+
+    .validation-error {
+        color: var(--danger-color);
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .validation-error:before {
+        content: "⚠";
+        font-size: 1rem;
+    }
+
+    .field-help {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        line-height: 1.4;
+    }
+
+    .field-help i {
+        color: var(--info-color);
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .btn-send {
+        background: var(--success-color);
+        color: white;
+        border-color: var(--success-color);
+    }
+
+    .btn-send:hover {
+        background: var(--success-hover);
+        border-color: var(--success-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-cancel {
+        background: rgba(107, 114, 128, 0.1);
+        color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+
+    .btn-cancel:hover {
+        background: var(--secondary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Info List */
+    .info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--info-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .info-content h6 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .info-content p {
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.5;
+        font-size: 0.95rem;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .add-member-wrapper {
+            padding: 1rem 0;
+        }
+
+        .header-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .add-member-title {
+            font-size: 1.75rem;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .card-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .info-item {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

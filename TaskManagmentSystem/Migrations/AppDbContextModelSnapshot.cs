@@ -390,6 +390,43 @@ namespace TaskManagmentSystem.Migrations
                     b.ToTable("TeamAppUser");
                 });
 
+            modelBuilder.Entity("TaskManagmentSystem.Models.TeamInvitation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SenderId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("TeamInvitations");
+                });
+
             modelBuilder.Entity("TaskManagmentSystem.Models.UserTask", b =>
                 {
                     b.Property<int>("Id")
@@ -629,6 +666,33 @@ namespace TaskManagmentSystem.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("TaskManagmentSystem.Models.TeamInvitation", b =>
+                {
+                    b.HasOne("TaskManagmentSystem.Models.AppUser", "Receiver")
+                        .WithMany("TnvitationsReceived")
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TaskManagmentSystem.Models.AppUser", "Sender")
+                        .WithMany("TnvitationsSent")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TaskManagmentSystem.Models.Team", "Team")
+                        .WithMany("Invitations")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
+
+                    b.Navigation("Team");
+                });
+
             modelBuilder.Entity("TaskManagmentSystem.Models.UserTask", b =>
                 {
                     b.HasOne("TaskManagmentSystem.Models.AppUser", "Creater")
@@ -678,6 +742,10 @@ namespace TaskManagmentSystem.Migrations
 
                     b.Navigation("TeamAppUsers");
 
+                    b.Navigation("TnvitationsReceived");
+
+                    b.Navigation("TnvitationsSent");
+
                     b.Navigation("WorkSpaces");
                 });
 
@@ -688,6 +756,8 @@ namespace TaskManagmentSystem.Migrations
 
             modelBuilder.Entity("TaskManagmentSystem.Models.Team", b =>
                 {
+                    b.Navigation("Invitations");
+
                     b.Navigation("TeamAppUsers");
 
                     b.Navigation("WorkSpaces");
