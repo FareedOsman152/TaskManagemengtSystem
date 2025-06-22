@@ -104,13 +104,6 @@ namespace TaskManagmentSystem.Controllers
             return View("Details", teamDetails);
         }
 
-        [TypeFilter(typeof(TeamPermissionsFilter),Arguments = new object[] {TeamPermissions.Admin})]
-        public IActionResult AddMember(int id)
-        {
-            var userId = GetUserId();
-            var invitationViewModel = new InvitationViewModel { TeamId =  id , SenderId = userId};
-            return View("AddMember", invitationViewModel);
-        }
-
+        
     }
 }

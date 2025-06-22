@@ -95,9 +95,9 @@
                     @if (Model.AdminId == Model.UserId)
                     {
                         <div class="header-actions">
-                            <a asp-action="AddMember" asp-route-id="@Model.Id" class="btn btn-add-member">
+                            <a asp-controller="TeamInvitation" asp-action="Send" asp-route-id="@Model.Id" class="btn btn-add-member">
                                 <i class="bi bi-person-plus-fill"></i>
-                                <span>Add Member</span>
+                                <span>Send Invitation</span>
                             </a>
                         </div>
                     }
