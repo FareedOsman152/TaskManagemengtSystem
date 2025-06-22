@@ -50,7 +50,7 @@ namespace TaskManagmentSystem.Controllers
             if (team == null) 
                 return BadRequest("Failed to create team");
 
-            await _teamAppUserService.AddAsync(userId!, team.Id);
+            await _teamAppUserService.AddAsync(userId!, team.Id,teamFromRequest.Permissions);
 
             return RedirectToAction("Show");
         }

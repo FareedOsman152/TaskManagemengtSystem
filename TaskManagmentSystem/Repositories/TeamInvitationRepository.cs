@@ -46,8 +46,9 @@ namespace TaskManagmentSystem.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(TeamInvitation invitation)
+        public async Task DeleteAsync(int id)
         {
+            var invitation = await GetBuIdAsync(id);
             _context.TeamInvitations.Remove(invitation);
             await _context.SaveChangesAsync();
         }

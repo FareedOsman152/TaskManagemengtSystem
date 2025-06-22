@@ -22,11 +22,17 @@ namespace TaskManagmentSystem.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<TeamAppUser> GetAsync(string userId, int teamId)
+        {
+            return await _context.TeamAppUser.FindAsync(userId, teamId);
+        }
+
         public async Task<TeamPermissions> GetPermissionsAsync(string userId, int teamId)
         {
             var teamAppUser = await _context.TeamAppUser.FindAsync(teamId, userId);
             Check.IsNull(teamAppUser!);
             return teamAppUser!.Permissons;
         }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TaskManagmentSystem.Models;
 
 namespace TaskManagmentSystem.ViewModels
 {
@@ -12,5 +13,6 @@ namespace TaskManagmentSystem.ViewModels
         [MinLength(1)]
         [MaxLength(255)]
         public string? Description { get; set; }
+        public TeamPermissions Permissions { get; set; } = TeamPermissions.None;
     }
 }

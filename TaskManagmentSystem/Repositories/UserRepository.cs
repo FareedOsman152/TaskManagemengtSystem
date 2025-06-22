@@ -1,4 +1,5 @@
-﻿using TaskManagmentSystem.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using TaskManagmentSystem.Models;
 using TaskManagmentSystem.Repositories.Interfaces;
 
 namespace TaskManagmentSystem.Repositories
@@ -14,6 +15,11 @@ namespace TaskManagmentSystem.Repositories
         public async Task<AppUser?> GetByIdAsync(string userId)
         {
             return await _context.Users.FindAsync(userId);
+        }
+
+        public async Task<AppUser> GetByUserNameAsync(string userName)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
         }
 
         public async Task<bool> IsExistAsync(string userId)

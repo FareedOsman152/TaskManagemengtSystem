@@ -22,11 +22,11 @@ namespace TaskManagmentSystem.Controllers
             return View("SendInvitationToAddMember", invitationViewModel);
         }
 
-        [TypeFilter(typeof(TeamPermissionsFilter), Arguments = new object[] { TeamPermissions.SendInvitation })]
-        public async Task<IActionResult> SaveInvitation(InvitationViewModel invitationViewModel)
-        {
+        //[TypeFilter(typeof(TeamPermissionsFilter), Arguments = new object[] { TeamPermissions.SendInvitation })]
+        //public async Task<IActionResult> SaveInvitation(InvitationViewModel invitationViewModel)
+        //{
 
-        }
+        //}
 
     }
 }

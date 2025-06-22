@@ -1,4 +1,5 @@
-﻿using TaskManagmentSystem.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using TaskManagmentSystem.Models;
 using TaskManagmentSystem.Repositories.Interfaces;
 using TaskManagmentSystem.Srvices.Interfaces;
 using TaskManagmentSystem.ViewModels;
@@ -33,6 +34,11 @@ namespace TaskManagmentSystem.Srvices
                 UserName = user.UserName,
                 IsAdmin = adminId == user.Id,
             };
+        }
+
+        public async Task<AppUser> GetByUserNameAsync(string userName)
+        {
+            return await _userRepository.GetByUserNameAsync(userName);
         }
     }
 }

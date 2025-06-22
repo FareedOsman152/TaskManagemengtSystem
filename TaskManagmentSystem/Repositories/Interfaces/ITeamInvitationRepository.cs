@@ -10,7 +10,7 @@ namespace TaskManagmentSystem.Repositories.Interfaces
         Task AddAsync(TeamInvitation invitation);
         Task UpdateAsync(TeamInvitation invitationToUpdate);
         Task UpdateStatusAsync(TeamInvitation invitationToUpdate);
-        Task DeleteAsync(TeamInvitation invitation);
+        Task DeleteAsync(int id);
 
     }
 }
