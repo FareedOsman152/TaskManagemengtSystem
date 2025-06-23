@@ -1,7 +1,7 @@
 ﻿@model TaskManagmentSystem.ViewModels.InvitationViewModel
 
 @{
-    ViewData["Title"] = "Add Team Member";
+    ViewData["Title"] = "Send Invitation";
 }
 
 <div class="add-member-wrapper">
@@ -17,7 +17,7 @@
                     <p class="add-member-subtitle">Invite a new member to join your team</p>
                 </div>
                 <div class="header-actions">
-                    <a asp-action="Details" asp-route-id="@Model.TeamId" class="btn btn-back">
+                    <a asp-controller="Team" asp-action="Details" asp-route-id="@Model.TeamId" class="btn btn-back">
                         <i class="bi bi-arrow-left"></i>
                         <span>Back to Team</span>
                     </a>
@@ -43,8 +43,8 @@
                         @Html.AntiForgeryToken()
 
                         <!-- Hidden Fields -->
-                        @Html.HiddenFor(m => m.TeamId)
-                        @Html.HiddenFor(m => m.SenderId)
+                        <input asp-for="TeamId" type="hidden"/>
+                        <input asp-for="SenderId" type="hidden" />
 
                         <!-- Username Field -->
                         <div class="form-group">
@@ -98,7 +98,7 @@
                                 <i class="bi bi-send-fill"></i>
                                 <span>Send Invitation</span>
                             </button>
-                            <a asp-action="Details" asp-route-id="@Model.TeamId" class="btn btn-cancel">
+                            <a asp-controller="Team" asp-action="Details" asp-route-id="@Model.TeamId" class="btn btn-cancel">
                                 <i class="bi bi-x-circle"></i>
                                 <span>Cancel</span>
                             </a>
@@ -261,11 +261,11 @@
         border-color: var(--secondary-color);
     }
 
-    .btn-back:hover {
-        background: var(--secondary-color);
-        color: white;
-        transform: translateY(-2px);
-    }
+        .btn-back:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
 
     /* Content Layout */
     .add-member-content {
@@ -315,18 +315,18 @@
         flex: 1;
     }
 
-    .header-text h3 {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin: 0 0 0.25rem 0;
-    }
+        .header-text h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 0.25rem 0;
+        }
 
-    .header-text p {
-        color: var(--text-secondary);
-        margin: 0;
-        font-size: 0.95rem;
-    }
+        .header-text p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 0.95rem;
+        }
 
     .card-body {
         padding: 2rem;
@@ -354,10 +354,10 @@
         font-size: 1rem;
     }
 
-    .form-label i {
-        color: var(--success-color);
-        font-size: 1.1rem;
-    }
+        .form-label i {
+            color: var(--success-color);
+            font-size: 1.1rem;
+        }
 
     .required {
         color: var(--danger-color);
@@ -385,15 +385,15 @@
         background: white;
     }
 
-    .form-control:focus {
-        outline: none;
-        border-color: var(--success-color);
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-    }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--success-color);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
 
-    .form-control::placeholder {
-        color: var(--text-muted);
-    }
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
 
     textarea.form-control {
         resize: vertical;
@@ -426,10 +426,10 @@
         gap: 0.25rem;
     }
 
-    .validation-error:before {
-        content: "⚠";
-        font-size: 1rem;
-    }
+        .validation-error:before {
+            content: "⚠";
+            font-size: 1rem;
+        }
 
     .field-help {
         display: flex;
@@ -440,11 +440,11 @@
         line-height: 1.4;
     }
 
-    .field-help i {
-        color: var(--info-color);
-        font-size: 1rem;
-        flex-shrink: 0;
-    }
+        .field-help i {
+            color: var(--info-color);
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
 
     /* Form Actions */
     .form-actions {
@@ -461,12 +461,12 @@
         border-color: var(--success-color);
     }
 
-    .btn-send:hover {
-        background: var(--success-hover);
-        border-color: var(--success-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-    }
+        .btn-send:hover {
+            background: var(--success-hover);
+            border-color: var(--success-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
 
     .btn-cancel {
         background: rgba(107, 114, 128, 0.1);
@@ -474,11 +474,11 @@
         border-color: var(--secondary-color);
     }
 
-    .btn-cancel:hover {
-        background: var(--secondary-color);
-        color: white;
-        transform: translateY(-2px);
-    }
+        .btn-cancel:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
 
     /* Info List */
     .info-list {

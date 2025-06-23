@@ -24,7 +24,7 @@ namespace TaskManagmentSystem.Repositories
 
         public async Task<TeamAppUser> GetAsync(string userId, int teamId)
         {
-            return await _context.TeamAppUser.FindAsync(userId, teamId);
+            return await _context.TeamAppUser.FindAsync(teamId, userId);
         }
 
         public async Task<TeamPermissions> GetPermissionsAsync(string userId, int teamId)

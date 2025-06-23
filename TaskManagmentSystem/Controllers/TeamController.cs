@@ -21,7 +21,6 @@ namespace TaskManagmentSystem.Controllers
             _teamService = teamService;
             _teamAppUserService = teamAppUserService;
         }
-
         private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         public async Task<IActionResult> Show()

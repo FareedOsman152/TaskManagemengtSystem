@@ -1,6 +1,7 @@
 ﻿using TaskManagmentSystem.Helpers;
 using TaskManagmentSystem.Models;
 using TaskManagmentSystem.Repositories;
+using TaskManagmentSystem.Repositories.Interfaces;
 using TaskManagmentSystem.Srvices.Interfaces;
 using TaskManagmentSystem.Srvicese;
 using TaskManagmentSystem.ViewModels;
@@ -9,17 +10,19 @@ namespace TaskManagmentSystem.Srvices
 {
     public class TeamInvitationService : ITeamInvitationService
     {
-        private readonly TeamInvitationRepository _teamInvitationRepository;
-        private readonly UserService _userService;
-        private readonly TeamAppUserService _teamAppUserService;
-        private readonly TeamService _teamService;
-        public TeamInvitationService(TeamInvitationRepository teamInvitationRepository, UserService userService, TeamAppUserService teamAppUserService, TeamService teamService)
+        private readonly ITeamInvitationRepository _teamInvitationRepository;
+        private readonly IUserService _userService;
+        private readonly ITeamAppUserService _teamAppUserService;
+        private readonly ITeamService _teamService;
+
+        public TeamInvitationService(ITeamInvitationRepository teamInvitationRepository, IUserService userService, ITeamAppUserService teamAppUserService, ITeamService teamService)
         {
             _teamInvitationRepository = teamInvitationRepository;
             _userService = userService;
             _teamAppUserService = teamAppUserService;
             _teamService = teamService;
         }
+
         public async Task<bool> IsInvited(string userName, int teamId)
         {
             var user = await _userService.GetByUserNameAsync(userName);

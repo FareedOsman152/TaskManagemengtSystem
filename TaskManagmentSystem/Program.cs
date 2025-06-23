@@ -64,9 +64,11 @@ namespace TaskManagmentSystem
             builder.Services.AddScoped<ITeamAppUserRepository, TeamAppUserRepository>();
             builder.Services.AddScoped<ITeamRepository, TeamRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<ITeamInvitationRepository, TeamInvitationRepository>();
             builder.Services.AddScoped<ITeamAppUserService, TeamAppUserService>();
             builder.Services.AddScoped<ITeamService, TeamService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<ITeamInvitationService, TeamInvitationService>();
             //builder.Services.AddScoped<TeamPermissionsFilter>();
 
 
