@@ -64,7 +64,7 @@ namespace TaskManagmentSystem.Srvices
                 if (!checkTeamIsFound.Succeeded)
                     return checkTeamIsFound;
 
-                var checkReceiverResult = await _checkReceiver(invitationToSend.ReceiverUserName, invitationToSend.TeamId);
+                var checkReceiverResult = await _checkReceiver(invitationToSend.ReceiverUserName, invitationToSend.TeamId, invitationToSend.SenderId);
                 if (!checkReceiverResult.Succeeded)
                     return checkReceiverResult;
                 
@@ -99,7 +99,7 @@ namespace TaskManagmentSystem.Srvices
                 return OperationResult.Failure($"team with id: {teamId} is not found");
             return OperationResult.Success();
         }
-        private async Task<OperationResult> _checkReceiver(string userName, int teamId)
+        private async Task<OperationResult> _checkReceiver(string userName, int teamId, string senderId)
         {
             if(string.IsNullOrEmpty(userName))
                 return OperationResult.Failure("username is null or empty");
@@ -109,9 +109,13 @@ namespace TaskManagmentSystem.Srvices
             // is exist?
             if (receiver is null)
                 return OperationResult.Failure($"user {userName} is not found");
-            
+
+            // is receiver the sender?
+            if (receiver.Id == senderId)
+                return OperationResult.Failure($"you can not invite yourself to the team");
+
             // is already member in the team?
-            if(await _teamAppUserService.IsMemberAsync(receiver.Id, teamId))
+            if (await _teamAppUserService.IsMemberAsync(receiver.Id, teamId))
                 return OperationResult.Failure($"this member {userName} is already member in this team");
 
             // is already invited?
