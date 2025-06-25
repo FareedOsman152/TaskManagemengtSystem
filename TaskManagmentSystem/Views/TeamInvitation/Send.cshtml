@@ -43,7 +43,7 @@
                         @Html.AntiForgeryToken()
 
                         <!-- Hidden Fields -->
-                        <input asp-for="TeamId" type="hidden"/>
+                        <input asp-for="TeamId" type="hidden" />
                         <input asp-for="SenderId" type="hidden" />
 
                         <!-- Username Field -->
@@ -66,6 +66,124 @@
                             <div class="field-help">
                                 <i class="bi bi-info-circle"></i>
                                 <span>Enter the exact username of the person you want to add to the team</span>
+                            </div>
+                        </div>
+
+                        <!-- Permissions Field -->
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="bi bi-shield-check-fill"></i>
+                                <span>Member Permissions</span>
+                                <span class="required">*</span>
+                            </label>
+                            <div class="permissions-wrapper">
+                                <div class="permissions-grid">
+                                    <div class="permission-item">
+                                        <input type="checkbox"
+                                               id="perm-admin"
+                                               name="Permissions"
+                                               value="@((int)TeamPermissions.Admin)"
+                                               class="permission-checkbox" />
+                                        <label for="perm-admin" class="permission-label">
+                                            <div class="permission-icon admin">
+                                                <i class="bi bi-shield-fill-check"></i>
+                                            </div>
+                                            <div class="permission-content">
+                                                <h6>Administrator</h6>
+                                                <p>Full access to all team features and settings</p>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <div class="permission-item">
+                                        <input type="checkbox"
+                                               id="perm-workspace"
+                                               name="Permissions"
+                                               value="@((int)TeamPermissions.AddEditWorkspace)"
+                                               class="permission-checkbox" />
+                                        <label for="perm-workspace" class="permission-label">
+                                            <div class="permission-icon workspace">
+                                                <i class="bi bi-kanban-fill"></i>
+                                            </div>
+                                            <div class="permission-content">
+                                                <h6>Manage Workspaces</h6>
+                                                <p>Create, edit, and delete workspaces</p>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <div class="permission-item">
+                                        <input type="checkbox"
+                                               id="perm-tasklist"
+                                               name="Permissions"
+                                               value="@((int)TeamPermissions.AddEditTaskList)"
+                                               class="permission-checkbox" />
+                                        <label for="perm-tasklist" class="permission-label">
+                                            <div class="permission-icon tasklist">
+                                                <i class="bi bi-list-ul"></i>
+                                            </div>
+                                            <div class="permission-content">
+                                                <h6>Manage Task Lists</h6>
+                                                <p>Create, edit, and organize task lists</p>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <div class="permission-item">
+                                        <input type="checkbox"
+                                               id="perm-task"
+                                               name="Permissions"
+                                               value="@((int)TeamPermissions.AddEditTask)"
+                                               class="permission-checkbox" />
+                                        <label for="perm-task" class="permission-label">
+                                            <div class="permission-icon task">
+                                                <i class="bi bi-check2-square"></i>
+                                            </div>
+                                            <div class="permission-content">
+                                                <h6>Manage Tasks</h6>
+                                                <p>Create, edit, and update individual tasks</p>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <div class="permission-item">
+                                        <input type="checkbox"
+                                               id="perm-invitation"
+                                               name="Permissions"
+                                               value="@((int)TeamPermissions.SendInvitation)"
+                                               class="permission-checkbox" />
+                                        <label for="perm-invitation" class="permission-label">
+                                            <div class="permission-icon invitation">
+                                                <i class="bi bi-person-plus-fill"></i>
+                                            </div>
+                                            <div class="permission-content">
+                                                <h6>Send Invitations</h6>
+                                                <p>Invite new members to join the team</p>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <div class="permission-item">
+                                        <input type="checkbox"
+                                               id="perm-team-edit"
+                                               name="Permissions"
+                                               value="@((int)TeamPermissions.EditTeamDetails)"
+                                               class="permission-checkbox" />
+                                        <label for="perm-team-edit" class="permission-label">
+                                            <div class="permission-icon team-edit">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </div>
+                                            <div class="permission-content">
+                                                <h6>Edit Team Details</h6>
+                                                <p>Modify team name, description, and settings</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field-help">
+                                <i class="bi bi-info-circle"></i>
+                                <span>Select the permissions you want to grant to this team member</span>
                             </div>
                         </div>
 
@@ -136,6 +254,16 @@
                                 <i class="bi bi-2-circle-fill"></i>
                             </div>
                             <div class="info-content">
+                                <h6>Set Permissions</h6>
+                                <p>Choose what permissions the new member will have in your team.</p>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="bi bi-3-circle-fill"></i>
+                            </div>
+                            <div class="info-content">
                                 <h6>Add Message</h6>
                                 <p>Optionally include a personal message with your invitation.</p>
                             </div>
@@ -143,7 +271,7 @@
 
                         <div class="info-item">
                             <div class="info-icon">
-                                <i class="bi bi-3-circle-fill"></i>
+                                <i class="bi bi-4-circle-fill"></i>
                             </div>
                             <div class="info-content">
                                 <h6>Send Invitation</h6>
@@ -417,6 +545,106 @@
         transform: none;
     }
 
+    /* Permissions Styles */
+    .permissions-wrapper {
+        background: var(--background-light);
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 1.5rem;
+    }
+
+    .permissions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+
+    .permission-item {
+        position: relative;
+    }
+
+    .permission-checkbox {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .permission-label {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: white;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .permission-checkbox:checked + .permission-label {
+        border-color: var(--success-color);
+        background: rgba(16, 185, 129, 0.05);
+    }
+
+        .permission-checkbox:checked + .permission-label .permission-icon {
+            transform: scale(1.1);
+        }
+
+    .permission-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+
+        .permission-icon.admin {
+            background: var(--warning-color);
+        }
+
+        .permission-icon.workspace {
+            background: var(--purple-color);
+        }
+
+        .permission-icon.tasklist {
+            background: var(--info-color);
+        }
+
+        .permission-icon.task {
+            background: var(--success-color);
+        }
+
+        .permission-icon.invitation {
+            background: var(--primary-color);
+        }
+
+        .permission-icon.team-edit {
+            background: var(--secondary-color);
+        }
+
+    .permission-content {
+        flex: 1;
+    }
+
+        .permission-content h6 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 0.25rem 0;
+        }
+
+        .permission-content p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
     .validation-error {
         color: var(--danger-color);
         font-size: 0.875rem;
@@ -523,44 +751,59 @@
 
     /* Responsive Design */
     @@media (max-width: 768px) {
-        .add-member-wrapper {
-            padding: 1rem 0;
-        }
+        .add-member-wrapper
 
-        .header-content {
-            flex-direction: column;
-            align-items: flex-start;
-        }
+    {
+        padding: 1rem 0;
+    }
 
-        .add-member-title {
-            font-size: 1.75rem;
-        }
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-        .form-actions {
-            flex-direction: column;
-        }
+    .add-member-title {
+        font-size: 1.75rem;
+    }
 
-        .btn {
-            width: 100%;
-            justify-content: center;
-        }
+    .form-actions {
+        flex-direction: column;
+    }
 
-        .card-header {
-            flex-direction: column;
-            text-align: center;
-            gap: 1rem;
-        }
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .card-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .permissions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .permission-label {
+        flex-direction: column;
+        text-align: center;
+    }
+
     }
 
     @@media (max-width: 480px) {
-        .card-body {
-            padding: 1.5rem;
-        }
+        .card-body
 
-        .info-item {
-            flex-direction: column;
-            text-align: center;
-        }
+    {
+        padding: 1.5rem;
+    }
+
+    .info-item {
+        flex-direction: column;
+        text-align: center;
+    }
+
     }
 </style>
 
