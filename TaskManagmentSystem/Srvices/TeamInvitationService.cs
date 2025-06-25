@@ -88,7 +88,8 @@ namespace TaskManagmentSystem.Srvices
                 ReceiverId = receiver.Id,
                 Message = invitationToSend.Message,
                 TeamId = invitationToSend.TeamId,
-                Status = InvitationStatus.Pending
+                Status = InvitationStatus.Pending,
+                Permissions = invitationToSend.Permissions
             });
         }
         private async Task<OperationResult> _checkTeam(int teamId)
@@ -119,13 +120,14 @@ namespace TaskManagmentSystem.Srvices
 
             return OperationResult.Success();
         }
-        public async Task<OperationResult> ChangeMessageAsync(TeamInvitationEditMessageViewModel invitationToUpdate)
+        public async Task<OperationResult> EditAsync(TeamInvitationEditMessageViewModel invitationToUpdate)
         {
             var invitation = await _teamInvitationRepository.GetBuIdAsync(invitationToUpdate.Id);
             if(invitation is null)
                 return OperationResult.Failure($"Invitation with id: {invitationToUpdate.Id} is not found");
 
             invitation.Message = invitationToUpdate.Message;
+            invitation.Permissions = invitationToUpdate.Permissions;
             await _teamInvitationRepository.UpdateAsync(invitation);
             return OperationResult.Success();
         }

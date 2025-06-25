@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using TaskManagmentSystem.Models;
 
 namespace TaskManagmentSystem.ViewModels
 {
@@ -15,5 +16,7 @@ namespace TaskManagmentSystem.ViewModels
         [ValidateNever]
         public int TeamId { get; set; }
         public string? Message { get; set; }
+
+        public TeamPermissions Permissions { get; set; } = TeamPermissions.None;
     }
 }
