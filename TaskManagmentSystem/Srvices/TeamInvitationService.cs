@@ -33,6 +33,7 @@ namespace TaskManagmentSystem.Srvices
 
             return invitationsReceived.FirstOrDefault(i => i.TeamId == teamId) is not null;
         }
+        //public async Task
         public async Task<OperationResult<List<TeamInvitation>>> GetForReceiverAsync(string userId)
         {
             if (string.IsNullOrEmpty(userId))
@@ -44,7 +45,6 @@ namespace TaskManagmentSystem.Srvices
             var invitations = await _teamInvitationRepository.GetForReceiverAsync(userId);
             return OperationResult<List<TeamInvitation>>.Success(invitations);
         }
-
         public async Task<OperationResult<List<TeamInvitation>>> GetForSenderAsync(string userId)
         {
             if (string.IsNullOrEmpty(userId))
@@ -56,6 +56,76 @@ namespace TaskManagmentSystem.Srvices
             var invitations = await _teamInvitationRepository.GetForSenderAsync(userId);
             return OperationResult<List<TeamInvitation>>.Success(invitations);
         }
+        public async Task<OperationResult<List<TeamInvitationsShowViewModel>>> GetReceivedForShow(string userId)
+        {
+            var invitationsResult = await GetForReceiverAsync(userId);
+            if (!invitationsResult.Succeeded)
+                return OperationResult<List<TeamInvitationsShowViewModel>>.Failure(invitationsResult.ErrorMessage);
+
+            var receiver = await _userService.GetByIdAsync(userId);
+
+            var invitationViewModel = new List<TeamInvitationsShowViewModel>();
+            foreach (var i in invitationsResult.Data)
+            {
+                var sender = await _userService.GetByIdAsync(i.SenderId);
+                var team = await _teamService.GetByIdAsync(i.TeamId);
+                if (sender is null || team is null)
+                    continue; // skip this invitation if sender or team is not found
+                //var message = _getMessageForReceiver(i.Message!, sender.UserName!, team.Title);
+                invitationViewModel.Add(new TeamInvitationsShowViewModel
+                {
+                    Id = i.Id,
+                    OtherUserName = sender.UserName!,
+                    TeamName = team.Title,
+                    Message = i.Message,
+                    Status = i.Status,
+                    SendOn = i.SendOn
+                });
+                return OperationResult<List<TeamInvitationsShowViewModel>>.Success(invitationViewModel);
+            }
+
+            return OperationResult<List<TeamInvitationsShowViewModel>>.Success(invitationViewModel.ToList());
+        }
+        //private string _getMessageForReceiver(string message, string senderUserName, string teamName)
+        //{
+        //    if (string.IsNullOrEmpty(message))
+        //        return $"{senderUserName} has invited you to join the team {teamName}";
+        //    return $"{senderUserName} has invited you to join the team {teamName} with message: {message}";
+        //}
+        public async Task<OperationResult<List<TeamInvitationsShowViewModel>>> GetSentForShow(string userId)
+        {
+            var invitationsResult = await GetForSenderAsync(userId);
+            if (!invitationsResult.Succeeded)
+                return OperationResult<List<TeamInvitationsShowViewModel>>.Failure(invitationsResult.ErrorMessage);
+
+            var Sender = await _userService.GetByIdAsync(userId);
+
+            var invitationViewModel = new List<TeamInvitationsShowViewModel>();
+            foreach (var i in invitationsResult.Data)
+            {
+                var receiver = await _userService.GetByIdAsync(i.ReceiverId);
+                var team = await _teamService.GetByIdAsync(i.TeamId);
+                if (receiver is null || team is null)
+                    continue; // skip this invitation if sender or team is not found
+                //var message = _getMessageForSender(i.Message!, receiver.UserName!, team.Title);
+                invitationViewModel.Add(new TeamInvitationsShowViewModel
+                {
+                    Id = i.Id,
+                    OtherUserName = receiver.UserName!,
+                    TeamName = team.Title,
+                    Message = i.Message,
+                    Status = i.Status,
+                    SendOn = i.SendOn
+                });
+            }
+            return OperationResult<List<TeamInvitationsShowViewModel>>.Success(invitationViewModel);
+        }
+        //private string _getMessageForSender(string message, string receiverUserName, string teamName)
+        //{
+        //    if (string.IsNullOrEmpty(message))
+        //        return $"You has invited {receiverUserName} to join the team {teamName}";
+        //    return $"You has invited {receiverUserName} to join the team {teamName} with message: {message}";
+        //}
         public async Task<OperationResult> Send(InvitationViewModel invitationToSend)
         {
             try
@@ -89,7 +159,8 @@ namespace TaskManagmentSystem.Srvices
                 Message = invitationToSend.Message,
                 TeamId = invitationToSend.TeamId,
                 Status = InvitationStatus.Pending,
-                Permissions = invitationToSend.Permissions
+                Permissions = invitationToSend.Permissions,
+                SendOn = DateTime.Now
             });
         }
         private async Task<OperationResult> _checkTeam(int teamId)

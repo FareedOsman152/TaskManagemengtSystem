@@ -16,6 +16,7 @@
         public int TeamId { get; set; }
         public Team Team { get; set; } = null!;
         public string? Message { get; set; }
+        public DateTime SendOn { get; set; }
         public InvitationStatus Status { get; set; } = InvitationStatus.Pending;
         public TeamPermissions Permissions { get; set; } = TeamPermissions.None;
     }

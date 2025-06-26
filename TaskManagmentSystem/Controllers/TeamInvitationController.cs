@@ -18,9 +18,21 @@ namespace TaskManagmentSystem.Controllers
         }
 
         private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
-        public IActionResult show()
+        public async Task<IActionResult> ShowReceived()
         {
-            return View();
+            var userId = GetUserId();
+            var invitationsReceivedResult = await _teamInvitationService.GetReceivedForShow(userId);
+            if (!invitationsReceivedResult.Succeeded)
+                return BadRequest(invitationsReceivedResult.ErrorMessage);
+            return View("ShowReceived", invitationsReceivedResult.Data);
+        }
+        public async Task<IActionResult> ShowSent()
+        {
+            var userId = GetUserId();
+            var invitationsSentResult = await _teamInvitationService.GetSentForShow(userId);
+            if (!invitationsSentResult.Succeeded)
+                return BadRequest(invitationsSentResult.ErrorMessage);
+            return View("ShowSent", invitationsSentResult.Data);
         }
 
         //[TypeFilter(typeof(TeamPermissionsFilter), Arguments = new object[] { TeamPermissions.SendInvitation })]
@@ -48,5 +60,30 @@ namespace TaskManagmentSystem.Controllers
             return RedirectToAction("Show", "Team");
         }
 
+        public async Task<IActionResult> Accept(int id)
+        {
+            var userId = GetUserId();
+            var result = await _teamInvitationService.AcceptAsync(id, userId);
+            if (!result.Succeeded)
+                return BadRequest(result.ErrorMessage);
+            return RedirectToAction("ShowReceived");
+        }
+
+        public async Task<IActionResult> Reject(int id)
+        {
+            var userId = GetUserId();
+            var result = await _teamInvitationService.RejectAsync(id, userId);
+            if (!result.Succeeded)
+                return BadRequest(result.ErrorMessage);
+            return RedirectToAction("ShowReceived");
+        }
+
+        public async Task<IActionResult> Cancel(int id)
+        {
+            var result = await _teamInvitationService.CancelAsync(id);
+            if (!result.Succeeded)
+                return BadRequest(result.ErrorMessage);
+            return RedirectToAction("ShowSent");
+        }
     }
 }

@@ -1,0 +1,895 @@
+﻿@model List<TaskManagmentSystem.ViewModels.TeamInvitationsShowViewModel>
+
+@{
+    ViewData["Title"] = "Sent Invitations";
+}
+
+<div class="invitations-wrapper">
+    <div class="container-fluid invitations-container">
+        <!-- Header Section -->
+        <div class="invitations-header">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="invitations-title">
+                        <i class="bi bi-envelope-fill"></i>
+                        Team Invitations
+                    </h1>
+                    <p class="invitations-subtitle">Manage your team invitations</p>
+                </div>
+                <div class="header-actions">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-back">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Back to Home</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="invitations-nav">
+            <div class="nav-tabs">
+                <a asp-action="ShowReceived" class="nav-tab">
+                    <i class="bi bi-inbox-fill"></i>
+                    <span>Received Invitations</span>
+                </a>
+                <a asp-action="ShowSent" class="nav-tab active">
+                    <i class="bi bi-send-fill"></i>
+                    <span>Sent Invitations</span>
+                    @if (Model != null && Model.Any())
+                    {
+                        <span class="nav-badge">@Model.Count()</span>
+                    }
+                </a>
+            </div>
+        </div>
+
+        <!-- Invitations Content -->
+        <div class="invitations-content">
+            @if (Model != null && Model.Any())
+            {
+                <div class="invitations-grid">
+                    @foreach (var invitation in Model)
+                    {
+                        <div class="invitation-card @GetStatusClass(invitation.Status)">
+                            <div class="invitation-header">
+                                <div class="invitation-info">
+                                    <div class="recipient-info">
+                                        <div class="recipient-avatar">
+                                            <i class="bi bi-person-fill"></i>
+                                        </div>
+                                        <div class="recipient-details">
+                                            <h4 class="recipient-name">@invitation.OtherUserName</h4>
+                                            <p class="invitation-date">
+                                                <i class="bi bi-calendar3"></i>
+                                                Sent on @invitation.SendOn.ToString("MMM dd, yyyy 'at' hh:mm tt")
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="status-badge @GetStatusClass(invitation.Status)">
+                                        <i class="@GetStatusIcon(invitation.Status)"></i>
+                                        <span>@invitation.Status.ToString()</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="invitation-body">
+                                <div class="team-info">
+                                    <div class="team-icon">
+                                        <i class="bi bi-diagram-3-fill"></i>
+                                    </div>
+                                    <div class="team-details">
+                                        <h5>Team: @invitation.TeamName</h5>
+                                        <p>Invitation to join your team</p>
+                                    </div>
+                                </div>
+
+                                @if (!string.IsNullOrEmpty(invitation.Message))
+                                {
+                                    <div class="invitation-message">
+                                        <div class="message-header">
+                                            <i class="bi bi-chat-quote-fill"></i>
+                                            <span>Your Message</span>
+                                        </div>
+                                        <div class="message-content">
+                                            "@invitation.Message"
+                                        </div>
+                                    </div>
+                                }
+
+                                <div class="invitation-status-info">
+                                    <div class="status-info-item">
+                                        <i class="@GetStatusIcon(invitation.Status)"></i>
+                                        <div class="status-details">
+                                            <h6>@GetStatusTitle(invitation.Status)</h6>
+                                            <p>@GetStatusDescription(invitation.Status)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="invitation-actions">
+                                @if (invitation.Status == InvitationStatus.Pending)
+                                {                                    
+                                    <a asp-controller="TeamInvitation" asp-action="Cancel" asp-route-id="@invitation.Id" class="btn btn-cancel-invitation">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                        <span>Cancel Invitation</span>
+                                    </a>
+
+                                    <div class="action-info">
+                                        <i class="bi bi-info-circle"></i>
+                                        <span>You can cancel this invitation while it's pending</span>
+                                    </div>
+                                }
+                                else if (invitation.Status == InvitationStatus.Accepted)
+                                {
+                                    <div class="response-info success">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>@invitation.OtherUserName accepted your invitation and joined the team!</span>
+                                    </div>
+                                }
+                                else if (invitation.Status == InvitationStatus.Rejected)
+                                {
+                                    <div class="response-info rejected">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                        <span>@invitation.OtherUserName declined your invitation</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Summary Stats -->
+                <div class="invitations-summary">
+                    <div class="summary-cards">
+                        <div class="summary-card pending">
+                            <div class="summary-icon">
+                                <i class="bi bi-clock-fill"></i>
+                            </div>
+                            <div class="summary-info">
+                                <h4>@Model.Count(i => i.Status == InvitationStatus.Pending)</h4>
+                                <p>Pending</p>
+                            </div>
+                        </div>
+
+                        <div class="summary-card accepted">
+                            <div class="summary-icon">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </div>
+                            <div class="summary-info">
+                                <h4>@Model.Count(i => i.Status == InvitationStatus.Accepted)</h4>
+                                <p>Accepted</p>
+                            </div>
+                        </div>
+
+                        <div class="summary-card rejected">
+                            <div class="summary-icon">
+                                <i class="bi bi-x-circle-fill"></i>
+                            </div>
+                            <div class="summary-info">
+                                <h4>@Model.Count(i => i.Status == InvitationStatus.Rejected)</h4>
+                                <p>Rejected</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-state-content">
+                        <div class="empty-icon">
+                            <i class="bi bi-send"></i>
+                        </div>
+                        <h3>No Sent Invitations</h3>
+                        <p>You haven't sent any team invitations yet. Start building your team by inviting members!</p>
+                        <a asp-action="ShowReceived" class="btn btn-view-received">
+                            <i class="bi bi-inbox"></i>
+                            <span>View Received Invitations</span>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetStatusClass(InvitationStatus status)
+    {
+        return status switch
+        {
+            InvitationStatus.Pending => "status-pending",
+            InvitationStatus.Accepted => "status-accepted",
+            InvitationStatus.Rejected => "status-rejected",
+            _ => "status-pending"
+        };
+    }
+
+    private string GetStatusIcon(InvitationStatus status)
+    {
+        return status switch
+        {
+            InvitationStatus.Pending => "bi bi-clock-fill",
+            InvitationStatus.Accepted => "bi bi-check-circle-fill",
+            InvitationStatus.Rejected => "bi bi-x-circle-fill",
+            _ => "bi bi-clock-fill"
+        };
+    }
+
+    private string GetStatusTitle(InvitationStatus status)
+    {
+        return status switch
+        {
+            InvitationStatus.Pending => "Waiting for Response",
+            InvitationStatus.Accepted => "Invitation Accepted",
+            InvitationStatus.Rejected => "Invitation Declined",
+            _ => "Unknown Status"
+        };
+    }
+
+    private string GetStatusDescription(InvitationStatus status)
+    {
+        return status switch
+        {
+            InvitationStatus.Pending => "The user hasn't responded to your invitation yet.",
+            InvitationStatus.Accepted => "The user accepted your invitation and joined the team.",
+            InvitationStatus.Rejected => "The user declined your invitation to join the team.",
+            _ => "Status information unavailable."
+        };
+    }
+}
+
+<style>
+    /* Root Variables */
+    :root {
+        --primary-color: #6366f1;
+        --primary-hover: #5855eb;
+        --success-color: #10b981;
+        --success-hover: #059669;
+        --warning-color: #f59e0b;
+        --warning-hover: #d97706;
+        --danger-color: #ef4444;
+        --danger-hover: #dc2626;
+        --info-color: #3b82f6;
+        --info-hover: #2563eb;
+        --purple-color: #8b5cf6;
+        --purple-hover: #7c3aed;
+        --secondary-color: #6b7280;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --text-muted: #9ca3af;
+        --border-color: #e5e7eb;
+        --background-light: #f8fafc;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 12px;
+        --radius-sm: 8px;
+    }
+
+    /* Main Container */
+    .invitations-wrapper {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .invitations-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* Header Styles */
+    .invitations-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .title-section {
+        flex: 1;
+    }
+
+    .invitations-title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .invitations-subtitle {
+        color: var(--text-secondary);
+        margin: 0.5rem 0 0 0;
+        font-size: 1.1rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border: 2px solid;
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+
+    .btn-back {
+        background: rgba(107, 114, 128, 0.1);
+        color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+
+        .btn-back:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    /* Navigation Tabs */
+    .invitations-nav {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        padding: 1rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .nav-tabs {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .nav-tab {
+        padding: 1rem 1.5rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: var(--text-secondary);
+        background: transparent;
+        border: 2px solid transparent;
+        position: relative;
+    }
+
+        .nav-tab:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+        }
+
+        .nav-tab.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+    .nav-badge {
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        min-width: 20px;
+        text-align: center;
+    }
+
+    .nav-tab:not(.active) .nav-badge {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    /* Invitations Grid */
+    .invitations-content {
+        margin-bottom: 2rem;
+    }
+
+    .invitations-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .invitation-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+        .invitation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
+        }
+
+    .invitation-header {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .invitation-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .recipient-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex: 1;
+    }
+
+    .recipient-avatar {
+        width: 50px;
+        height: 50px;
+        background: var(--info-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .recipient-details {
+        flex: 1;
+    }
+
+    .recipient-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.25rem 0;
+    }
+
+    .invitation-date {
+        color: var(--text-muted);
+        margin: 0;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        flex-shrink: 0;
+    }
+
+        .status-badge.status-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .status-badge.status-accepted {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-badge.status-rejected {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+    .invitation-body {
+        padding: 2rem;
+    }
+
+    .team-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .team-icon {
+        width: 45px;
+        height: 45px;
+        background: var(--purple-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .team-details h5 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.25rem 0;
+    }
+
+    .team-details p {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .invitation-message {
+        background: var(--background-light);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .message-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+        .message-header i {
+            color: var(--info-color);
+        }
+
+    .message-content {
+        color: var(--text-secondary);
+        font-style: italic;
+        line-height: 1.5;
+        padding-left: 1rem;
+        border-left: 3px solid var(--info-color);
+    }
+
+    .invitation-status-info {
+        background: var(--background-light);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 1rem;
+    }
+
+    .status-info-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+        .status-info-item i {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .status-info-item.status-pending i {
+            color: var(--warning-color);
+        }
+
+        .status-info-item.status-accepted i {
+            color: var(--success-color);
+        }
+
+        .status-info-item.status-rejected i {
+            color: var(--danger-color);
+        }
+
+    .status-details h6 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.25rem 0;
+    }
+
+    .status-details p {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.875rem;
+        line-height: 1.4;
+    }
+
+    .invitation-actions {
+        background: var(--background-light);
+        padding: 1.5rem 2rem;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .btn-cancel-invitation {
+        background: var(--danger-color);
+        color: white;
+        border-color: var(--danger-color);
+        max-width: 200px;
+        justify-content: center;
+    }
+
+        .btn-cancel-invitation:hover {
+            background: var(--danger-hover);
+            border-color: var(--danger-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+    .action-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        text-align: center;
+    }
+
+        .action-info i {
+            color: var(--info-color);
+        }
+
+    .response-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 500;
+        text-align: center;
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        width: 100%;
+        justify-content: center;
+    }
+
+        .response-info.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .response-info.rejected {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .response-info i {
+            font-size: 1.25rem;
+        }
+
+    /* Summary Stats */
+    .invitations-summary {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        padding: 2rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .summary-card {
+        background: var(--background-light);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.3s ease;
+    }
+
+        .summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+    .summary-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .summary-card.pending .summary-icon {
+        background: var(--warning-color);
+    }
+
+    .summary-card.accepted .summary-icon {
+        background: var(--success-color);
+    }
+
+    .summary-card.rejected .summary-icon {
+        background: var(--danger-color);
+    }
+
+    .summary-info h4 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 0.25rem 0;
+    }
+
+    .summary-card.pending .summary-info h4 {
+        color: var(--warning-color);
+    }
+
+    .summary-card.accepted .summary-info h4 {
+        color: var(--success-color);
+    }
+
+    .summary-card.rejected .summary-info h4 {
+        color: var(--danger-color);
+    }
+
+    .summary-info p {
+        color: var(--text-secondary);
+        margin: 0;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.875rem;
+        letter-spacing: 0.05em;
+    }
+
+    /* Empty State */
+    .empty-state {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 400px;
+    }
+
+    .empty-state-content {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius);
+        padding: 3rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        text-align: center;
+        max-width: 500px;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state-content h3 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 1rem 0;
+    }
+
+    .empty-state-content p {
+        color: var(--text-secondary);
+        margin: 0 0 2rem 0;
+        line-height: 1.6;
+        font-size: 1.1rem;
+    }
+
+    .btn-view-received {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+        .btn-view-received:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .invitations-wrapper
+
+    {
+        padding: 1rem 0;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .invitations-title {
+        font-size: 1.75rem;
+    }
+
+    .nav-tabs {
+        flex-direction: column;
+    }
+
+    .invitation-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .recipient-info {
+        width: 100%;
+    }
+
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        .invitation-header, .invitation-body, .invitation-actions
+
+    {
+        padding: 1rem;
+    }
+
+    .team-info {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .empty-state-content {
+        padding: 2rem;
+        margin: 0 1rem;
+    }
+
+    .summary-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    }
+</style>
+
+
+@Html.AntiForgeryToken()

@@ -409,6 +409,9 @@ namespace TaskManagmentSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("SendOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("SenderId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");

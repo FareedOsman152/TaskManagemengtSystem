@@ -1,81 +1,628 @@
 ﻿@model List<TaskManagmentSystem.ViewModels.NotificationViewModel>
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">
-            <i class="fas fa-bell me-2"></i>Notifications
-        </h2>
-        <div>
-            <span class="badge bg-primary" id="unread-count">
-                @Model.Count(n => !n.IsRead) unread
-            </span>
-            <a asp-action="MakeAllRead" 
-               class="btn btn-sm btn-outline-primary mark-as-read-link">
-                <i class="fas fa-check"></i> Make All Read
-            </a>
-        </div>
-    </div>
+@{
+    ViewData["Title"] = "Notifications";
+}
 
-    <div class="list-group">
-        @foreach (var notification in Model.OrderByDescending(n => n.DateToSend))
-        {
-            <div class="list-group-item list-group-item-action flex-column align-items-start @(!notification.IsRead ? "list-group-item-primary" : "")"
-                 data-notification-id="@notification.Id">
-                <div class="d-flex w-100 justify-content-between">
-                    <div class="mb-1">
-                        <p class="mb-1 @(!notification.IsRead ? "fw-bold" : "")">@notification.Details</p>
-                        <small class="text-muted">
-                            <i class="far fa-clock me-1"></i>@notification.DateToSend.ToString("yyyy/M/d h:mm tt")
-                        </small>
+<div class="notifications-wrapper">
+    <div class="container-fluid notifications-container">
+        <!-- Header Section -->
+        <div class="notifications-header">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="notifications-title">
+                        <i class="bi bi-bell-fill"></i>
+                        Notifications
+                    </h1>
+                    <p class="notifications-subtitle">Stay updated with your latest activities</p>
+                </div>
+                <div class="header-actions">
+                    <div class="notifications-stats">
+                        <span class="unread-badge">
+                            <i class="bi bi-circle-fill"></i>
+                            <span id="unread-count">@Model.Count(n => !n.IsRead)</span>
+                            <span>unread</span>
+                        </span>
+                        <span class="total-badge">
+                            <i class="bi bi-bell"></i>
+                            <span>@Model.Count()</span>
+                            <span>total</span>
+                        </span>
                     </div>
-                    <div>
-                        @if (!notification.IsRead)
-                        {
-                            <a asp-action="MakeRead" asp-route-Id="@notification.Id"
-                               class="btn btn-sm btn-outline-primary mark-as-read-link">
-                                <i class="fas fa-check"></i> Make Read
-                            </a>
-                        }
-                        else
-                        {
-                            <span class="badge bg-success">Read</span>
-                        }
-                    </div>
+                    @if (Model.Any(n => !n.IsRead))
+                    {
+                        <a asp-action="MakeAllRead" class="btn btn-mark-all">
+                            <i class="bi bi-check-all"></i>
+                            <span>Mark All Read</span>
+                        </a>
+                    }
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-back">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Back to Home</span>
+                    </a>
                 </div>
             </div>
-        }
+        </div>
+
+        <!-- Notifications Content -->
+        <div class="notifications-content">
+            @if (Model != null && Model.Any())
+            {
+                <div class="notifications-list">
+                    @foreach (var notification in Model.OrderByDescending(n => n.DateToSend))
+                    {
+                        <div class="notification-card @(!notification.IsRead ? "unread" : "read")"
+                             data-notification-id="@notification.Id">
+                            <div class="notification-indicator">
+                                @if (!notification.IsRead)
+                                {
+                                    <div class="unread-dot"></div>
+                                }
+                                else
+                                {
+                                    <div class="read-dot"></div>
+                                }
+                            </div>
+
+                            <div class="notification-content">
+                                <div class="notification-icon">
+                                    <i class="@GetNotificationIcon(notification.Details)"></i>
+                                </div>
+
+                                <div class="notification-body">
+                                    <div class="notification-message @(!notification.IsRead ? "font-bold" : "")">
+                                        @notification.Details
+                                    </div>
+                                    <div class="notification-meta">
+                                        <span class="notification-time">
+                                            <i class="bi bi-clock"></i>
+                                            @GetTimeAgo(notification.DateToSend)
+                                        </span>
+                                        <span class="notification-date">
+                                            @notification.DateToSend.ToString("MMM dd, yyyy 'at' hh:mm tt")
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="notification-actions">
+                                    @if (!notification.IsRead)
+                                    {
+                                        <a asp-action="MakeRead" asp-route-Id="@notification.Id"
+                                           class="btn btn-mark-read">
+                                            <i class="bi bi-check"></i>
+                                            <span>Mark Read</span>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <div class="read-status">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            <span>Read</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-state-content">
+                        <div class="empty-icon">
+                            <i class="bi bi-bell-slash"></i>
+                        </div>
+                        <h3>No Notifications</h3>
+                        <p>You're all caught up! No new notifications at the moment.</p>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                            <i class="bi bi-house"></i>
+                            <span>Go to Dashboard</span>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
 </div>
-    <style>
-        .list-group-item-primary {
-            background-color: #e6f2ff;
+
+@functions {
+    private string GetNotificationIcon(string details)
+    {
+        if (details.Contains("team", StringComparison.OrdinalIgnoreCase))
+            return "bi bi-people-fill";
+        if (details.Contains("invitation", StringComparison.OrdinalIgnoreCase))
+            return "bi bi-envelope-fill";
+        if (details.Contains("task", StringComparison.OrdinalIgnoreCase))
+            return "bi bi-check-square-fill";
+        if (details.Contains("workspace", StringComparison.OrdinalIgnoreCase))
+            return "bi bi-kanban-fill";
+        return "bi bi-info-circle-fill";
+    }
+
+    private string GetTimeAgo(DateTime dateTime)
+    {
+        var timeSpan = DateTime.Now - dateTime;
+
+        if (timeSpan.TotalMinutes < 1)
+            return "Just now";
+        if (timeSpan.TotalMinutes < 60)
+            return $"{(int)timeSpan.TotalMinutes}m ago";
+        if (timeSpan.TotalHours < 24)
+            return $"{(int)timeSpan.TotalHours}h ago";
+        if (timeSpan.TotalDays < 7)
+            return $"{(int)timeSpan.TotalDays}d ago";
+        if (timeSpan.TotalDays < 30)
+            return $"{(int)(timeSpan.TotalDays / 7)}w ago";
+
+        return dateTime.ToString("MMM dd");
+    }
+}
+
+<style>
+    /* Root Variables */
+    :root {
+        --primary-color: #6366f1;
+        --primary-hover: #5855eb;
+        --success-color: #10b981;
+        --success-hover: #059669;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --info-color: #3b82f6;
+        --purple-color: #8b5cf6;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        --border-radius: 12px;
+        --border-radius-sm: 8px;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    /* Main Container */
+    .notifications-wrapper {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .notifications-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* Header Styles */
+    .notifications-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .title-section {
+        flex: 1;
+    }
+
+    .notifications-title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: var(--gray-800);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .notifications-subtitle {
+        color: var(--gray-600);
+        margin: 0.5rem 0 0 0;
+        font-size: 1.1rem;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .notifications-stats {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .unread-badge,
+    .total-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius-sm);
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .unread-badge {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger-color);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .total-badge {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary-color);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--border-radius-sm);
+        font-weight: 600;
+        text-decoration: none;
+        border: 2px solid;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-mark-all {
+        background: var(--success-color);
+        color: white;
+        border-color: var(--success-color);
+    }
+
+        .btn-mark-all:hover {
+            background: var(--success-hover);
+            border-color: var(--success-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
-        .notification-time {
-            font-size: 0.85rem;
+    .btn-back {
+        background: rgba(107, 114, 128, 0.1);
+        color: var(--gray-600);
+        border-color: var(--gray-400);
+    }
+
+        .btn-back:hover {
+            background: var(--gray-600);
+            color: white;
+            transform: translateY(-2px);
         }
-    </style>
 
-    <script src="~/lib/jquery/dist/jquery.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('.mark-as-read').click(function() {
-                const notificationItem = $(this).closest('.list-group-item');
-                const notificationId = notificationItem.data('notification-id');
+    /* Notifications List */
+    .notifications-content {
+        margin-bottom: 2rem;
+    }
 
-                $.post('/Notification/MarkAsRead', { id: notificationId }, function() {
-                    notificationItem.removeClass('list-group-item-primary');
-                    notificationItem.find('p').removeClass('fw-bold');
-                    notificationItem.find('.mark-as-read').replaceWith(
-                        '<span class="badge bg-success">مقروء</span>'
-                    );
+    .notifications-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
 
-                    // تحديث العداد
-                    const unreadCount = parseInt($('#unread-count').text()) - 1;
-                $('#unread-count').text(unreadCount + 'unread');
-                });
-            });
+    .notification-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: stretch;
+    }
+
+        .notification-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .notification-card.unread {
+            border-left: 4px solid var(--primary-color);
+            background: rgba(99, 102, 241, 0.02);
+        }
+
+        .notification-card.read {
+            border-left: 4px solid var(--gray-300);
+        }
+
+    .notification-indicator {
+        display: flex;
+        align-items: center;
+        padding: 1.5rem 0 1.5rem 1rem;
+    }
+
+    .unread-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--primary-color);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+
+    .read-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--gray-300);
+        border-radius: 50%;
+    }
+
+    @@keyframes pulse {
+        0%
+
+    {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+    }
+
+    }
+
+    .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem;
+        flex: 1;
+    }
+
+    .notification-icon {
+        width: 48px;
+        height: 48px;
+        background: var(--gray-100);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color);
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .notification-card.unread .notification-icon {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary-color);
+    }
+
+    .notification-body {
+        flex: 1;
+    }
+
+    .notification-message {
+        font-size: 1rem;
+        color: var(--gray-800);
+        margin-bottom: 0.5rem;
+        line-height: 1.5;
+    }
+
+        .notification-message.font-bold {
+            font-weight: 600;
+        }
+
+    .notification-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .notification-time {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: var(--primary-color);
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .notification-date {
+        color: var(--gray-500);
+        font-size: 0.875rem;
+    }
+
+    .notification-actions {
+        display: flex;
+        align-items: center;
+        padding: 1.5rem 1.5rem 1.5rem 0;
+    }
+
+    .btn-mark-read {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+
+        .btn-mark-read:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+        }
+
+    .read-status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--success-color);
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 400px;
+    }
+
+    .empty-state-content {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--border-radius);
+        padding: 3rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        text-align: center;
+        max-width: 500px;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: var(--gray-400);
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state-content h3 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--gray-800);
+        margin: 0 0 1rem 0;
+    }
+
+    .empty-state-content p {
+        color: var(--gray-600);
+        margin: 0 0 2rem 0;
+        line-height: 1.6;
+        font-size: 1.1rem;
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .notifications-wrapper
+
+    {
+        padding: 1rem 0;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .notifications-title {
+        font-size: 1.75rem;
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .notifications-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .notification-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .notification-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    }
+
+    @@media (max-width: 480px) {
+        .notification-card
+
+    {
+        flex-direction: column;
+    }
+
+    .notification-indicator {
+        padding: 1rem;
+        justify-content: center;
+    }
+
+    .notification-content {
+        padding: 1rem;
+    }
+
+    .notification-actions {
+        padding: 1rem;
+        justify-content: center;
+    }
+
+    .empty-state-content {
+        padding: 2rem;
+        margin: 0 1rem;
+    }
+
+    }
+</style>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/signalr.js"></script>
+<script src="~/js/NewNotification.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Update unread count when marking as read
+        $('.btn-mark-read').click(function(e) {
+            const currentCount = parseInt($('#unread-count').text());
+            if (currentCount > 0) {
+                $('#unread-count').text(currentCount - 1);
+            }
         });
-    </script>
-    <script src="~/js/signalr.js"></script>
-    <script src="~/js/NewNotification.js"></script>
+
+        // Auto-refresh notifications every 30 seconds
+        setInterval(function() {
+            // You can implement auto-refresh logic here if needed
+        }, 30000);
+    });
+</script>
