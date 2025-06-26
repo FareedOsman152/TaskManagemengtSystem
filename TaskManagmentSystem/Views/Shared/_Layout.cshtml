@@ -3,310 +3,1028 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - TaskManagmentSystem</title>
+    <title>@ViewData["Title"] - TaskBoard</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TaskManagmentSystem.styles.css" asp-append-version="true" />
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <!-- Brand -->
-                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="WorkSpace" asp-action="ShowAll">
-                    <i class="bi bi-kanban me-2"></i>
-                    TaskManagement
-                </a>
+    <!-- Top Navigation Bar -->
+    <nav class="top-navbar">
+        <div class="navbar-container">
+            <!-- Left Section -->
+            <div class="navbar-left">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <button class="sidebar-toggle" id="sidebarToggle">
+                        <i class="bi bi-list"></i>
+                    </button>
+                }
+                <div class="brand">
+                    <i class="bi bi-kanban-fill"></i>
+                    <span>TaskBoard</span>
+                </div>
+            </div>
 
-                <!-- Mobile Toggle Button -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-                        aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+            <!-- Center Section - Search -->
+            <div class="navbar-center">
+                <div class="search-container">
+                    <i class="bi bi-search"></i>
+                    <input type="text" placeholder="Search teams, workspaces, tasks..." class="search-input">
+                    <kbd class="search-shortcut">Ctrl+K</kbd>
+                </div>
+            </div>
 
-                <!-- Navbar Content -->
-                <div class="collapse navbar-collapse" id="navbarContent">
-                    <!-- Left Navigation -->
-                   
-
-                    <!-- Right Navigation -->
-                    <div class="navbar-nav ms-auto d-flex align-items-center">
-
-                        <!-- Language Switcher -->
-                        <div class="nav-item dropdown me-3">
-                            <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-translate me-1"></i>
-                                <span class="d-none d-md-inline">Language</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+            <!-- Right Section -->
+            <div class="navbar-right">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <div class="dropdown">
+                            <button class="quick-action-btn" data-bs-toggle="dropdown">
+                                <i class="bi bi-plus-lg"></i>
+                                <span>Create</span>
+                            </button>
+                            <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item" href="?culture=en">
-                                        <i class="bi bi-flag-usa me-2"></i>English
+                                    <a class="dropdown-item" asp-controller="Team" asp-action="Add">
+                                        <i class="bi bi-people-fill"></i>
+                                        <span>New Team</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="?culture=ar">
-                                        <i class="bi bi-flag me-2"></i>العربية
+                                    <a class="dropdown-item" asp-controller="Workspace" asp-action="Add">
+                                        <i class="bi bi-kanban"></i>
+                                        <span>New Workspace</span>
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="TeamInvitation" asp-action="AddMember">
+                                        <i class="bi bi-person-plus"></i>
+                                        <span>Invite Member</span>
                                     </a>
                                 </li>
                             </ul>
                         </div>
+                    </div>
 
-                        <!-- Authentication Section -->
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <div class="nav-item me-2">
-                                <a class="btn btn-outline-primary btn-sm" asp-controller="Profile" asp-action="Show">
-                                    <i class="bi bi-box-arrow-in-right me-1"></i>Profile
-                                </a>
-                            </div>
-                            <div class="nav-item me-2">
-                                <a class="btn btn-outline-primary btn-sm" asp-controller="Team" asp-action="Show">
-                                    <i class="bi bi-box-arrow-in-right me-1"></i>Teams
-                                </a>
-                            </div>
-                            <!-- Notifications (Only for authenticated users) -->
-                            <div class="nav-item me-3">
-                                <a class="nav-link position-relative" asp-area="" asp-controller="Notification" asp-action="Show">
-                                    <i class="bi bi-bell fs-5"></i>
-                                    <span id="unread-notifications-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                        0
-                                    </span>
-                                </a>
-                            </div>
+                    <!-- Notifications -->
+                    <div class="notification-container">
+                        <a class="notification-btn" asp-controller="Notification" asp-action="Show">
+                            <i class="bi bi-bell"></i>
+                            <span class="notification-badge">3</span>
+                        </a>
+                    </div>
 
-                            <!-- User Menu -->
-                            <div class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
-                                   role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <div class="user-avatar me-2">
-                                        <i class="bi bi-person-circle fs-4"></i>
-                                    </div>
-                                    <span class="d-none d-md-inline">@User.Identity.Name</span>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                    <li>
-                                        <h6 class="dropdown-header">
-                                            <i class="bi bi-person me-1"></i>
-                                            @User.Identity.Name
-                                        </h6>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item" href="#" onclick="document.getElementById('logoutForm').submit();">
-                                            <i class="bi bi-box-arrow-right me-2"></i>Logout
-                                        </a>
-                                    </li>
-                                </ul>
+                    <!-- User Menu -->
+                    <div class="user-menu dropdown">
+                        <button class="user-menu-btn" data-bs-toggle="dropdown">
+                            <div class="user-avatar">
+                                <span>@User.Identity.Name?.Substring(0, 2).ToUpper()</span>
                             </div>
+                            <div class="user-info">
+                                <span class="user-name">@User.Identity.Name</span>
+                                <span class="user-role">Team Member</span>
+                            </div>
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" asp-controller="Profile" asp-action="Show">
+                                    <i class="bi bi-person"></i>
+                                    <span>Profile Settings</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="TeamInvitation" asp-action="ShowReceived">
+                                    <i class="bi bi-envelope"></i>
+                                    <span>Invitations</span>
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="document.getElementById('logoutForm').submit();">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    <span>Sign Out</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
 
-                            <!-- Hidden Logout Form -->
-                            <form id="logoutForm" asp-area="" asp-controller="Account" asp-action="SignOut" method="post" class="d-none">
-                                @Html.AntiForgeryToken()
-                            </form>
-                        }
-                        else
-                        {
-                            <!-- Login/Register Links for non-authenticated users -->
-                            <div class="nav-item me-2">
-                                <a class="btn btn-outline-primary btn-sm" asp-area="" asp-controller="Account" asp-action="Login">
-                                    <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                    <form id="logoutForm" asp-controller="Account" asp-action="SignOut" method="post" class="d-none">
+                        @Html.AntiForgeryToken()
+                    </form>
+                }
+                else
+                {
+                    <div class="auth-buttons">
+                        <a class="btn btn-outline" asp-controller="Account" asp-action="Login">
+                            <i class="bi bi-box-arrow-in-right"></i>
+                            <span>Sign In</span>
+                        </a>
+                        <a class="btn btn-primary" asp-controller="Account" asp-action="Register">
+                            <i class="bi bi-person-plus"></i>
+                            <span>Sign Up</span>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Navigation -->
+    @if (User.Identity.IsAuthenticated)
+    {
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <i class="bi bi-kanban-fill"></i>
+                    <span class="sidebar-brand-text">TaskBoard</span>
+                </div>
+                <button class="sidebar-close" id="sidebarClose">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-content">
+                <!-- Main Navigation -->
+                <nav class="sidebar-nav">
+                    <div class="nav-section">
+                        <h6 class="nav-section-title">Main</h6>
+                        <ul class="nav-list">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                    <i class="bi bi-house-fill"></i>
+                                    <span>Dashboard</span>
                                 </a>
-                            </div>
-                            <div class="nav-item">
-                                <a class="btn btn-primary btn-sm" asp-area="" asp-controller="Account" asp-action="Register">
-                                    <i class="bi bi-person-plus me-1"></i>Sign Up
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="WorkSpace" asp-action="ShowAll">
+                                    <i class="bi bi-kanban-fill"></i>
+                                    <span>All Workspaces</span>
                                 </a>
-                            </div>
-                        }
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Team" asp-action="Show">
+                                    <i class="bi bi-people-fill"></i>
+                                    <span>My Teams</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="nav-section">
+                        <h6 class="nav-section-title">Collaboration</h6>
+                        <ul class="nav-list">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="TeamInvitation" asp-action="ShowReceived">
+                                    <i class="bi bi-inbox-fill"></i>
+                                    <span>Invitations</span>
+                                    <span class="nav-badge">2</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Notification" asp-action="Show">
+                                    <i class="bi bi-bell-fill"></i>
+                                    <span>Notifications</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="nav-section">
+                        <h6 class="nav-section-title">Account</h6>
+                        <ul class="nav-list">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Profile" asp-action="Show">
+                                    <i class="bi bi-person-fill"></i>
+                                    <span>Profile</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                                    <i class="bi bi-gear-fill"></i>
+                                    <span>Settings</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <!-- Quick Create Section -->
+                <div class="sidebar-footer">
+                    <div class="quick-create">
+                        <h6 class="quick-create-title">Quick Create</h6>
+                        <div class="quick-create-buttons">
+                            <a class="quick-create-btn" asp-controller="Team" asp-action="Add" title="Create Team">
+                                <i class="bi bi-people"></i>
+                            </a>
+                            <a class="quick-create-btn" asp-controller="Workspace" asp-action="Add" title="Create Workspace">
+                                <i class="bi bi-kanban"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </nav>
-    </header>
+        </aside>
+    }
 
-    <div class="container">
-        <main role="main" class="pb-3">
+    <!-- Main Content Area -->
+    <main class="main-content" id="mainContent">
+        <div class="content-wrapper">
             @RenderBody()
-        </main>
+        </div>
+    </main>
+
+    <!-- Overlay for mobile sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-gear-fill me-2"></i>
+                        Settings
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-section">
+                        <h6>Theme</h6>
+                        <div class="theme-options">
+                            <label class="theme-option">
+                                <input type="radio" name="theme" value="light" checked>
+                                <span class="theme-preview light"></span>
+                                <span>Light</span>
+                            </label>
+                            <label class="theme-option">
+                                <input type="radio" name="theme" value="dark">
+                                <span class="theme-preview dark"></span>
+                                <span>Dark</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <h6>Language</h6>
+                        <select class="form-select">
+                            <option value="en">English</option>
+                            <option value="ar">العربية</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - TaskManagementSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-
-    <!-- Custom Styles -->
     <style>
-        /* Navbar Enhancements */
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
+        /* Root Variables */
+        :root {
+            --primary-color: #6366f1;
+            --primary-hover: #5855eb;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            --purple-color: #8b5cf6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --sidebar-width: 280px;
+            --sidebar-collapsed-width: 0px;
+            --navbar-height: 64px;
+            --border-radius: 8px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
 
-        .nav-link {
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border-radius: 6px;
-            margin: 0 2px;
-            padding: 8px 12px !important;
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-            .nav-link:hover {
-                background-color: rgba(13, 110, 253, 0.1);
-                color: #0d6efd !important;
-            }
-
-        /* User Avatar */
-        .user-avatar {
-            color: #6c757d;
-            transition: color 0.3s ease;
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.6;
         }
 
-        .dropdown-toggle:hover .user-avatar {
-            color: #0d6efd;
+        /* Top Navbar */
+        .top-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--navbar-height);
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            z-index: 1000;
+            box-shadow: var(--shadow-sm);
         }
 
-        /* Notification Badge */
-        .badge {
-            font-size: 0.6rem;
-            min-width: 18px;
-            height: 18px;
+        .navbar-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 1.5rem;
+            max-width: none;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .sidebar-toggle {
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--gray-100);
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.25rem;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
         }
+
+            .sidebar-toggle:hover {
+                background-color: var(--gray-200);
+                color: var(--gray-800);
+            }
+
+            .sidebar-toggle.active {
+                background-color: var(--primary-color);
+                color: white;
+            }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+            .brand i {
+                font-size: 1.75rem;
+            }
+
+        /* Search */
+        .navbar-center {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 2rem;
+        }
+
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+            .search-container i {
+                position: absolute;
+                left: 1rem;
+                color: var(--gray-400);
+                z-index: 1;
+            }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            background-color: var(--gray-50);
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+            .search-input:focus {
+                outline: none;
+                border-color: var(--primary-color);
+                background-color: white;
+                box-shadow: 0 0 0 3px rgb(99 102 241 / 0.1);
+            }
+
+        .search-shortcut {
+            position: absolute;
+            right: 0.75rem;
+            background: var(--gray-200);
+            color: var(--gray-500);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: monospace;
+        }
+
+        /* Navbar Right */
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .quick-actions .quick-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-action-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .notification-container {
+            position: relative;
+        }
+
+        .notification-btn {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--gray-100);
+            border-radius: 50%;
+            color: var(--gray-600);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+            .notification-btn:hover {
+                background: var(--gray-200);
+                color: var(--gray-800);
+            }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: var(--danger-color);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.125rem 0.375rem;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .user-menu-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            background: none;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+            .user-menu-btn:hover {
+                background: var(--gray-100);
+            }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: var(--gray-800);
+            font-size: 0.875rem;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .btn-outline {
+            color: var(--gray-600);
+            border-color: var(--gray-300);
+        }
+
+            .btn-outline:hover {
+                background: var(--gray-100);
+                color: var(--gray-800);
+            }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background: var(--primary-hover);
+            }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: var(--navbar-height);
+            left: 0;
+            width: var(--sidebar-width);
+            height: calc(100vh - var(--navbar-height));
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            z-index: 900;
+            overflow-y: auto;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+            .sidebar-brand i {
+                font-size: 1.5rem;
+            }
+
+        .sidebar-close {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: none;
+            border: none;
+            border-radius: var(--border-radius);
+            color: var(--gray-500);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+            .sidebar-close:hover {
+                background: var(--gray-200);
+                color: var(--gray-800);
+            }
+
+        .sidebar-content {
+            padding: 1.5rem 0;
+            height: calc(100% - 80px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-list {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--gray-700);
+            text-decoration: none;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+            .nav-link:hover {
+                background: var(--gray-50);
+                color: var(--primary-color);
+            }
+
+            .nav-link.active {
+                background: var(--primary-color);
+                color: white;
+            }
+
+                .nav-link.active::before {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    bottom: 0;
+                    width: 3px;
+                    background: var(--primary-color);
+                }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--primary-color);
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .quick-create-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .quick-create-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .quick-create-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--gray-100);
+            color: var(--gray-600);
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+            .quick-create-btn:hover {
+                background: var(--primary-color);
+                color: white;
+                transform: translateY(-1px);
+            }
+
+        /* Main Content */
+        .main-content {
+            margin-top: var(--navbar-height);
+            margin-left: var(--sidebar-collapsed-width);
+            min-height: calc(100vh - var(--navbar-height));
+            transition: margin-left 0.3s ease;
+        }
+
+            .main-content.with-sidebar {
+                margin-left: var(--sidebar-width);
+            }
+
+        .content-wrapper {
+            padding: 2rem;
+        }
+
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: var(--navbar-height);
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 850;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+            .sidebar-overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
 
         /* Dropdown Enhancements */
         .dropdown-menu {
             border: none;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            border-radius: var(--border-radius);
             padding: 0.5rem 0;
+            min-width: 200px;
         }
 
         .dropdown-item {
-            padding: 8px 16px;
-            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--gray-700);
+            transition: all 0.2s;
         }
 
             .dropdown-item:hover {
-                background-color: #f8f9fa;
-                color: #0d6efd;
+                background: var(--gray-50);
+                color: var(--primary-color);
             }
 
-        .dropdown-header {
-            color: #6c757d;
-            font-size: 0.875rem;
-            font-weight: 600;
-            padding: 8px 16px;
+        .dropdown-divider {
+            margin: 0.5rem 0;
+            border-color: var(--gray-200);
         }
 
-        /* Button Enhancements */
-        .btn {
-            border-radius: 6px;
-            font-weight: 500;
-            transition: all 0.3s ease;
+        /* Settings Modal */
+        .settings-section {
+            margin-bottom: 1.5rem;
         }
 
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 0.875rem;
+            .settings-section h6 {
+                font-weight: 600;
+                margin-bottom: 0.75rem;
+                color: var(--gray-800);
+            }
+
+        .theme-options {
+            display: flex;
+            gap: 1rem;
         }
 
-        /* Mobile Responsiveness */
-        /* media (max-width: 991.98px) { */
-        /*     .navbar-nav */
+        .theme-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
 
-        /* { */
-        /*     padding-top: 1rem; */
-        /* } */
+        .theme-preview {
+            width: 40px;
+            height: 30px;
+            border-radius: 4px;
+            border: 2px solid var(--gray-300);
+        }
 
-        /* .navbar-nav .nav-item { */
-        /*     margin: 2px 0; */
-        /* } */
+            .theme-preview.light {
+                background: white;
+            }
 
-        /* .dropdown-menu { */
-        /*     position: static !important; */
-        /*     transform: none !important; */
-        /*     border: 1px solid #dee2e6; */
-        /*     margin-top: 0.5rem; */
-        /* } */
+            .theme-preview.dark {
+                background: var(--gray-800);
+            }
 
-        /* } */
+        .theme-option input:checked + .theme-preview {
+            border-color: var(--primary-color);
+        }
 
-        /* /* RTL Support for Arabic */ 
-        /* [dir="rtl"] .navbar-nav { */
-        /*     flex-direction: row-reverse; */
-        /* } */
+        /* Responsive Design */
+        @@media (max-width: 1024px) {
+            .main-content.with-sidebar
 
-        /* [dir="rtl"] .dropdown-menu-end { */
-        /*     right: auto; */
-        /*     left: 0; */
-        /* } */
+        {
+            margin-left: 0;
+        }
 
-        /* /* Animation for notification badge */ 
-        /* /*  keyframes pulse { */ 
-        /*     /* 0% */ 
+        }
 
-        /* { */
-        /*     transform: scale(1); */
-        /* } */
+        @@media (max-width: 768px) {
+            .navbar-center
 
-        /* 50% { */
-        /*     transform: scale(1.1); */
-        /* } */
+        {
+            display: none;
+        }
 
-        /* 100% { */
-        /*     transform: scale(1); */
-        /* } */
+        .user-info {
+            display: none;
+        }
 
-        /* } */
+        .quick-actions span {
+            display: none;
+        }
 
-        /* .badge:not(:empty) { */
-        /*     animation: pulse 2s infinite; */
-        /* } */
+        .auth-buttons span {
+            display: none;
+        }
+
+        .sidebar-brand-text {
+            display: none;
+        }
+
+        }
+
+        @@media (max-width: 480px) {
+            .navbar-container
+
+        {
+            padding: 0 1rem;
+        }
+
+        .content-wrapper {
+            padding: 1rem;
+        }
+
+        }
     </style>
-    @* <script src="~/"></script> *@
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    <!-- Notification Script -->
     <script>
-        // Update notification count
-        // function updateNotificationCount() {
-        //     This would typically fetch from your API
-        //     For now, it's just a placeholder
-        //     fetch('/api/notifications/unread-count')
-        //         .then(response => response.json())
-        //         .then(data => {
-        //             const badge = document.getElementById('unread-notifications-count');
-        //             if (badge) {
-        //                 badge.textContent = data.count || 0;
-        //                 badge.style.display = data.count > 0 ? 'flex' : 'none';
-        //             }
-        //         })
-        //         .catch(error => console.log('Notification count update failed:', error));
-        // }
+        // Sidebar Toggle Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarClose = document.getElementById('sidebarClose');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const mainContent = document.getElementById('mainContent');
 
-        // Update notification count on page load (only for authenticated users)
-        @if (User.Identity.IsAuthenticated)
-        {
-            // <text>
-            //     document.addEventListener('DOMContentLoaded', function() {
-            //         updateNotificationCount();
-            //         Update every 30 seconds
-            //         setInterval(updateNotificationCount, 30000);
-            //     });
-            // </text>
-        }
+            // Check if user is authenticated (sidebar exists)
+            if (!sidebar) return;
+
+            // Load sidebar state from localStorage
+            const sidebarState = localStorage.getItem('sidebarOpen');
+            const isDesktop = window.innerWidth > 1024;
+
+            // Set initial state
+            if (sidebarState === 'true' && isDesktop) {
+                openSidebar();
+            }
+
+            // Toggle sidebar function
+            function toggleSidebar() {
+                if (sidebar.classList.contains('open')) {
+                    closeSidebar();
+                } else {
+                    openSidebar();
+                }
+            }
+
+            // Open sidebar function
+            function openSidebar() {
+                sidebar.classList.add('open');
+                sidebarToggle.classList.add('active');
+
+                // Only adjust main content on desktop
+                if (window.innerWidth > 1024) {
+                    mainContent.classList.add('with-sidebar');
+                } else {
+                    sidebarOverlay.classList.add('active');
+                }
+
+                localStorage.setItem('sidebarOpen', 'true');
+            }
+
+            // Close sidebar function
+            function closeSidebar() {
+                sidebar.classList.remove('open');
+                sidebarToggle.classList.remove('active');
+                mainContent.classList.remove('with-sidebar');
+                sidebarOverlay.classList.remove('active');
+                localStorage.setItem('sidebarOpen', 'false');
+            }
+
+            // Event listeners
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', toggleSidebar);
+            }
+
+            if (sidebarClose) {
+                sidebarClose.addEventListener('click', closeSidebar);
+            }
+
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', closeSidebar);
+            }
+
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth <= 1024) {
+                    mainContent.classList.remove('with-sidebar');
+                    if (sidebar.classList.contains('open')) {
+                        sidebarOverlay.classList.add('active');
+                    }
+                } else {
+                    sidebarOverlay.classList.remove('active');
+                    if (sidebar.classList.contains('open')) {
+                        mainContent.classList.add('with-sidebar');
+                    }
+                }
+            });
+
+            // Search shortcut
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'k') {
+                    e.preventDefault();
+                    document.querySelector('.search-input')?.focus();
+                }
+
+                // ESC to close sidebar on mobile
+                if (e.key === 'Escape' && window.innerWidth <= 1024) {
+                    closeSidebar();
+                }
+            });
+
+            // Active nav link
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
