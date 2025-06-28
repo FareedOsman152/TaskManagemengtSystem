@@ -5,6 +5,6 @@ namespace TaskManagmentSystem.Notifications.Interfaces
 {
     public interface INotificationDispatcher
     {
-        Task SendRealTimeTaskNotification(NotificationViewModel notification, string userId);
+        Task SendNotificationAsync(NotificationForSentViewModel notification, string recipientId);
     }
 }

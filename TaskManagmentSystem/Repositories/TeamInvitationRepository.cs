@@ -40,10 +40,11 @@ namespace TaskManagmentSystem.Repositories
             return invitations;
         }
 
-        public async Task AddAsync(TeamInvitation invitation)
+        public async Task<TeamInvitation> AddAsync(TeamInvitation invitation)
         {
             _context.TeamInvitations.AddAsync(invitation);
             await _context.SaveChangesAsync();
+            return invitation;
         }
 
         public async Task DeleteAsync(int id)

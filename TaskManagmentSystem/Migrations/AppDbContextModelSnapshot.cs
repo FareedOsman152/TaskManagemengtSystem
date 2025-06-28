@@ -270,7 +270,7 @@ namespace TaskManagmentSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AppUserId")
+                    b.Property<string>("ActorId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("DateToSend")
@@ -284,12 +284,25 @@ namespace TaskManagmentSystem.Migrations
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
+                    b.Property<string>("RecipientId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("TeamInvitationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
                     b.Property<int?>("UserTaskId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
+                    b.HasIndex("ActorId");
+
+                    b.HasIndex("RecipientId");
+
+                    b.HasIndex("TeamInvitationId");
 
                     b.HasIndex("UserTaskId");
 
@@ -597,17 +610,31 @@ namespace TaskManagmentSystem.Migrations
 
             modelBuilder.Entity("TaskManagmentSystem.Models.Notification", b =>
                 {
-                    b.HasOne("TaskManagmentSystem.Models.AppUser", "AppUser")
+                    b.HasOne("TaskManagmentSystem.Models.AppUser", "Actor")
+                        .WithMany()
+                        .HasForeignKey("ActorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TaskManagmentSystem.Models.AppUser", "Recipient")
                         .WithMany("Notifications")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .HasForeignKey("RecipientId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TaskManagmentSystem.Models.TeamInvitation", "TeamInvitation")
+                        .WithMany()
+                        .HasForeignKey("TeamInvitationId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("TaskManagmentSystem.Models.UserTask", "UserTask")
                         .WithMany("Notifications")
                         .HasForeignKey("UserTaskId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("AppUser");
+                    b.Navigation("Actor");
+
+                    b.Navigation("Recipient");
+
+                    b.Navigation("TeamInvitation");
 
                     b.Navigation("UserTask");
                 });

@@ -53,9 +53,11 @@ namespace TaskManagmentSystem.Controllers
             if (userId != invitationViewModel.SenderId)
                 return BadRequest("This user is not the real sender");
 
-            var result = await _teamInvitationService.Send(invitationViewModel);
+            var result = await _teamInvitationService.SendAsync(invitationViewModel);
             if(!result.Succeeded)
                 return BadRequest(result.ErrorMessage);
+
+            var invitation = result.Data;
 
             return RedirectToAction("Show", "Team");
         }

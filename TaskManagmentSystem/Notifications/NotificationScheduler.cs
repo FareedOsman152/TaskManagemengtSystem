@@ -20,12 +20,12 @@ namespace TaskManagmentSystem.Notifications
 
         public void SheduleTaskNotifiBeginOrEnd(List<NotificationViewModel> notifications, string userId)
         {
-            foreach (var notification in notifications)
-            {
-                _backgroundJob.Schedule(
-            () => _notificationDispatcher.SendRealTimeTaskNotification(notification, userId),
-            notification.DateToSend);
-            }            
+            //foreach (var notification in notifications)
+            //{
+            //    _backgroundJob.Schedule(
+            //() => _notificationDispatcher.SendRealTimeTaskNotification(notification, userId),
+            //notification.DateToSend);
+            //}            
         }
     }
 }

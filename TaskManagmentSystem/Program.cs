@@ -58,7 +58,7 @@ namespace TaskManagmentSystem
 
             builder.Services.AddScoped<INotificationFactory,NotificationFactory>();
             builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-            builder.Services.AddScoped<INotificationManager, NotificationManager>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
             builder.Services.AddScoped<INotificationScheduler, NotificationScheduler>();
             builder.Services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
             builder.Services.AddScoped<ITeamAppUserRepository, TeamAppUserRepository>();

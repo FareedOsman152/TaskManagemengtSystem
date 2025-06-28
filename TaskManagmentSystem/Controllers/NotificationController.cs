@@ -21,7 +21,7 @@ namespace TaskManagmentSystem.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var notifications = _context.Notifications
-                .Where(n=>n.AppUserId==userId && n.DateToSend<=DateTime.Now)
+                .Where(n=>n.RecipientId==userId && n.DateToSend<=DateTime.Now)
                 .Select(n=>new NotificationViewModel
                 {
                     Id = n.Id,
@@ -52,7 +52,7 @@ namespace TaskManagmentSystem.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var unreadNotifications = _context.Notifications
-                .Where(n=>n.AppUserId == userId)
+                .Where(n=>n.RecipientId == userId)
                 .Where(n => n.IsRead == false);
             await unreadNotifications.ForEachAsync(n => n.IsRead = true);
             await _context.SaveChangesAsync();

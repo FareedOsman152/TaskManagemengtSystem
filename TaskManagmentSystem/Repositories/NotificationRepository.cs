@@ -1,9 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using TaskManagmentSystem.Helpers;
 using TaskManagmentSystem.Models;
 using TaskManagmentSystem.Notifications.Interfaces;
+using TaskManagmentSystem.Repositories.Interfaces;
 
-namespace TaskManagmentSystem.Notifications
+namespace TaskManagmentSystem.Repositories
 {
     public class NotificationRepository : INotificationRepository
     {
@@ -51,5 +53,13 @@ namespace TaskManagmentSystem.Notifications
             return await createNotificationAsync(userId, userTask.Id, details, timeBeforeEnd, IsRead);
         }
 
+        public async Task<OperationResult<Notification>> CreateAsync(Notification notification)
+        {
+            if (notification is null)
+                return OperationResult<Notification>.Failure("notification us null");
+            await _context.AddAsync(notification);
+            await _context.SaveChangesAsync();
+            return OperationResult<Notification>.Success(notification);
+        }
     }
 }

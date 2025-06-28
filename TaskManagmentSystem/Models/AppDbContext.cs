@@ -56,9 +56,19 @@ namespace TaskManagmentSystem.Models
                 .WithMany(x=>x.Notifications)
                 .OnDelete(DeleteBehavior.SetNull);
             builder.Entity<Notification>()
-                .HasOne(x => x.AppUser)
+                .HasOne(x => x.Recipient)
                 .WithMany(x => x.Notifications)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<Notification>(n =>
+            {
+                n.HasOne(n => n.Actor)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+                n.HasOne(n => n.TeamInvitation)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+            });
 
             builder.Entity<AppUserProfile>(p =>
             {

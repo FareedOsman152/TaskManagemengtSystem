@@ -9,7 +9,7 @@ namespace TaskManagmentSystem.Notifications
         {
             return new Notification
             {
-                AppUserId = userId,
+                RecipientId = userId,
                 UserTaskId = userTaskId,
                 Details = details,
                 IsRead = IsRead,

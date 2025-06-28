@@ -14,13 +14,15 @@ namespace TaskManagmentSystem.Srvices
         private readonly IUserService _userService;
         private readonly ITeamAppUserService _teamAppUserService;
         private readonly ITeamService _teamService;
+        private readonly INotificationService _notificationService;
 
-        public TeamInvitationService(ITeamInvitationRepository teamInvitationRepository, IUserService userService, ITeamAppUserService teamAppUserService, ITeamService teamService)
+        public TeamInvitationService(ITeamInvitationRepository teamInvitationRepository, IUserService userService, ITeamAppUserService teamAppUserService, ITeamService teamService, INotificationService notificationService)
         {
             _teamInvitationRepository = teamInvitationRepository;
             _userService = userService;
             _teamAppUserService = teamAppUserService;
             _teamService = teamService;
+            _notificationService = notificationService;
         }
 
         public async Task<bool> IsInvited(string userName, int teamId)
@@ -81,7 +83,6 @@ namespace TaskManagmentSystem.Srvices
                     Status = i.Status,
                     SendOn = i.SendOn
                 });
-                return OperationResult<List<TeamInvitationsShowViewModel>>.Success(invitationViewModel);
             }
 
             return OperationResult<List<TeamInvitationsShowViewModel>>.Success(invitationViewModel.ToList());
@@ -126,42 +127,59 @@ namespace TaskManagmentSystem.Srvices
         //        return $"You has invited {receiverUserName} to join the team {teamName}";
         //    return $"You has invited {receiverUserName} to join the team {teamName} with message: {message}";
         //}
-        public async Task<OperationResult> Send(InvitationViewModel invitationToSend)
+        public async Task<OperationResult<TeamInvitation>> SendAsync(InvitationViewModel invitationToSend)
         {
             try
             {
                 var checkTeamIsFound = await _checkTeam(invitationToSend.TeamId);
                 if (!checkTeamIsFound.Succeeded)
-                    return checkTeamIsFound;
+                    return OperationResult<TeamInvitation>.Failure(checkTeamIsFound.ErrorMessage);
 
                 var checkReceiverResult = await _checkReceiver(invitationToSend.ReceiverUserName, invitationToSend.TeamId, invitationToSend.SenderId);
                 if (!checkReceiverResult.Succeeded)
-                    return checkReceiverResult;
+                    return OperationResult<TeamInvitation>.Failure(checkReceiverResult.ErrorMessage); 
                 
-                await _saveInvitation(invitationToSend);
-                
-                return OperationResult.Success();
+                var invitationResult = await _saveInvitation(invitationToSend);
+                if(!invitationResult.Succeeded)
+                    return OperationResult<TeamInvitation>.Failure(invitationResult.ErrorMessage);
+
+                var notificationResult = await _notificationService.SendTeamInvitation(invitationResult.Data);
+                if(!notificationResult.Succeeded)
+                    return OperationResult<TeamInvitation>.Failure(notificationResult.ErrorMessage);
+
+                return OperationResult<TeamInvitation>.Success(invitationResult.Data);
             }
             catch (Exception ex)
             {
-                return OperationResult.Failure(ex.Message);
+                return OperationResult<TeamInvitation>.Failure(ex.Message);
             }
             
         }
-        private async Task _saveInvitation(InvitationViewModel invitationToSend)
+        private async Task<OperationResult<TeamInvitation>> _saveInvitation(InvitationViewModel invitationToSend)
         {
             var receiver = await _userService.GetByUserNameAsync(invitationToSend.ReceiverUserName);
 
-            await _teamInvitationRepository.AddAsync(new TeamInvitation
+            try
             {
-                SenderId = invitationToSend.SenderId,
-                ReceiverId = receiver.Id,
-                Message = invitationToSend.Message,
-                TeamId = invitationToSend.TeamId,
-                Status = InvitationStatus.Pending,
-                Permissions = invitationToSend.Permissions,
-                SendOn = DateTime.Now
-            });
+                var invitation = await _teamInvitationRepository.AddAsync(new TeamInvitation
+                {
+                    SenderId = invitationToSend.SenderId,
+                    ReceiverId = receiver.Id,
+                    Message = invitationToSend.Message,
+                    TeamId = invitationToSend.TeamId,
+                    Status = InvitationStatus.Pending,
+                    Permissions = invitationToSend.Permissions,
+                    SendOn = DateTime.Now
+                });
+                return OperationResult<TeamInvitation>.Success(invitation);
+            }
+            catch (Exception ex)
+            {
+
+                return OperationResult<TeamInvitation>.Failure(ex.Message);
+            }
+           
+
         }
         private async Task<OperationResult> _checkTeam(int teamId)
         {

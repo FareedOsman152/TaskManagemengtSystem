@@ -3,7 +3,7 @@ using Hangfire;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagmentSystem.Models;
-using TaskManagmentSystem.Notifications.Interfaces;
+using TaskManagmentSystem.Srvices.Interfaces;
 using TaskManagmentSystem.ViewModels;
 
 namespace TaskManagmentSystem.Controllers
@@ -11,12 +11,12 @@ namespace TaskManagmentSystem.Controllers
     public class UserTaskController : Controller
     {    
         private readonly AppDbContext _context;
-        private readonly INotificationManager _notificationManager;
+        private readonly INotificationService _notificationService;
 
-        public UserTaskController(AppDbContext context, INotificationManager notificationManager)
+        public UserTaskController(AppDbContext context, INotificationService notificationService)
         {
             _context = context;
-            _notificationManager = notificationManager;
+            _notificationService = notificationService;
         }
 
         [HttpPost]
@@ -55,7 +55,7 @@ namespace TaskManagmentSystem.Controllers
                  _context.UserTasks.Add(userTask);
                  await _context.SaveChangesAsync();
 
-                await _notificationManager.ManageTaskBeginAndEndAsync(userId!, userTask);
+                await _notificationService.ManageTaskBeginAndEndAsync(userId!, userTask);
 
                 return RedirectToAction
                     ("ShowAll", "TaskList", new { id = userTaskFromRequest.WorkSpaceId });

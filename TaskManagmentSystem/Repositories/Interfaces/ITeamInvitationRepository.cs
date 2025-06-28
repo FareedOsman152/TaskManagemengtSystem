@@ -7,7 +7,7 @@ namespace TaskManagmentSystem.Repositories.Interfaces
         Task<TeamInvitation> GetBuIdAsync(int id);
         Task<List<TeamInvitation>> GetForReceiverAsync(string userId);
         Task<List<TeamInvitation>> GetForSenderAsync(string userId);
-        Task AddAsync(TeamInvitation invitation);
+        Task<TeamInvitation> AddAsync(TeamInvitation invitation);
         Task UpdateAsync(TeamInvitation invitationToUpdate);
         Task UpdateStatusAsync(TeamInvitation invitationToUpdate);
         Task DeleteAsync(int id);
