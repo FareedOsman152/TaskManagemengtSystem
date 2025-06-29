@@ -265,6 +265,8 @@ namespace TaskManagmentSystem.Srvices
             invitation.Status = InvitationStatus.Accepted;
             await _teamInvitationRepository.UpdateStatusAsync(invitation);
 
+            await _teamAppUserService.AddAsync( user.Id, invitation.TeamId, invitation.Permissions);
+
             var notificationResult = await _notificationService.SendTeamInvitationAccepted(invitation);
             if (!notificationResult.Succeeded)
                 return OperationResult.Failure(notificationResult.ErrorMessage);
