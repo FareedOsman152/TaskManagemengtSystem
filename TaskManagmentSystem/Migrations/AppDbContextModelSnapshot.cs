@@ -363,7 +363,6 @@ namespace TaskManagmentSystem.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AdminId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("DateCreated")
@@ -613,12 +612,12 @@ namespace TaskManagmentSystem.Migrations
                     b.HasOne("TaskManagmentSystem.Models.AppUser", "Actor")
                         .WithMany()
                         .HasForeignKey("ActorId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("TaskManagmentSystem.Models.AppUser", "Recipient")
                         .WithMany("Notifications")
                         .HasForeignKey("RecipientId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("TaskManagmentSystem.Models.TeamInvitation", "TeamInvitation")
                         .WithMany()
@@ -674,8 +673,7 @@ namespace TaskManagmentSystem.Migrations
                     b.HasOne("TaskManagmentSystem.Models.AppUser", "Admin")
                         .WithMany()
                         .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Admin");
                 });
@@ -716,7 +714,7 @@ namespace TaskManagmentSystem.Migrations
                     b.HasOne("TaskManagmentSystem.Models.Team", "Team")
                         .WithMany("Invitations")
                         .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Receiver");
@@ -731,7 +729,7 @@ namespace TaskManagmentSystem.Migrations
                     b.HasOne("TaskManagmentSystem.Models.AppUser", "Creater")
                         .WithMany("TasksCreated")
                         .HasForeignKey("CreaterId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("TaskManagmentSystem.Models.TaskList", "TaskList")
                         .WithMany("UserTasks")

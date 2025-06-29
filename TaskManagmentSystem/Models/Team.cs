@@ -12,8 +12,8 @@ namespace TaskManagmentSystem.Models
         public DateTime DateCreated { get; set; }
 
         [ForeignKey("Admin")]
-        public string AdminId { get; set; } = null!;
-        public AppUser Admin { get; set; } = null!;
+        public string? AdminId { get; set; } = null!;
+        public AppUser? Admin { get; set; } = null!;
 
         public List<TeamAppUser> TeamAppUsers { get; set; } = null!;
 

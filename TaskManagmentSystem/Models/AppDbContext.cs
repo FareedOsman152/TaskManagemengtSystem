@@ -22,7 +22,7 @@ namespace TaskManagmentSystem.Models
             base.OnModelCreating(builder);
             builder.Entity<UserTask>().HasKey(x => x.Id);
             builder.Entity<UserTask>().Property(x => x.Title).HasMaxLength(50);
-            builder.Entity<UserTask>().Property(x=>x.Description).HasMaxLength(100);
+            builder.Entity<UserTask>().Property(x => x.Description).HasMaxLength(100);
             builder.Entity<UserTask>().Property(x => x.BeginOn).IsRequired(false);
             builder.Entity<UserTask>().Property(x => x.EndOn).IsRequired(false);
             builder.Entity<UserTask>(e =>
@@ -32,13 +32,12 @@ namespace TaskManagmentSystem.Models
                 e.Property(x => x.IsDone).HasDefaultValue(false);
 
                 e.HasOne(t => t.Creater)
-               .WithMany(u => u.TasksCreated)
-               .OnDelete(DeleteBehavior.Restrict);
+                 .WithMany(u => u.TasksCreated)
+                 .OnDelete(DeleteBehavior.SetNull);
 
                 e.HasMany(t => t.Editors)
-                .WithMany(u => u.TasksEdited)
-                .UsingEntity<TaskEdiotor>();
-
+                 .WithMany(u => u.TasksEdited)
+                 .UsingEntity<TaskEdiotor>();
             });
 
             builder.Entity<TaskList>().HasKey(x => x.Id);
@@ -52,32 +51,32 @@ namespace TaskManagmentSystem.Models
             builder.Entity<Notification>().HasKey(x => x.Id);
             builder.Entity<Notification>().Property(x => x.Details).HasMaxLength(200);
             builder.Entity<Notification>()
-                .HasOne(x=>x.UserTask)
-                .WithMany(x=>x.Notifications)
+                .HasOne(x => x.UserTask)
+                .WithMany(x => x.Notifications)
                 .OnDelete(DeleteBehavior.SetNull);
             builder.Entity<Notification>()
                 .HasOne(x => x.Recipient)
                 .WithMany(x => x.Notifications)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction); // Changed from SetNull
             builder.Entity<Notification>(n =>
             {
                 n.HasOne(n => n.Actor)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Restrict);
+                 .WithMany()
+                 .OnDelete(DeleteBehavior.NoAction); // Changed from SetNull
 
                 n.HasOne(n => n.TeamInvitation)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Restrict);
+                 .WithMany()
+                 .OnDelete(DeleteBehavior.Restrict);
             });
 
             builder.Entity<AppUserProfile>(p =>
             {
                 p.HasKey(p => p.Id);
-                p.Property(p=>p.FirstName).HasMaxLength(30);    
-                p.Property(p=>p.LastName).HasMaxLength(30);    
+                p.Property(p => p.FirstName).HasMaxLength(30);
+                p.Property(p => p.LastName).HasMaxLength(30);
                 p.HasOne(x => x.AppUser)
-                .WithOne(u => u.Profile)
-                .OnDelete(DeleteBehavior.Cascade);
+                 .WithOne(u => u.Profile)
+                 .OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<Team>(t =>
@@ -85,16 +84,16 @@ namespace TaskManagmentSystem.Models
                 t.Property(t => t.Title).HasMaxLength(75);
                 t.Property(t => t.Description).HasMaxLength(255);
                 t.HasOne(t => t.Admin)
-                .WithMany()
-                .OnDelete(DeleteBehavior.NoAction);
+                 .WithMany()
+                 .OnDelete(DeleteBehavior.SetNull);
 
                 t.HasMany(t => t.Users)
-                .WithMany(u => u.Teams)
-                .UsingEntity<TeamAppUser>();
+                 .WithMany(u => u.Teams)
+                 .UsingEntity<TeamAppUser>();
 
                 t.HasMany(t => t.WorkSpaces)
-                .WithOne(w => w.Team)
-                .OnDelete(DeleteBehavior.SetNull);
+                 .WithOne(w => w.Team)
+                 .OnDelete(DeleteBehavior.SetNull);
             });
 
             builder.Entity<TaskEdiotor>(te =>
@@ -102,14 +101,14 @@ namespace TaskManagmentSystem.Models
                 te.HasKey(te => new { te.EditorId, te.TaskEditedId });
 
                 te.HasOne(te => te.Editor)
-                .WithMany(u => u.TaskEditor)
-                .HasForeignKey(te => te.EditorId)
-                .OnDelete(DeleteBehavior.Restrict);
+                 .WithMany(u => u.TaskEditor)
+                 .HasForeignKey(te => te.EditorId)
+                 .OnDelete(DeleteBehavior.Restrict);
 
                 te.HasOne(te => te.TaskEdited)
-                .WithMany(u => u.TaskEditor)
-                .HasForeignKey(te => te.TaskEditedId)
-                .OnDelete(DeleteBehavior.Restrict);
+                 .WithMany(u => u.TaskEditor)
+                 .HasForeignKey(te => te.TaskEditedId)
+                 .OnDelete(DeleteBehavior.Restrict);
             });
 
             builder.Entity<TeamInvitation>(ti =>
@@ -118,20 +117,22 @@ namespace TaskManagmentSystem.Models
                 ti.Property(ti => ti.Message).HasMaxLength(250);
 
                 ti.HasOne(ti => ti.Sender)
-                .WithMany(u => u.TnvitationsSent)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasForeignKey(ti => ti.SenderId);
+                 .WithMany(u => u.TnvitationsSent)
+                 .OnDelete(DeleteBehavior.Restrict)
+                 .HasForeignKey(ti => ti.SenderId);
 
                 ti.HasOne(ti => ti.Receiver)
-                .WithMany(u => u.TnvitationsReceived)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasForeignKey(ti => ti.ReceiverId);
+                 .WithMany(u => u.TnvitationsReceived)
+                 .OnDelete(DeleteBehavior.Restrict)
+                 .HasForeignKey(ti => ti.ReceiverId);
 
                 ti.HasOne(ti => ti.Team)
-                .WithMany(t => t.Invitations)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasForeignKey(ti => ti.TeamId);
-            }); 
+                 .WithMany(t => t.Invitations)
+                 .OnDelete(DeleteBehavior.Cascade)
+                 .HasForeignKey(ti => ti.TeamId);
+            });
         }
     }
 }
+
+
