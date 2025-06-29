@@ -264,6 +264,11 @@ namespace TaskManagmentSystem.Srvices
 
             invitation.Status = InvitationStatus.Accepted;
             await _teamInvitationRepository.UpdateStatusAsync(invitation);
+
+            var notificationResult = await _notificationService.SendTeamInvitationAccepted(invitation);
+            if (!notificationResult.Succeeded)
+                return OperationResult.Failure(notificationResult.ErrorMessage);
+
             return OperationResult.Success();
         }
         private OperationResult _checkInvitationStatus(TeamInvitation invitation)
@@ -300,6 +305,10 @@ namespace TaskManagmentSystem.Srvices
 
             invitation.Status = InvitationStatus.Rejected;
             await _teamInvitationRepository.UpdateStatusAsync(invitation);
+            var notificationResult = await _notificationService.SendTeamInvitationAccepted(invitation,false);
+            if (!notificationResult.Succeeded)
+                return OperationResult.Failure(notificationResult.ErrorMessage);
+
             return OperationResult.Success();
 
         }

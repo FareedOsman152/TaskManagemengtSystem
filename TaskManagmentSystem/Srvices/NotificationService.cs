@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Plugins;
 using TaskManagmentSystem.Helpers;
 using TaskManagmentSystem.Models;
 using TaskManagmentSystem.Notifications.Interfaces;
@@ -14,13 +15,15 @@ namespace TaskManagmentSystem.Srvices
         private readonly INotificationScheduler _notifiScheduler;
         private readonly INotificationDispatcher _notifiDispatcher;
         private readonly IUserService _userService;
+        private readonly ITeamService _teamService;
 
-        public NotificationService(INotificationRepository notifiRepository, INotificationScheduler notifiScheduler, INotificationDispatcher notifiDispatcher, IUserService userService)
+        public NotificationService(INotificationRepository notifiRepository, INotificationScheduler notifiScheduler, INotificationDispatcher notifiDispatcher, IUserService userService, ITeamService teamService)
         {
             _notifiRepository = notifiRepository;
             _notifiScheduler = notifiScheduler;
             _notifiDispatcher = notifiDispatcher;
             _userService = userService;
+            _teamService = teamService;
         }
 
         public async Task ManageTaskBeginAndEndAsync(string userId, UserTask userTask)
@@ -30,7 +33,7 @@ namespace TaskManagmentSystem.Srvices
                 var notifications = new List<Notification>();
                 // Create notifi Begin
                 if (userTask.BeginOn is not null && userTask.BeginOn > DateTime.Now)
-                {                                      
+                {
                     var notifiBeginOn = await _notifiRepository.BeginAsync(userId!, userTask);
                     notifications.Add(notifiBeginOn);
 
@@ -52,9 +55,9 @@ namespace TaskManagmentSystem.Srvices
                         notifications.Add(notifiBeforeEnd);
                     }
                 }
-                if(notifications.Count>0)
+                if (notifications.Count > 0)
                 {
-                   var notificationsViewModel = new List<NotificationViewModel>();
+                    var notificationsViewModel = new List<NotificationViewModel>();
                     foreach (var n in notifications)
                     {
                         notificationsViewModel.Add(new NotificationViewModel
@@ -77,6 +80,68 @@ namespace TaskManagmentSystem.Srvices
             if (invitation is null)
                 return OperationResult.Failure("Invitation is null");
 
+            var Recipient = await _userService.GetByIdAsync(invitation.ReceiverId);
+
+            var createResult = await _createTeamInvitationNotification(invitation);
+            if (!createResult.Succeeded)
+                return OperationResult.Failure(createResult.ErrorMessage);
+
+            var dispatchResult = _dispatchNotification(createResult.Data, Recipient);
+            if (!dispatchResult.Succeeded)
+                return OperationResult.Failure(dispatchResult.ErrorMessage);
+
+            return OperationResult.Success();
+        }
+        /// <summary>
+        /// Sends a notification when a team invitation is accepted or rejected .
+        /// </summary>
+        /// <param name="invitation"></param>
+        /// <param name="accepted"></param>
+        /// <returns></returns>
+        public async Task<OperationResult> SendTeamInvitationAccepted(TeamInvitation invitation, bool accepted = true)
+        {
+            if (invitation is null)
+                return OperationResult.Failure("Invitation is null");
+
+            var Recipient = await _userService.GetByIdAsync(invitation.SenderId);
+            invitation.Team = await _teamService.GetByIdAsync(invitation.TeamId);
+
+            var createResult = await _createTeamInvitationAcceptedNotification(invitation,accepted);
+            if (!createResult.Succeeded)
+                return OperationResult.Failure(createResult.ErrorMessage);
+
+            var dispatchResult = _dispatchNotification(createResult.Data, Recipient);
+            if (!dispatchResult.Succeeded)
+                return OperationResult.Failure(dispatchResult.ErrorMessage);
+
+            return OperationResult.Success();
+        }
+
+        private async Task<OperationResult<Notification>> _createTeamInvitationAcceptedNotification(TeamInvitation invitation, bool accepted = true)
+        {
+            var sender = await _userService.GetByIdAsync(invitation.SenderId);
+            var receiver = await _userService.GetByIdAsync(invitation.ReceiverId);
+            var response = accepted ? "accepted" : "rejected";
+
+            var notification = new Notification
+            {
+                Details = $"\"{receiver.UserName}\" {response} your invitation ti join to \"{invitation.Team.Title}\" team",
+                IsRead = false,
+                Type = NotificationType.TeamInvitationAccepted,
+                DateToSend = DateTime.Now,
+                RecipientId = invitation.SenderId,
+                ActorId = invitation.ReceiverId,
+                TeamInvitationId = invitation.Id
+            };
+            var createResult = await _notifiRepository.CreateAsync(notification);
+            if (!createResult.Succeeded)
+                return OperationResult<Notification>.Failure(createResult.ErrorMessage);
+
+            return OperationResult<Notification>.Success(createResult.Data);
+        }
+
+        private async Task<OperationResult<Notification>> _createTeamInvitationNotification(TeamInvitation invitation)
+        {
             var sender = await _userService.GetByIdAsync(invitation.SenderId);
             var receiver = await _userService.GetByIdAsync(invitation.ReceiverId);
 
@@ -92,11 +157,16 @@ namespace TaskManagmentSystem.Srvices
                 TeamInvitationId = invitation.Id
             };
             var createResult = await _notifiRepository.CreateAsync(notification);
-            if(!createResult.Succeeded)
-                return OperationResult.Failure(createResult.ErrorMessage);
+            if (!createResult.Succeeded)
+                return OperationResult<Notification>.Failure(createResult.ErrorMessage);
+
+            return OperationResult<Notification>.Success(createResult.Data);
+        }
+        private OperationResult _dispatchNotification(Notification notification, AppUser receiver)
+        {
             try
             {
-                await _notifiDispatcher.SendNotificationAsync(new NotificationForSentViewModel
+                _notifiDispatcher.SendNotificationAsync(new NotificationForSentViewModel
                 {
                     Id = notification.Id,
                     Details = notification.Details,
@@ -109,8 +179,6 @@ namespace TaskManagmentSystem.Srvices
             {
                 return OperationResult.Failure($"Failed to send notification: {ex.Message}");
             }
-            ;
-        
         }
     }
 }
