@@ -80,8 +80,11 @@ namespace TaskManagmentSystem.Srvices
             if (invitation is null)
                 return OperationResult.Failure("Invitation is null");
 
-            var Recipient = await _userService.GetByIdAsync(invitation.ReceiverId);
+            var RecipientResult = await _userService.GetByIdAsync(invitation.ReceiverId);
+            if (!RecipientResult.Succeeded)
+                return OperationResult.Failure(RecipientResult.ErrorMessage);
 
+            var Recipient = RecipientResult.Data;
             var createResult = await _createTeamInvitationNotification(invitation);
             if (!createResult.Succeeded)
                 return OperationResult.Failure(createResult.ErrorMessage);
@@ -103,8 +106,16 @@ namespace TaskManagmentSystem.Srvices
             if (invitation is null)
                 return OperationResult.Failure("Invitation is null");
 
-            var Recipient = await _userService.GetByIdAsync(invitation.SenderId);
-            invitation.Team = await _teamService.GetByIdAsync(invitation.TeamId);
+            var RecipientResult = await _userService.GetByIdAsync(invitation.SenderId);
+            if (!RecipientResult.Succeeded)
+                return OperationResult.Failure(RecipientResult.ErrorMessage);
+
+            var Recipient = RecipientResult.Data;
+            var teamResult = await _teamService.GetByIdAsync(invitation.TeamId);
+            if (!teamResult.Succeeded)
+                return OperationResult.Failure(teamResult.ErrorMessage);
+
+            invitation.Team = teamResult.Data;
 
             var createResult = await _createTeamInvitationAcceptedNotification(invitation,accepted);
             if (!createResult.Succeeded)
@@ -119,8 +130,16 @@ namespace TaskManagmentSystem.Srvices
 
         private async Task<OperationResult<Notification>> _createTeamInvitationAcceptedNotification(TeamInvitation invitation, bool accepted = true)
         {
-            var sender = await _userService.GetByIdAsync(invitation.SenderId);
-            var receiver = await _userService.GetByIdAsync(invitation.ReceiverId);
+            var senderResult = await _userService.GetByIdAsync(invitation.SenderId);
+            if (!senderResult.Succeeded)
+                return OperationResult<Notification>.Failure(senderResult.ErrorMessage);
+
+            var sender = senderResult.Data;
+            var receiverResult = await _userService.GetByIdAsync(invitation.ReceiverId);
+            if (!receiverResult.Succeeded)
+                return OperationResult<Notification>.Failure(receiverResult.ErrorMessage);
+
+            var receiver = receiverResult.Data;
             var response = accepted ? "accepted" : "rejected";
 
             var notification = new Notification
@@ -142,8 +161,16 @@ namespace TaskManagmentSystem.Srvices
 
         private async Task<OperationResult<Notification>> _createTeamInvitationNotification(TeamInvitation invitation)
         {
-            var sender = await _userService.GetByIdAsync(invitation.SenderId);
-            var receiver = await _userService.GetByIdAsync(invitation.ReceiverId);
+            var senderResult = await _userService.GetByIdAsync(invitation.SenderId);
+            if (!senderResult.Succeeded)
+                return OperationResult<Notification>.Failure(senderResult.ErrorMessage);
+
+            var sender = senderResult.Data;
+            var receiverResult = await _userService.GetByIdAsync(invitation.ReceiverId);
+            if (!receiverResult.Succeeded)
+                return OperationResult<Notification>.Failure(receiverResult.ErrorMessage);
+
+            var receiver = receiverResult.Data;
 
             var notification = new Notification
             {

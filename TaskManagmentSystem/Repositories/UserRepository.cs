@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TaskManagmentSystem.Helpers;
 using TaskManagmentSystem.Models;
 using TaskManagmentSystem.Repositories.Interfaces;
 
@@ -12,19 +13,39 @@ namespace TaskManagmentSystem.Repositories
         {
             _context = context;
         }
-        public async Task<AppUser?> GetByIdAsync(string userId)
+        public async Task<OperationResult<AppUser>> GetByIdAsync(string userId)
         {
-            return await _context.Users.FindAsync(userId);
+             var user = await _context.Users.FindAsync(userId);
+            if(user is null)
+                return OperationResult<AppUser>.Failure("User not found");
+
+            return OperationResult<AppUser>.Success(user);
         }
 
-        public async Task<AppUser> GetByUserNameAsync(string userName)
+        public async Task<OperationResult<AppUser>> GetByIdIncludeTeamsAsync(string userId)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            var user = await _context.Users.Include(u=>u.Teams).FirstOrDefaultAsync(u => u.Id == userId);
+            if(user is null)
+                return OperationResult<AppUser>.Failure("User not found");
+            return OperationResult<AppUser>.Success(user);
         }
 
-        public async Task<bool> IsExistAsync(string userId)
+        public async Task<OperationResult<AppUser>> GetByUserNameAsync(string userName)
         {
-            return await _context.Users.FindAsync(userId) is not null;
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            if (user is null)
+                return OperationResult<AppUser>.Failure("User not found");
+
+            return OperationResult<AppUser>.Success(user);
+        }
+
+        public async Task<OperationResult> IsExistAsync(string userId)
+        {
+            var userResult  = await GetByIdAsync(userId);
+            if (userResult.Succeeded)
+                return OperationResult.Success();
+
+            return OperationResult.Failure(userResult.ErrorMessage);
         }
     }
 }

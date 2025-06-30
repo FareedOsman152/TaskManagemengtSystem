@@ -10,7 +10,7 @@ namespace TaskManagmentSystem.Srvices.Interfaces
         Task<OperationResult<List<TeamInvitationsShowViewModel>>> GetReceivedForShow(string userId);
         Task<OperationResult<List<TeamInvitation>>> GetForSenderAsync(string userId);
         Task<OperationResult<List<TeamInvitationsShowViewModel>>> GetSentForShow(string userId);
-        Task<bool> IsInvited(string userName, int teamId);
+        Task<OperationResult<bool>> IsInvited(string userName, int teamId);
         Task<OperationResult<TeamInvitation>> SendAsync(InvitationViewModel invitationToSend);
         Task<OperationResult> EditAsync(TeamInvitationEditMessageViewModel invitationToUpdate);
         Task<OperationResult> AcceptAsync(int id, string userId);

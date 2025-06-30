@@ -1,11 +1,13 @@
-﻿using TaskManagmentSystem.Models;
+﻿using TaskManagmentSystem.Helpers;
+using TaskManagmentSystem.Models;
 
 namespace TaskManagmentSystem.Repositories.Interfaces
 {
     public interface IUserRepository
     {
-        Task<AppUser> GetByIdAsync(string userId);
-        Task<AppUser> GetByUserNameAsync(string userName);
-        Task<bool> IsExistAsync(string userId);
+        Task<OperationResult<AppUser>> GetByIdAsync(string userId);
+        Task<OperationResult<AppUser>> GetByIdIncludeTeamsAsync(string userId);
+        Task<OperationResult<AppUser>> GetByUserNameAsync(string userName);
+        Task<OperationResult> IsExistAsync(string userId);
     }
 }

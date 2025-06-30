@@ -28,9 +28,9 @@ namespace TaskManagmentSystem.Filters
                 context.Result = new BadRequestObjectResult("Team ID is required");
                 return;
             }
-            var isOk = await _teamAppUserService.IsHasPermissionAsync(userId!, teamId,_permissionCheck);
-            if (!isOk) 
-                context.Result = new ForbidResult();         
+            var isHasPermissionsResult = await _teamAppUserService.IsHasPermissionAsync(userId!, teamId,_permissionCheck);
+            if(!isHasPermissionsResult.Succeeded || !isHasPermissionsResult.Data)
+                context.Result = new ForbidResult();
         }
     }
 }

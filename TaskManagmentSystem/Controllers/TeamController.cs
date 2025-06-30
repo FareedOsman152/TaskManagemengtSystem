@@ -14,12 +14,10 @@ namespace TaskManagmentSystem.Controllers
     public class TeamController : Controller
     {
         private readonly ITeamService _teamService;
-        private readonly ITeamAppUserService _teamAppUserService;
 
-        public TeamController(ITeamService teamService, ITeamAppUserService teamAppUserService)
+        public TeamController(ITeamService teamService)
         {
             _teamService = teamService;
-            _teamAppUserService = teamAppUserService;
         }
         private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -28,9 +26,12 @@ namespace TaskManagmentSystem.Controllers
             var userId = GetUserId();
             if (userId is null)
                 return BadRequest();
-             
-            var teamsViewModel = await _teamService.GetTeamsForShowAllAsync(userId);
 
+            var teamsViewModelResult = await _teamService.GetTeamsForShowAllAsync(userId);
+            if (!teamsViewModelResult.Succeeded)
+                return BadRequest(teamsViewModelResult.ErrorMessage);
+
+            var teamsViewModel = teamsViewModelResult.Data;
             return View("Show", teamsViewModel);
         }
 
@@ -45,11 +46,9 @@ namespace TaskManagmentSystem.Controllers
             if (!ModelState.IsValid)
                 return RedirectToAction("Add", teamFromRequest);
 
-            var team = await _teamService.AddAsync(teamFromRequest, userId!);
-            if (team == null) 
-                return BadRequest("Failed to create team");
-
-            await _teamAppUserService.AddAsync(userId!, team.Id,teamFromRequest.Permissions);
+            var addTeamResult = await _teamService.AddAsync(teamFromRequest, userId!);
+            if (!addTeamResult.Succeeded)
+                return BadRequest(addTeamResult.ErrorMessage);
 
             return RedirectToAction("Show");
         }
@@ -60,16 +59,21 @@ namespace TaskManagmentSystem.Controllers
             var userId = GetUserId();
 
 
-            await _teamService.DeleteAsync(id, userId);
+            var deleteResult = await _teamService.DeleteAsync(id, userId);
+            if (!deleteResult.Succeeded)
+                return BadRequest(deleteResult.ErrorMessage);
+
             return RedirectToAction("Show");
         }
 
         [TypeFilter(typeof(TeamPermissionsFilter), Arguments =new object[] {TeamPermissions.EditTeamDetails})]
         public async Task<IActionResult> Edit(int id)
         {
-            var team = await _teamService.GetByIdAsync(id);
-            if (team == null)
-                return NotFound();
+            var teamResult = await _teamService.GetByIdAsync(id);
+            if (!teamResult.Succeeded)
+                return BadRequest(teamResult.ErrorMessage);
+
+            var team = teamResult.Data;
 
             var userId = GetUserId();
             if (userId == team.AdminId)
@@ -92,14 +96,21 @@ namespace TaskManagmentSystem.Controllers
                 return View("Edit", teamFromRequest);
 
             var userId = GetUserId();
-            await _teamService.EditAsync(teamFromRequest, userId!);
+            var editResult = await _teamService.EditAsync(teamFromRequest, userId!);
+            if (!editResult.Succeeded)
+                return BadRequest(editResult.ErrorMessage);
+
             return RedirectToAction("Show");
         }
 
         public async Task<IActionResult> Details(int id)
         {
             var userId = GetUserId();
-            var teamDetails = await _teamService.GetTeamDetailsInculdeUsersAsync(id, userId);
+            var teamDetailsResult = await _teamService.GetTeamDetailsInculdeUsersAsync(id, userId);
+            if (!teamDetailsResult.Succeeded)
+                return BadRequest(teamDetailsResult.ErrorMessage);
+
+            var teamDetails = teamDetailsResult.Data;
             return View("Details", teamDetails);
         }
 

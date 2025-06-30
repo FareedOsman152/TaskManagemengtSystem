@@ -10,5 +10,6 @@ namespace TaskManagmentSystem.Repositories.Interfaces
         Task<OperationResult> UpdateAsync(WorkSpace workSpace);
         Task<OperationResult> DeleteAsync(int id);
         Task<OperationResult<List<WorkSpace>>> GetForUserAsync(string userId);
+        Task<OperationResult<List<WorkSpace>>> GetForTeamAsync(int teamId);
     }
 }

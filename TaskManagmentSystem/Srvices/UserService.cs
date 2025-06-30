@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TaskManagmentSystem.Helpers;
 using TaskManagmentSystem.Models;
 using TaskManagmentSystem.Repositories.Interfaces;
 using TaskManagmentSystem.Srvices.Interfaces;
@@ -14,31 +15,60 @@ namespace TaskManagmentSystem.Srvices
         {
             _userRepository = userRepository;
         }
+        public async Task<OperationResult<AppUser>> GetByIdAsync(string userId)
+        {
+            if(string.IsNullOrEmpty(userId))
+                return OperationResult<AppUser>.Failure("User ID is null or empty");
 
-        public async Task<AppUser> GetByIdAsync(string userId)
-        {
-            Check.IsNull(userId);
-            return await _userRepository.GetByIdAsync(userId);
+            var userResult = await _userRepository.GetByIdAsync(userId);
+            if (!userResult.Succeeded)
+                return OperationResult<AppUser>.Failure("User not found");
+
+            return OperationResult<AppUser>.Success(userResult.Data);
         }
-        public async Task<bool> IsExistAsync(string userId)
+        public async Task<OperationResult<AppUser>> GetIncludeTeamsAsync(string userId)
         {
-            return await _userRepository.IsExistAsync(userId); 
+            if (string.IsNullOrEmpty(userId))
+                return OperationResult<AppUser>.Failure("User ID is null or empty");
+            var userResult = await _userRepository.GetByIdIncludeTeamsAsync(userId);
+            if (!userResult.Succeeded)
+                return OperationResult<AppUser>.Failure("User not found");
+            return OperationResult<AppUser>.Success(userResult.Data);
         }
 
-        public async Task<UserDetailsForTeamViewModel> GetUserDetailsForTeamDetails(string userId,string adminId)
+        public async Task<OperationResult<AppUser>> GetByUserNameAsync(string userName)
         {
-            var user = await GetByIdAsync(userId);
-            return new UserDetailsForTeamViewModel
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                IsAdmin = adminId == user.Id,
-            };
+            if(string.IsNullOrEmpty(userName))
+                return OperationResult<AppUser>.Failure("User name is null or empty");
+            var userResult = await _userRepository.GetByUserNameAsync(userName);
+            if (!userResult.Succeeded)
+                return OperationResult<AppUser>.Failure("User not found");
+            return OperationResult<AppUser>.Success(userResult.Data);
         }
 
-        public async Task<AppUser> GetByUserNameAsync(string userName)
+        public async Task<OperationResult> IsExistAsync(string userId)
         {
-            return await _userRepository.GetByUserNameAsync(userName);
+            return await _userRepository.IsExistAsync(userId);
+        }
+
+        public async Task<OperationResult<UserDetailsForTeamViewModel>> GetUserDetailsForTeamDetailsAsync(string userId, string adminId)
+        {
+            var userResult = await GetByIdAsync(userId);
+            if (!userResult.Succeeded)
+                return OperationResult<UserDetailsForTeamViewModel>.Failure(userResult.ErrorMessage);
+
+            if (string.IsNullOrEmpty(adminId))
+                return OperationResult<UserDetailsForTeamViewModel>.Failure("Admin ID is null or empty");
+
+            var user  = userResult.Data;
+
+            return OperationResult<UserDetailsForTeamViewModel>
+                .Success(new UserDetailsForTeamViewModel
+                {
+                    Id = user.Id,
+                    UserName = user.UserName!,
+                    IsAdmin = adminId == user.Id,
+                });
         }
     }
 }

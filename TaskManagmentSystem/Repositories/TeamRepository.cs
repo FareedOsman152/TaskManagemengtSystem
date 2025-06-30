@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TaskManagmentSystem.Helpers;
 using TaskManagmentSystem.Models;
 using TaskManagmentSystem.Repositories.Interfaces;
 using TaskManagmentSystem.Srvices;
+using TaskManagmentSystem.Srvices.Interfaces;
 using TaskManagmentSystem.ViewModels;
 
 namespace TaskManagmentSystem.Repositories
@@ -9,73 +11,109 @@ namespace TaskManagmentSystem.Repositories
     public class TeamRepository : ITeamRepository
     {
         private readonly AppDbContext _context;
+        private readonly IUserService _userService;
 
-        public TeamRepository(AppDbContext context)
+        public TeamRepository(AppDbContext context, IUserService userService)
         {
             _context = context;
+            _userService = userService;
         }
 
-        public async Task<Team> GetByIdAsync(int id)
+        public async Task<OperationResult<Team>> GetByIdAsync(int id)
         {
             var team = await _context.Teams.FindAsync(id);
             if (team is null)
-                throw new ArgumentException("The team is not found");
+                return OperationResult<Team>.Failure("Team not found");
 
-            return team;
+            return OperationResult<Team>.Success(team);
         }
 
-        public async Task<List<Team>> GetTeamsOfUserAsync(string userId)
+        public async Task<OperationResult<List<Team>>> GetTeamsOfUserAsync(string userId)
         {
-            var userWithTeams = await _context.Users.Include(u=>u.Teams!).ThenInclude(t=>t.Admin)
-                .FirstOrDefaultAsync(u=>u.Id==userId);
+            var userResult = await _userService.GetByIdAsync(userId);
+            if(!userResult.Succeeded)
+                return OperationResult<List<Team>>.Failure(userResult.ErrorMessage);
 
-            if (userWithTeams is null)
-                throw new ArgumentException($"There is no user with this Id {userId}");
+            var user = userResult.Data;
 
-            return userWithTeams.Teams!;
+            var userWithTeamsResult = await _userService.GetIncludeTeamsAsync(userId);
+            if(!userWithTeamsResult.Succeeded)
+                return OperationResult<List<Team>>.Failure(userWithTeamsResult.ErrorMessage);
+
+            var userWithTeams = userWithTeamsResult.Data;
+
+            return OperationResult<List<Team>>.Success(userWithTeams.Teams);
         }
 
-        public async Task<Team> AddAsync(Team teamToAdd)
+        public async Task<OperationResult<Team>> AddAsync(Team teamToAdd)
         {
             if (teamToAdd is null)
-                throw new ArgumentNullException($"The {nameof(teamToAdd)} is null");
-
-            await _context.Teams.AddAsync(teamToAdd);
-            await _context.SaveChangesAsync();
-            return teamToAdd;
+                return OperationResult<Team>.Failure("The team to add is null");
+            try
+            {
+                await _context.Teams.AddAsync(teamToAdd);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return OperationResult<Team>.Failure($"An error occurred while adding the team: {ex.Message}");
+            }
+            return OperationResult<Team>.Success(teamToAdd);
         }
 
-        public async Task<Team> EditAsync(Team teamToEdit)
+        public async Task<OperationResult<Team>> EditAsync(Team teamToEdit)
         {
-            Check.IsNull(teamToEdit);
+            if (teamToEdit is null)
+                return OperationResult<Team>.Failure("The team to edit is null");
 
-            var team = await _context.Teams.FindAsync(teamToEdit.Id);
-            Check.IsNull(team!);
+            var teamResult = await GetByIdAsync(teamToEdit.Id);
+            if (!teamResult.Succeeded)
+                return OperationResult<Team>.Failure(teamResult.ErrorMessage);
+
+            var team = teamResult.Data;
 
             team.Title = teamToEdit.Title;
             team.Description = teamToEdit.Description;
-            await _context.SaveChangesAsync();
-            return team;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return OperationResult<Team>.Failure($"An error occurred while updating the team: {ex.Message}");
+            }
+           
+            return OperationResult<Team>.Success(team);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<OperationResult> DeleteAsync(int id)
         {
-            var team = await _context.Teams.FindAsync(id);
-            if (team is null)
-                throw new ArgumentException("this team is not found");
-            _context.Teams.Remove(team);
-            await _context.SaveChangesAsync();
+            var teamresult = await GetByIdAsync(id);
+            if (!teamresult.Succeeded)
+                return OperationResult.Failure(teamresult.ErrorMessage);
+            var team = teamresult.Data;
+            try
+            {
+                _context.Teams.Remove(team);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return OperationResult.Failure($"An error occurred while deleting the team: {ex.Message}");
+            }
+            return OperationResult.Success();
         }
 
-        public async Task<Team> GetByIdIncludeUsersAsync(int id)
+        public async Task<OperationResult<Team>> GetByIdIncludeUsersAsync(int id)
         {
             var team = await _context.Teams.Include(t=>t.Users)
                 .FirstOrDefaultAsync(t=>t.Id==id);
 
             if (team is null)
-                throw new ArgumentException("The team is not found");
+                return OperationResult<Team>.Failure("Team not found");
 
-            return team;
+            return OperationResult<Team>.Success(team);
         }
+
     }
 }

@@ -1,14 +1,15 @@
-﻿using TaskManagmentSystem.Models;
+﻿using TaskManagmentSystem.Helpers;
+using TaskManagmentSystem.Models;
 
 namespace TaskManagmentSystem.Repositories.Interfaces
 {
     public interface ITeamRepository
     {
-        Task<Team> GetByIdAsync(int id);
-        Task<Team> GetByIdIncludeUsersAsync(int id);
-        Task<List<Team>> GetTeamsOfUserAsync(string userId);
-        Task<Team> AddAsync(Team teamToAdd);
-        Task<Team> EditAsync(Team teamToEdit);
-        Task DeleteAsync(int id);
+        Task<OperationResult<Team>> GetByIdAsync(int id);
+        Task<OperationResult<Team>> GetByIdIncludeUsersAsync(int id);
+        Task<OperationResult<List<Team>>> GetTeamsOfUserAsync(string userId);
+        Task<OperationResult<Team>> AddAsync(Team teamToAdd);
+        Task<OperationResult<Team>> EditAsync(Team teamToEdit);
+        Task<OperationResult> DeleteAsync(int id);
     }
 }

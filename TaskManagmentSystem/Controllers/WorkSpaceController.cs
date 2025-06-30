@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Host;
 using Microsoft.EntityFrameworkCore;
 using TaskManagmentSystem.Models;
+using TaskManagmentSystem.Srvices.Interfaces;
 using TaskManagmentSystem.ViewModels;
 
 namespace TaskManagmentSystem.Controllers
@@ -12,75 +14,36 @@ namespace TaskManagmentSystem.Controllers
     [Authorize]
     public class WorkSpaceController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IWorkSpaceService _workSpaceService;
+        private readonly ITeamService _teamService;
+        private readonly IUserService _userService;
 
-        public WorkSpaceController(AppDbContext context)
+        public WorkSpaceController(IWorkSpaceService workSpaceService, ITeamService teamService, IUserService userService)
         {
-            _context = context;
+            _workSpaceService = workSpaceService;
+            _teamService = teamService;
+            _userService = userService;
         }
+
+        private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
         public async Task<IActionResult> ShowAll()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var workSpaces = _context.WorkSpaces.Where(x => x.AppUserId == userId).ToList();
-            return View("ShowAll", workSpaces);
+            var userId = GetUserId();
+            var workSpacesResult = await _workSpaceService.GetForUserAsync(userId);
+            if (!workSpacesResult.Succeeded)
+                return BadRequest(workSpacesResult.ErrorMessage);
+
+            return View("ShowAll", workSpacesResult.Data);
         }
 
         public async Task<IActionResult> ShowForTeam(int id)
         {
-            var team = await _context.Teams.Include(t=>t.Users).FirstOrDefaultAsync(t=>t.Id==id);
-            if (team is null)
-                return NotFound();
+            var userId = GetUserId();
+            var workSpacesResult = await _workSpaceService.GetForTeamShowAsync(id,userId);
+            if (!workSpacesResult.Succeeded)
+                return BadRequest(workSpacesResult.ErrorMessage);
 
-            var workspaces = await _context.WorkSpaces.Where(w=>w.TeamId==id).ToListAsync();
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (team.Users.FirstOrDefault(u => u.Id == userId) is null || team.Users.Count==0)
-                return BadRequest();
-
-            var workspacesViewModel = new List<WorkSpaceForTeamViewModel>();
-            var admin = await _context.Users.FindAsync(team.AdminId);
-            if (admin is null)
-                return BadRequest();
-
-            var usersViewModel = new List<UserDetailsForTeamViewModel>();
-
-            foreach (var u in team.Users)
-            {
-                usersViewModel.Add(new UserDetailsForTeamViewModel
-                {
-                    Id = u.Id,
-                    UserName = u.UserName,
-                    IsAdmin = u.Id == admin.Id
-                });
-            }
-
-            var fullWorkspacesViewModel = new FullDataWorkSpaceForTeamViewModel
-            {
-                Workspaces = workspacesViewModel,
-                Name = team.Title,
-                Description = team.Description,
-                DateCreated = team.DateCreated,
-                AdminId = team.AdminId,
-                AdminName = admin.UserName,
-                UserId = userId
-            };
-            if (workspaces.Count < 1)
-                goto finalReutn;
-
-            foreach (var w in workspaces)
-            {
-                workspacesViewModel.Add(new WorkSpaceForTeamViewModel
-                {
-                    Title = w.Title,
-                    Description = w.Description,
-                    Id = w.Id,
-                    Color = w.Color
-                });
-            }
-
-        finalReutn:
-            return View("ShowForTeam", fullWorkspacesViewModel);
+            return View("ShowForTeam", workSpacesResult.Data);
         }
 
         public IActionResult Add()
@@ -95,42 +58,30 @@ namespace TaskManagmentSystem.Controllers
 
         public async Task<IActionResult> SaveAdd(WorkSpaceViewModel workSpaceFromRequest)
         {
-            if (ModelState.IsValid)
+            var createResult = await _workSpaceService.CreateAsync(workSpaceFromRequest, GetUserId());
+            if (!createResult.Succeeded)
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                var workSapce = new WorkSpace();
-                workSapce.Title = workSpaceFromRequest.Title;
-                workSapce.Description = workSpaceFromRequest.Description;
-                workSapce.AppUserId = userId!;
-                workSapce.Color = workSpaceFromRequest.Color;
-
-                await _context.AddAsync(workSapce);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("ShowAll");
+                ModelState.AddModelError("", createResult.ErrorMessage);
+                return View("Add", workSpaceFromRequest);
             }
-            return View("Add", workSpaceFromRequest);
+            return RedirectToAction("ShowAll");
         }
 
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            var workSpace = await _context.WorkSpaces.FindAsync(id);
-            if (workSpace != null)
-            {
-                _context.WorkSpaces.Remove(workSpace);
-                await _context.SaveChangesAsync();
-            }
+            var deleteResult = await _workSpaceService.DeleteAsync(id);
+            if (!deleteResult.Succeeded)
+                ModelState.AddModelError("", deleteResult.ErrorMessage);
             return RedirectToAction("ShowAll");
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var workSpace = await _context.WorkSpaces.FindAsync(id);
-            if (workSpace is null)
-            {
-                return NotFound();
-            }
+            var workSpaceResult = await _workSpaceService.GetByIdAsync(id);
+           if (!workSpaceResult.Succeeded)
+                return NotFound(workSpaceResult.ErrorMessage);
+            var workSpace = workSpaceResult.Data;
             var colors = Enum.GetNames(typeof(WorkSpaceColor)).ToList();
             var workSpaceViewModel = new WorkSpaceForEditViewModel
             {
@@ -149,14 +100,11 @@ namespace TaskManagmentSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                var workSpace = await _context.WorkSpaces.FindAsync(id);
-                if (workSpace != null)
+               var updateResult = await _workSpaceService.UpdateAsync(workSpaceFromRequest);
+                if (!updateResult.Succeeded)
                 {
-                    workSpace.Title = workSpaceFromRequest.Title;
-                    workSpace.Description = workSpaceFromRequest.Description;
-                    workSpace.Color = workSpaceFromRequest.Color;
-                    _context.Update(workSpace);
-                    await _context.SaveChangesAsync();
+                    ModelState.AddModelError("", updateResult.ErrorMessage);
+                    return View("Edit", workSpaceFromRequest);
                 }
                 return RedirectToAction("ShowAll");
             }

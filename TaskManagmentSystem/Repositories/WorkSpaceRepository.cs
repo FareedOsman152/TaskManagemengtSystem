@@ -2,18 +2,23 @@
 using TaskManagmentSystem.Helpers;
 using TaskManagmentSystem.Models;
 using TaskManagmentSystem.Repositories.Interfaces;
+using TaskManagmentSystem.Srvices.Interfaces;
 
 namespace TaskManagmentSystem.Repositories
 {
     public class WorkSpaceRepository : IWorkSpaceRepository
     {
         private readonly AppDbContext _context;
-        private readonly Logger<WorkSpaceRepository> _logger;
-        public WorkSpaceRepository(AppDbContext context, Logger<WorkSpaceRepository> logger)
+        private readonly ITeamService _teamService;
+        private readonly ILogger<WorkSpaceRepository> _logger;
+
+        public WorkSpaceRepository(AppDbContext context, ITeamService teamService, ILogger<WorkSpaceRepository> logger)
         {
             _context = context;
+            _teamService = teamService;
             _logger = logger;
         }
+
         public async Task<OperationResult<WorkSpace>> GetByIdAsync(int id)
         {
             var workSpace = await _context.WorkSpaces.FindAsync(id);
@@ -74,6 +79,17 @@ namespace TaskManagmentSystem.Repositories
                 .ToListAsync();
             return OperationResult<List<WorkSpace>>.Success(workSpaces);
         }
-     
+
+        public async Task<OperationResult<List<WorkSpace>>> GetForTeamAsync(int teamId)
+        {
+            var teamResult = await _teamService.GetByIdAsync(teamId);
+            if(!teamResult.Succeeded)
+                return OperationResult<List<WorkSpace>>.Failure("Team not found");
+
+            var workSpaces = await _context.WorkSpaces
+                .Where(ws => ws.TeamId == teamId)
+                .ToListAsync();
+            return OperationResult<List<WorkSpace>>.Success(workSpaces);
+        }
     }
 }
