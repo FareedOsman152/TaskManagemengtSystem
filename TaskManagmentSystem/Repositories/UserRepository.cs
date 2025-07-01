@@ -24,7 +24,7 @@ namespace TaskManagmentSystem.Repositories
 
         public async Task<OperationResult<AppUser>> GetByIdIncludeTeamsAsync(string userId)
         {
-            var user = await _context.Users.Include(u=>u.Teams).FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _context.Users.Include(u=>u.Teams).ThenInclude(t=>t.Admin).FirstOrDefaultAsync(u => u.Id == userId);
             if(user is null)
                 return OperationResult<AppUser>.Failure("User not found");
             return OperationResult<AppUser>.Success(user);

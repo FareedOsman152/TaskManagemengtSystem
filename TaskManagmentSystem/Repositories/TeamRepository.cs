@@ -33,9 +33,8 @@ namespace TaskManagmentSystem.Repositories
             var userResult = await _userService.GetByIdAsync(userId);
             if(!userResult.Succeeded)
                 return OperationResult<List<Team>>.Failure(userResult.ErrorMessage);
-
+            
             var user = userResult.Data;
-
             var userWithTeamsResult = await _userService.GetIncludeTeamsAsync(userId);
             if(!userWithTeamsResult.Succeeded)
                 return OperationResult<List<Team>>.Failure(userWithTeamsResult.ErrorMessage);
