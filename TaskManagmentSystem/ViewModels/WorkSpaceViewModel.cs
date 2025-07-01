@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using TaskManagmentSystem.Models;
 
@@ -16,5 +17,8 @@ namespace TaskManagmentSystem.ViewModels
 
         [ValidateNever]
         public List<string> Colors { get; set; }
+
+        [HiddenInput]
+        public int TeamId { get; set; }
     }
 }

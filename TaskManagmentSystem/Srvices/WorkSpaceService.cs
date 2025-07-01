@@ -34,6 +34,8 @@ namespace TaskManagmentSystem.Srvices
                 Title = workSpaceToCreate.Title,
                 Description = workSpaceToCreate.Description,
                 AppUserId = userId,
+                Color = workSpaceToCreate.Color,
+                TeamId = workSpaceToCreate.TeamId > 0 ? workSpaceToCreate.TeamId : null
             };
             return await _workSpaceRepository.CreateAsync(workSpace);
         }
@@ -94,7 +96,8 @@ namespace TaskManagmentSystem.Srvices
                         Workspaces = new List<WorkSpaceForTeamViewModel>(),
                         Name = teamWithUsers.Title,
                         AdminId = teamWithUsers.AdminId,
-                        UserId = userId
+                        UserId = userId,
+                        TeamId = teamId
                     });
 
             var workspacesViewModel = new List<WorkSpaceForTeamViewModel>();
@@ -114,7 +117,8 @@ namespace TaskManagmentSystem.Srvices
                 Workspaces = workspacesViewModel,
                 Name = teamWithUsers.Title,
                 AdminId = teamWithUsers.AdminId,
-                UserId = userId
+                UserId = userId,
+                TeamId = teamId
             };
 
             return OperationResult<FullDataWorkSpaceForTeamViewModel>.Success(fullWorkspacesViewModel);

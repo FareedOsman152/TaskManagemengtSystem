@@ -57,14 +57,16 @@
                                     </a>
                                     @if (Model.AdminId == Model.UserId)
                                     {
-                                        <a asp-action="Edit" asp-route-id="@workspace.Id" class="action-btn edit" title="Edit Workspace">
-                                            <i class="bi bi-pencil-square"></i>
+                                        <a asp-action="Edit" asp-route-id="@workspace.Id"
+                                           class="action-btn edit-btn" title="Edit">
+                                            <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a asp-action="Delete" asp-route-id="@workspace.Id" class="action-btn delete"
-                                           title="Delete Workspace"
-                                           onclick="return confirm('Are you sure you want to delete this workspace?');">
-                                            <i class="bi bi-trash3-fill"></i>
-                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@workspace.Id" method="post" class="d-inline"
+                                              onsubmit="return confirm('Delete this workspace and all its data?');">
+                                            <button type="submit" class="action-btn delete-btn" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
                                     }
                                 </div>
                             </div>
@@ -86,9 +88,10 @@
                                         @workspace.Color.ToString()
                                     </span>
                                 </div>
-                                <a asp-action="ViewTasks" asp-route-id="@workspace.Id" class="btn-view-tasks">
-                                    <i class="bi bi-list-task"></i>
-                                    <span>View Tasks</span>
+                                <a asp-action="ShowAll" asp-controller="TaskList" asp-route-id="@workspace.Id"
+                                   class="btn-go-to-tasks">
+                                    <i class="bi bi-arrow-right-circle"></i>
+                                    <span>Go To Tasks</span>
                                 </a>
                             </div>
                         </div>

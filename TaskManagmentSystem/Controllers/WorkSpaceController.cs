@@ -46,12 +46,13 @@ namespace TaskManagmentSystem.Controllers
             return View("ShowForTeam", workSpacesResult.Data);
         }
 
-        public IActionResult Add()
+        public IActionResult Add(int teamId)
         {
             var colors = Enum.GetNames(typeof(WorkSpaceColor)).ToList();
             var workSpaceViewModel = new WorkSpaceViewModel
             {                
-                Colors = colors
+                Colors = colors,
+                TeamId = teamId
             };
             return View("Add", workSpaceViewModel);
         }
