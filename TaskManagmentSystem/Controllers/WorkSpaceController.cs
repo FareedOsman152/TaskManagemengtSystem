@@ -65,7 +65,10 @@ namespace TaskManagmentSystem.Controllers
                 ModelState.AddModelError("", createResult.ErrorMessage);
                 return View("Add", workSpaceFromRequest);
             }
-            return RedirectToAction("ShowAll");
+            if(workSpaceFromRequest.TeamId == 0)
+                return RedirectToAction("ShowAll");
+            
+            return RedirectToAction("ShowForTeam",new {Id = workSpaceFromRequest.TeamId});
         }
 
         [HttpPost]
